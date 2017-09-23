@@ -2,7 +2,7 @@
 
 namespace z80vm.Tests
 {
-    public class MemoryTest
+    public class MemoryTests
     {
         [Theory]
         [InlineData(0)]

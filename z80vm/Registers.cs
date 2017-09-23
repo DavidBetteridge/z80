@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace z80vm
 {
@@ -52,6 +53,9 @@ namespace z80vm
         private byte E2;
         private byte F2;
         private byte H2;
+
+
+
         private byte L2;
 
 
@@ -70,6 +74,8 @@ namespace z80vm
         /// Refresh Register
         /// </summary>
         private byte R;
+
+
 
         /// <summary>
         /// Program counter
@@ -111,6 +117,43 @@ namespace z80vm
             }
         }
 
+        public ushort Read(Reg16 register)
+        {
+            var highOrderByte = default(byte);
+            var lowOrderByte = default(byte);
+
+            switch (register)
+            {
+                case Reg16.AF:
+                    highOrderByte = A;
+                    lowOrderByte = F;
+                    break;
+                case Reg16.BC:
+                    highOrderByte = B;
+                    lowOrderByte = C;
+                    break;
+                case Reg16.DE:
+                    highOrderByte = D;
+                    lowOrderByte = E;
+                    break;
+                case Reg16.HL:
+                    highOrderByte = H;
+                    lowOrderByte = L;
+                    break;
+                //case Reg16.IX:
+                //    IX = value;
+                //    break;
+                //case Reg16.IY:
+                //    IY = value;
+                //    break;
+                default:
+                    break;
+            }
+
+            var ho = (ushort)(highOrderByte << 8);
+            return (ushort)(ho | lowOrderByte);
+        }
+
         public void Set(Reg8 register, byte value)
         {
             switch (register)
@@ -142,6 +185,41 @@ namespace z80vm
                 default:
                     throw new Exception("Unknown register " + register);
             }
+        }
+
+        public void Set(Reg16 register, ushort value)
+        {
+            var highOrderByte = (byte)(value >> 8);
+            var lowOrderByte = (byte)(value & 0x00FF);
+
+            switch (register)
+            {
+                case Reg16.AF:
+                    A = highOrderByte;
+                    F = lowOrderByte;
+                    break;
+                case Reg16.BC:
+                    B = highOrderByte;
+                    C = lowOrderByte;
+                    break;
+                case Reg16.DE:
+                    D = highOrderByte;
+                    E = lowOrderByte;
+                    break;
+                case Reg16.HL:
+                    H = highOrderByte;
+                    L = lowOrderByte;
+                    break;
+                //case Reg16.IX:
+                //    IX = value;
+                //    break;
+                //case Reg16.IY:
+                //    IY = value;
+                //    break;
+                default:
+                    break;
+            }
+
         }
     }
 }

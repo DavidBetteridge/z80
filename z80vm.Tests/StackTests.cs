@@ -23,17 +23,18 @@ namespace z80vm.Tests
         }
 
         [Theory]
-        [InlineData(Reg16.AF, 100)]
-        public void PushingAValueOnToTheStackCopiesTheValueOfTheRegisterIntoTheMemoryLocationPointedToBySP(Reg16 register, int value)
+        [InlineData(Reg16.BC)]
+        public void PushingAValueOnToTheStackCopiesTheValueOfTheRegisterIntoTheMemoryLocationPointedToBySP(Reg16 register)
         {
+            //The Z80 is little endian,  so the lowest byte is stored in the lowest address
             var machine = new Machine();
 
             var currentValueOfSP = machine.Registers.SP;
-            //machine.Registers.Set(register, value);  //Needs to change to a LD
+            machine.Registers.Set(register, 0xABCD);  
             machine.PUSH(register);
 
-            Assert.True(false);
-//            Assert.Equal(machine.Memory.Read(currentValueOfSP), value);
+            Assert.Equal(machine.Memory.Read(currentValueOfSP), 0xAB);
+            Assert.Equal(machine.Memory.Read(--currentValueOfSP), 0xCD);
         }
 
 

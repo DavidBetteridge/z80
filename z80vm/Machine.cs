@@ -15,6 +15,14 @@ namespace z80vm
 
         public void PUSH(Reg16 register)
         {
+            //The Z80 is little endian,  so the lowest byte is stored in the lowest address
+            var value = this.Registers.Read(register);
+
+            var highOrderByte = (byte)(value >> 8);
+            var lowOrderByte = (byte)(value & 0x00FF);
+
+            this.Memory.Set(this.Registers.SP, highOrderByte);
+            this.Memory.Set((ushort)(this.Registers.SP - 1), lowOrderByte);
             this.Registers.SP -= 2;
         }
 
