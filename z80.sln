@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "z80vm", "z80vm\z80vm.csproj", "{6D979EC4-E58C-48C2-8FE0-FD1401DB5FF6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "z80vm", "z80vm\z80vm.csproj", "{6D979EC4-E58C-48C2-8FE0-FD1401DB5FF6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "z80vm.Tests", "z80vm.Tests\z80vm.Tests.csproj", "{6B125E25-C322-47A2-BBD5-93CBCBBBF4EA}"
 EndProject
