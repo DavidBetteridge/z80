@@ -5,10 +5,12 @@ namespace z80vm
     public class Machine
     {
         public Registers Registers { get; private set; }
+        public Memory Memory { get; private set; }
 
         public Machine()
         {
             this.Registers = new Registers();
+            this.Memory = new Memory();
         }
 
         public void PUSH(Reg16 register)
