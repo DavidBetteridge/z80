@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace z80vm
 {
@@ -189,8 +188,7 @@ namespace z80vm
 
         public void Set(Reg16 register, ushort value)
         {
-            var highOrderByte = (byte)(value >> 8);
-            var lowOrderByte = (byte)(value & 0x00FF);
+            var (highOrderByte, lowOrderByte) = value.Split();
 
             switch (register)
             {

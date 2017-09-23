@@ -17,9 +17,7 @@ namespace z80vm
         {
             //The Z80 is little endian,  so the lowest byte is stored in the lowest address
             var value = this.Registers.Read(register);
-
-            var highOrderByte = (byte)(value >> 8);
-            var lowOrderByte = (byte)(value & 0x00FF);
+            var (highOrderByte, lowOrderByte) = value.Split();
 
             this.Memory.Set(this.Registers.SP, highOrderByte);
             this.Memory.Set((ushort)(this.Registers.SP - 1), lowOrderByte);
