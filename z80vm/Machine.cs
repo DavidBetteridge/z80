@@ -16,6 +16,57 @@ namespace z80vm
         }
 
         /// <summary>
+        /// Usage: Adds 2 numbers together and stores the result in the first operand
+        /// Flags: Preserves the S, Z and P/V flags, and H is undefined. Rest of flags modified by definition.
+        /// </summary>
+        /// <param name="reg1"></param>
+        /// <param name="reg2"></param>
+        public void ADD(Reg16 reg1, Reg16 reg2)
+        {
+            switch (reg1)
+            {
+                case Reg16.HL:
+                case Reg16.IX:
+                case Reg16.IY:
+                    break;
+
+                default:
+                    throw new InvalidOperationException();
+            }
+
+            switch (reg2)
+            {
+                case Reg16.AF:
+                case Reg16.PC:
+                    throw new InvalidOperationException();
+            }
+
+            if ((reg1 == Reg16.HL && reg2 == Reg16.IX) ||
+                (reg1 == Reg16.HL && reg2 == Reg16.IY) ||
+                (reg1 == Reg16.IX && reg2 == Reg16.HL) ||
+                (reg1 == Reg16.IX && reg2 == Reg16.IY) ||
+                (reg1 == Reg16.IY && reg2 == Reg16.HL) ||
+                (reg1 == Reg16.IY && reg2 == Reg16.IX))
+            {
+                throw new InvalidOperationException();
+            }
+
+            var value1 = this.Registers.Read(reg1);
+            var value2 = this.Registers.Read(reg2);
+            var total = (value1 + value2);
+
+            if (total > ushort.MaxValue)
+            {
+                this.Flags.Set(Flag.C);
+                total = total - 65536;
+            }
+            else
+                this.Flags.Clear(Flag.C);
+
+            this.Registers.Set(reg1, (ushort)total);
+        }
+
+        /// <summary>
         /// SP is decreased by two and the value of reg16 is copied to the memory location pointed by the new value of SP. 
         /// It does not affect the flags.
         /// </summary>
