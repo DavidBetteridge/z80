@@ -276,9 +276,9 @@ namespace z80vm
             }
         }
 
-        public void Set(Reg16 register, ushort value)
+        public void Set(Reg16 register, ushort word)
         {
-            var (highOrderByte, lowOrderByte) = value.Split();
+            var (highOrderByte, lowOrderByte) = word.Split();
 
             switch (register)
             {
@@ -317,16 +317,16 @@ namespace z80vm
                     break;
 
                 case Reg16.IX:
-                    IX = value;
+                    IX = word;
                     break;
                 case Reg16.IY:
-                    IY = value;
+                    IY = word;
                     break;
                 case Reg16.PC:
-                    PC = value;
+                    PC = word;
                     break;
                 case Reg16.SP:
-                    SP = value;
+                    SP = word;
                     break;
 
                 default:

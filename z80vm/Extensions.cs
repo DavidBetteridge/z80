@@ -7,12 +7,12 @@ namespace z80vm
         /// <summary>
         /// Splits a 16bit number into two bytes
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="word"></param>
         /// <returns></returns>
-        public static (byte high, byte low) Split(this ushort value)
+        public static (byte high, byte low) Split(this ushort word)
         {
-            var highOrderByte = (byte)(value >> 8);
-            var lowOrderByte = (byte)(value & 0x00FF);
+            var highOrderByte = (byte)(word >> 8);
+            var lowOrderByte = (byte)(word & 0x00FF);
 
             return (highOrderByte, lowOrderByte);
         }
