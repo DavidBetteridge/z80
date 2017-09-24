@@ -66,16 +66,16 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\z80vm\z80vm.csproj">
-      <Project>{6d979ec4-e58c-48c2-8fe0-fd1401db5ff6}</Project>
-      <Name>z80vm</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\z80vm\z80vm.csproj">
+      <Project>{6d979ec4-e58c-48c2-8fe0-fd1401db5ff6}</Project>
+      <Name>z80vm</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

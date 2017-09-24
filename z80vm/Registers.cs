@@ -9,7 +9,9 @@ namespace z80vm
         DE = 2,
         HL = 3,
         IX = 4,
-        IY = 5
+        IY = 5,
+        PC = 6,
+        SP = 7
     }
 
     public enum Reg8
@@ -21,7 +23,17 @@ namespace z80vm
         E = 4,
         H = 5,
         L = 6,
-        F = 7
+        F = 7,
+        A2 = 8,
+        B2 = 9,
+        C2 = 10,
+        D2 = 11,
+        E2 = 12,
+        F2 = 13,
+        H2 = 14,
+        L2 = 15,
+        I = 16,
+        R = 17
     }
 
     public class Registers
@@ -52,9 +64,6 @@ namespace z80vm
         private byte E2;
         private byte F2;
         private byte H2;
-
-
-
         private byte L2;
 
 
@@ -74,8 +83,6 @@ namespace z80vm
         /// </summary>
         private byte R;
 
-
-
         /// <summary>
         /// Program counter
         /// </summary>
@@ -84,7 +91,7 @@ namespace z80vm
         /// <summary>
         /// Stack pointer
         /// </summary>
-        public ushort SP { get; set; }
+        private ushort SP;
 
         public Registers()
         {
@@ -111,6 +118,29 @@ namespace z80vm
                     return L;
                 case Reg8.F:
                     return F;
+
+                case Reg8.A2:
+                    return A2;
+                case Reg8.B2:
+                    return B2;
+                case Reg8.C2:
+                    return C2;
+                case Reg8.D2:
+                    return D2;
+                case Reg8.E2:
+                    return E2;
+                case Reg8.H2:
+                    return H2;
+                case Reg8.L2:
+                    return L2;
+                case Reg8.F2:
+                    return F2;
+
+                case Reg8.I:
+                    return I;
+                case Reg8.R:
+                    return R;
+
                 default:
                     throw new Exception("Unknown register " + register);
             }
@@ -139,12 +169,14 @@ namespace z80vm
                     highOrderByte = H;
                     lowOrderByte = L;
                     break;
-                //case Reg16.IX:
-                //    IX = value;
-                //    break;
-                //case Reg16.IY:
-                //    IY = value;
-                //    break;
+                case Reg16.IX:
+                    return IX;
+                case Reg16.IY:
+                    return IY;
+                case Reg16.SP:
+                    return SP;
+                case Reg16.PC:
+                    return PC;
                 default:
                     break;
             }
@@ -181,6 +213,39 @@ namespace z80vm
                 case Reg8.F:
                     F = value;
                     break;
+
+                case Reg8.A2:
+                    A2 = value;
+                    break;
+                case Reg8.B2:
+                    B2 = value;
+                    break;
+                case Reg8.C2:
+                    C2 = value;
+                    break;
+                case Reg8.D2:
+                    D2 = value;
+                    break;
+                case Reg8.E2:
+                    E2 = value;
+                    break;
+                case Reg8.H2:
+                    H2 = value;
+                    break;
+                case Reg8.L2:
+                    L2 = value;
+                    break;
+                case Reg8.F2:
+                    F2 = value;
+                    break;
+
+                case Reg8.I:
+                    I = value;
+                    break;
+                case Reg8.R:
+                    R = value;
+                    break;
+
                 default:
                     throw new Exception("Unknown register " + register);
             }
@@ -208,14 +273,21 @@ namespace z80vm
                     H = highOrderByte;
                     L = lowOrderByte;
                     break;
-                //case Reg16.IX:
-                //    IX = value;
-                //    break;
-                //case Reg16.IY:
-                //    IY = value;
-                //    break;
-                default:
+                case Reg16.IX:
+                    IX = value;
                     break;
+                case Reg16.IY:
+                    IY = value;
+                    break;
+                case Reg16.PC:
+                    PC = value;
+                    break;
+                case Reg16.SP:
+                    SP = value;
+                    break;
+
+                default:
+                    throw new Exception("Unknown register " + register);
             }
 
         }

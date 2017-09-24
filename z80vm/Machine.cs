@@ -19,9 +19,10 @@ namespace z80vm
             var value = this.Registers.Read(register);
             var (highOrderByte, lowOrderByte) = value.Split();
 
-            this.Memory.Set(this.Registers.SP, highOrderByte);
-            this.Memory.Set((ushort)(this.Registers.SP - 1), lowOrderByte);
-            this.Registers.SP -= 2;
+            var sp = this.Registers.Read(Reg16.SP);
+            this.Memory.Set(sp, highOrderByte);
+            this.Memory.Set((ushort)(sp - 1), lowOrderByte);
+            this.Registers.Set(Reg16.SP, (ushort)(sp - 2));
         }
 
         public void LD(Reg8 register, byte value)
