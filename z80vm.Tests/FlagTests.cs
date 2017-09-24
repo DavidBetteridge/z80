@@ -60,25 +60,25 @@ namespace z80vm.Tests
         [InlineData(Flag.Undefined5, 0b0010_0000)]
         [InlineData(Flag.Z, 0b0100_0000)]
         [InlineData(Flag.S, 0b1000_0000)]
-        public void SettingAFlagShouldUpdateTheARegister(Flag flag, byte valueOfAregister)
+        public void SettingAFlagShouldUpdateTheFRegister(Flag flag, byte valueOfAregister)
         {
             var machine = new Machine();
 
             machine.Flags.Set(flag);
 
-            Assert.Equal(valueOfAregister, machine.Registers.Read(Reg8.A));
+            Assert.Equal(valueOfAregister, machine.Registers.Read(Reg8.F));
         }
 
         [Theory]
         [InlineData(Flag.C, Flag.PV, 0b0000_0101)]
-        public void SettingTwoFlagShouldUpdateTheARegister(Flag flag1, Flag flag2, byte valueOfAregister)
+        public void SettingTwoFlagShouldUpdateTheFRegister(Flag flag1, Flag flag2, byte valueOfFregister)
         {
             var machine = new Machine();
 
             machine.Flags.Set(flag1);
             machine.Flags.Set(flag2);
 
-            Assert.Equal(valueOfAregister, machine.Registers.Read(Reg8.A));
+            Assert.Equal(valueOfFregister, machine.Registers.Read(Reg8.F));
         }
 
         [Theory]
@@ -90,10 +90,10 @@ namespace z80vm.Tests
         [InlineData(Flag.Undefined5, 0b0010_0000)]
         [InlineData(Flag.Z, 0b0100_0000)]
         [InlineData(Flag.S, 0b1000_0000)]
-        public void SettingTheARegisterShouldUpdateTheFlags(Flag flag, byte valueOfAregister)
+        public void SettingTheFRegisterShouldUpdateTheFlags(Flag flag, byte valueOfFregister)
         {
             var machine = new Machine();
-            machine.Registers.Set(Reg8.A, valueOfAregister);
+            machine.Registers.Set(Reg8.F, valueOfFregister);
             
             Assert.Equal(true, machine.Flags.Read(flag));
         }

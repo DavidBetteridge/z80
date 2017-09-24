@@ -8,10 +8,13 @@ namespace z80vm
         BC = 1,
         DE = 2,
         HL = 3,
+
         IX = 4,
         IY = 5,
+
         PC = 6,
         SP = 7,
+
         AF2 = 8,
         BC2 = 9,
         DE2 = 10,

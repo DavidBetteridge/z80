@@ -47,14 +47,14 @@
     }
 
     /// <summary>
-    /// Flags are bits in the 'A' register.  Each bit has a different meaning
+    /// Flags are bits in the 'F' register.  Each bit has a different meaning
     /// and is set/used by various opcodes
     /// </summary>
     public class Flags
     {
         /// <summary>
         /// We need a reference back to the registers so that we can
-        /// read/set the 'A' register
+        /// read/set the 'F' register
         /// </summary>
         private readonly Registers registers;
 
@@ -64,36 +64,36 @@
         }
 
         /// <summary>
-        /// Sets the corresponding bit in the 'A' register to 1
+        /// Sets the corresponding bit in the 'F' register to 1
         /// </summary>
         /// <param name="flag"></param>
         public void Set(Flag flag)
         {
-            var valueOfRegisterA = this.registers.Read(Reg8.A);
-            valueOfRegisterA = valueOfRegisterA.SetBit((int)flag);
-            this.registers.Set(Reg8.A, valueOfRegisterA);
+            var valueOfRegisterF = this.registers.Read(Reg8.F);
+            valueOfRegisterF = valueOfRegisterF.SetBit((int)flag);
+            this.registers.Set(Reg8.F, valueOfRegisterF);
         }
 
         /// <summary>
-        /// Sets the corresponding bit in the 'A' register to 0
+        /// Sets the corresponding bit in the 'F' register to 0
         /// </summary>
         /// <param name="flag"></param>
         public void Clear(Flag flag)
         {
-            var valueOfRegisterA = this.registers.Read(Reg8.A);
-            valueOfRegisterA = valueOfRegisterA.ClearBit((int)flag);
-            this.registers.Set(Reg8.A, valueOfRegisterA);
+            var valueOfRegisterF = this.registers.Read(Reg8.F);
+            valueOfRegisterF = valueOfRegisterF.ClearBit((int)flag);
+            this.registers.Set(Reg8.F, valueOfRegisterF);
         }
 
         /// <summary>
-        /// Reads the value of the corresponding bit in the 'A' register
+        /// Reads the value of the corresponding bit in the 'F' register
         /// </summary>
         /// <param name="flag"></param>
         /// <returns></returns>
         public bool Read(Flag flag)
         {
-            var a = this.registers.Read(Reg8.A);
-            return a.ReadBit((int)flag);
+            var valueOfRegisterF = this.registers.Read(Reg8.F);
+            return valueOfRegisterF.ReadBit((int)flag);
         }
     }
 }
