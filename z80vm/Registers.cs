@@ -11,7 +11,11 @@ namespace z80vm
         IX = 4,
         IY = 5,
         PC = 6,
-        SP = 7
+        SP = 7,
+        AF2 = 8,
+        BC2 = 9,
+        DE2 = 10,
+        HL2 = 11,
     }
 
     public enum Reg8
@@ -169,6 +173,24 @@ namespace z80vm
                     highOrderByte = H;
                     lowOrderByte = L;
                     break;
+
+                case Reg16.AF2:
+                    highOrderByte = A2;
+                    lowOrderByte = F2;
+                    break;
+                case Reg16.BC2:
+                    highOrderByte = B2;
+                    lowOrderByte = C2;
+                    break;
+                case Reg16.DE2:
+                    highOrderByte = D2;
+                    lowOrderByte = E2;
+                    break;
+                case Reg16.HL2:
+                    highOrderByte = H2;
+                    lowOrderByte = L2;
+                    break;
+
                 case Reg16.IX:
                     return IX;
                 case Reg16.IY:
@@ -273,6 +295,24 @@ namespace z80vm
                     H = highOrderByte;
                     L = lowOrderByte;
                     break;
+
+                case Reg16.AF2:
+                    A2 = highOrderByte;
+                    F2 = lowOrderByte;
+                    break;
+                case Reg16.BC2:
+                    B2 = highOrderByte;
+                    C2 = lowOrderByte;
+                    break;
+                case Reg16.DE2:
+                    D2 = highOrderByte;
+                    E2 = lowOrderByte;
+                    break;
+                case Reg16.HL2:
+                    H2 = highOrderByte;
+                    L2 = lowOrderByte;
+                    break;
+
                 case Reg16.IX:
                     IX = value;
                     break;

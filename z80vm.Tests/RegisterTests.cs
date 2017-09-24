@@ -24,6 +24,11 @@ namespace z80vm.Tests
         [InlineData(Reg16.BC, Reg8.C)]
         [InlineData(Reg16.DE, Reg8.E)]
         [InlineData(Reg16.HL, Reg8.L)]
+        [InlineData(Reg16.AF2, Reg8.F2)]
+        [InlineData(Reg16.BC2, Reg8.C2)]
+        [InlineData(Reg16.DE2, Reg8.E2)]
+        [InlineData(Reg16.HL2, Reg8.L2)]
+
         public void SettingA16BitRegisterSetsTheLowValueIntoTheSecondRegister(Reg16 register, Reg8 lowRegister)
         {
             ushort A_VALUE = 0xAABB;
@@ -39,6 +44,10 @@ namespace z80vm.Tests
         [InlineData(Reg16.BC, Reg8.B, Reg8.C)]
         [InlineData(Reg16.DE, Reg8.D, Reg8.E)]
         [InlineData(Reg16.HL, Reg8.H, Reg8.L)]
+        [InlineData(Reg16.AF2, Reg8.A2, Reg8.F2)]
+        [InlineData(Reg16.BC2, Reg8.B2, Reg8.C2)]
+        [InlineData(Reg16.DE2, Reg8.D2, Reg8.E2)]
+        [InlineData(Reg16.HL2, Reg8.H2, Reg8.L2)]
         public void ReadingA16BitRegisterCombinesItsHighAndLowOrderBytes(Reg16 register, Reg8 highRegister, Reg8 lowRegister)
         {
             var machine = new Machine();
