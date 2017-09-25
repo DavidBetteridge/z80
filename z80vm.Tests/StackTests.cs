@@ -29,14 +29,11 @@ namespace z80vm.Tests
             //The Z80 is little endian,  so the lowest byte is stored in the lowest address
             var machine = new Machine();
 
-            var currentValueOfSP = machine.Registers.Read(Reg16.SP);
             machine.Registers.Set(register, 0xABCD);
             machine.PUSH(register);
+            var currentValueOfSP = machine.Registers.Read(Reg16.SP);
 
-            currentValueOfSP = (ushort)(currentValueOfSP - 1);
-            Assert.Equal(0xAB, machine.Memory.Read(currentValueOfSP));
-
-            currentValueOfSP = (ushort)(currentValueOfSP - 1);
+            Assert.Equal(0xAB, machine.Memory.Read((ushort)(currentValueOfSP + 1)));
             Assert.Equal(0xCD, machine.Memory.Read(currentValueOfSP));
         }
 

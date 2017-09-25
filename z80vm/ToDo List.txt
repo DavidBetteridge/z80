@@ -1,14 +1,9 @@
 ﻿Issues
 ------
 
-I think the stack pointer might have an off by one error.
-I expect that the SP should be pointing at the lower order byte of the last stored value
-Currently it's pointing at the memory address below that
-
-
 Next Steps
 ----------
-Complete EX opcode
+Call opcode
 Add support for 8 bit adding
 Complete LD opcode
 
