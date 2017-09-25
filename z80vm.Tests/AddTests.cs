@@ -42,9 +42,6 @@ namespace z80vm.Tests
         [InlineData(Reg16.AF, Reg16.BC)]        //Invalid operand1
         [InlineData(Reg16.BC, Reg16.BC)]
         [InlineData(Reg16.DE, Reg16.BC)]
-        [InlineData(Reg16.AF2, Reg16.BC)]
-        [InlineData(Reg16.BC2, Reg16.BC)]
-        [InlineData(Reg16.DE2, Reg16.BC)]
         [InlineData(Reg16.PC, Reg16.BC)]
         [InlineData(Reg16.SP, Reg16.BC)]
 

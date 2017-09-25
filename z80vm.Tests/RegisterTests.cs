@@ -24,10 +24,6 @@ namespace z80vm.Tests
         [InlineData(Reg16.BC, Reg8.C)]
         [InlineData(Reg16.DE, Reg8.E)]
         [InlineData(Reg16.HL, Reg8.L)]
-        [InlineData(Reg16.AF2, Reg8.F2)]
-        [InlineData(Reg16.BC2, Reg8.C2)]
-        [InlineData(Reg16.DE2, Reg8.E2)]
-        [InlineData(Reg16.HL2, Reg8.L2)]
 
         public void SettingA16BitRegisterSetsTheLowValueIntoTheSecondRegister(Reg16 register, Reg8 lowRegister)
         {
@@ -44,10 +40,8 @@ namespace z80vm.Tests
         [InlineData(Reg16.BC, Reg8.B, Reg8.C)]
         [InlineData(Reg16.DE, Reg8.D, Reg8.E)]
         [InlineData(Reg16.HL, Reg8.H, Reg8.L)]
-        [InlineData(Reg16.AF2, Reg8.A2, Reg8.F2)]
-        [InlineData(Reg16.BC2, Reg8.B2, Reg8.C2)]
-        [InlineData(Reg16.DE2, Reg8.D2, Reg8.E2)]
-        [InlineData(Reg16.HL2, Reg8.H2, Reg8.L2)]
+        [InlineData(Reg16.IX, Reg8.IXH, Reg8.IXL)]
+        [InlineData(Reg16.IY, Reg8.IYH, Reg8.IYL)]
         public void ReadingA16BitRegisterCombinesItsHighAndLowOrderBytes(Reg16 register, Reg8 highRegister, Reg8 lowRegister)
         {
             var machine = new Machine();
@@ -59,23 +53,19 @@ namespace z80vm.Tests
 
         [Theory]
         [InlineData(Reg8.A)]
-        [InlineData(Reg8.A2)]
         [InlineData(Reg8.B)]
-        [InlineData(Reg8.B2)]
         [InlineData(Reg8.C)]
-        [InlineData(Reg8.C2)]
         [InlineData(Reg8.D)]
-        [InlineData(Reg8.D2)]
         [InlineData(Reg8.E)]
-        [InlineData(Reg8.E2)]
         [InlineData(Reg8.F)]
-        [InlineData(Reg8.F2)]
         [InlineData(Reg8.H)]
-        [InlineData(Reg8.H2)]
         [InlineData(Reg8.I)]
         [InlineData(Reg8.L)]
-        [InlineData(Reg8.L2)]
         [InlineData(Reg8.R)]
+        [InlineData(Reg8.IXH)]
+        [InlineData(Reg8.IXL)]
+        [InlineData(Reg8.IYH)]
+        [InlineData(Reg8.IYL)]
         public void IsShouldBePossibleToWriteAndReadFromEvery8BitRegister(Reg8 register)
         {
             var ANY_VALUE = (byte)0xAB;
@@ -103,6 +93,34 @@ namespace z80vm.Tests
             machine.Registers.Set(register, ANY_VALUE);
 
             Assert.Equal(ANY_VALUE, machine.Registers.Read(register));
+        }
+
+        [Theory]
+        [InlineData(Reg16Shadow.AF)]
+        [InlineData(Reg16Shadow.BC)]
+        [InlineData(Reg16Shadow.DE)]
+        [InlineData(Reg16Shadow.HL)]
+        public void IsShouldBePossibleToWriteAndReadFromEvery16BitShadowRegister(Reg16Shadow register)
+        {
+            var ANY_VALUE = (ushort)0xABCD;
+
+            var machine = new Machine();
+            machine.Registers.Set(register, ANY_VALUE);
+
+            Assert.Equal(ANY_VALUE, machine.Registers.Read(register));
+        }
+
+        [Fact]
+        public void SettingAShadowRegisterShouldNotChangeTheNormalRegister()
+        {
+            var ANY_VALUE = (ushort)0xABCD;
+            var A_DIFFERENT_VALUE = (ushort)0xAAAA;
+
+            var machine = new Machine();
+            machine.Registers.Set(Reg16.BC, ANY_VALUE);
+            machine.Registers.Set(Reg16Shadow.BC, A_DIFFERENT_VALUE);
+
+            Assert.Equal(ANY_VALUE, machine.Registers.Read(Reg16.BC));
         }
     }
 }
