@@ -7,12 +7,37 @@ namespace z80vm
         public Registers Registers { get; private set; }
         public Memory Memory { get; private set; }
         public Flags Flags { get; private set; }
+        public Labels Labels { get; private set; }
 
         public Machine()
         {
             this.Registers = new Registers();
             this.Memory = new Memory();
             this.Flags = new Flags(this.Registers);
+            this.Labels = new Labels();
+        }
+
+        /// <summary>
+        /// Usage: Change the address of execution whilst saving the return address on the stack
+        /// Flags: Preserved
+        /// </summary>
+        /// <param name="memoryAddress"></param>
+        public void CALL(ushort memoryAddress)
+        {
+            var currentPC = this.Registers.Read(Reg16.PC);
+            this.PUSH((ushort)(currentPC + 3));
+            this.Registers.Set(Reg16.PC, memoryAddress);
+        }
+
+        /// <summary>
+        /// Usage: Change the address of execution whilst saving the return address on the stack
+        /// Flags: Preserved
+        /// </summary>
+        /// <param name="label"></param>
+        public void CALL(string label)
+        {
+            var memoryAddress = this.Labels.Read(label);
+            this.CALL(memoryAddress);
         }
 
         /// <summary>
@@ -31,6 +56,8 @@ namespace z80vm
             swap(Reg16.DE, Reg16Shadow.DE);
             swap(Reg16.HL, Reg16Shadow.HL);
         }
+
+
 
         /// <summary>
         /// Usage: Adds 2 numbers together and stores the result in the first operand
@@ -162,6 +189,23 @@ namespace z80vm
         public void PUSH(Reg16 register)
         {
             var value = this.Registers.Read(register);
+            var (highOrderByte, lowOrderByte) = value.Split();
+
+            var stackPointer = this.Registers.Read(Reg16.SP);
+            stackPointer = (ushort)(stackPointer - 2);
+            this.Registers.Set(Reg16.SP, stackPointer);
+
+            //The Z80 is little endian,  so the lowest byte is stored in the lowest address
+            this.Memory.Set((ushort)(stackPointer + 1), highOrderByte);
+            this.Memory.Set((ushort)(stackPointer), lowOrderByte);
+        }
+
+        /// <summary>
+        /// Used internally to push a value straight onto the stack without using a registry
+        /// </summary>
+        /// <param name="value"></param>
+        private void PUSH(ushort value)
+        {
             var (highOrderByte, lowOrderByte) = value.Split();
 
             var stackPointer = this.Registers.Read(Reg16.SP);

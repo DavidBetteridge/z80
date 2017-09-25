@@ -60,8 +60,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AddTests.cs" />
+    <Compile Include="CallTests.cs" />
     <Compile Include="ExchangeTests.cs" />
     <Compile Include="FlagTests.cs" />
+    <Compile Include="LabelTests.cs" />
     <Compile Include="LDTests.cs" />
     <Compile Include="MemoryTests.cs" />
     <Compile Include="RegisterTests.cs" />
