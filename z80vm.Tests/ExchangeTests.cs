@@ -20,13 +20,7 @@ namespace z80vm.Tests
             Assert.Equal(0xAAAA, machine.Registers.Read(shadow));
             Assert.Equal(0xBBBB, machine.Registers.Read(register));
         }
-
-        //EX
-        //Syntax: ex op1, op2
-        //The values of the two operands are exchanged.
-        //ex de, hl, 
-        //ex af, af’. 
-        //The last one naturally alters the flags (exchanges them with the shadow flags). You cannot exchange the order given, e. g.there is no exhl,de!
+        
         [Theory]
         [InlineData(Reg16.HL)]
         [InlineData(Reg16.IX)]
@@ -50,5 +44,91 @@ namespace z80vm.Tests
             Assert.Equal(0xAABB, machine.Registers.Read(operand2));
         }
 
+
+        [Theory]
+        [InlineData(Reg16.BC)]
+        public void EXShouldErrorIfNotGivenValueAtSP(Reg16 operand1)
+        {
+            var machine = new Machine();
+            var exception = Record.Exception(() => machine.EX(valueAt(operand1), Reg16.HL));
+            Assert.IsType(typeof(System.InvalidOperationException), exception);
+        }
+
+        [Theory]
+        [InlineData(Reg16.BC)]
+        public void EXShouldErrorIfNotGivenHL_IX_IY(Reg16 operand2)
+        {
+            var machine = new Machine();
+            var exception = Record.Exception(() => machine.EX(valueAt(Reg16.SP), operand2));
+            Assert.IsType(typeof(System.InvalidOperationException), exception);
+        }
+
+
+        [Fact]
+        public void EXShouldExchangeDEandHL()
+        {
+            var machine = new Machine();
+            machine.Registers.Set(Reg16.DE, 0x1000);
+            machine.Registers.Set(Reg16.HL, 0x2000);
+
+            machine.EX(Reg16.DE, Reg16.HL);
+
+            Assert.Equal(0x2000, machine.Registers.Read(Reg16.DE));
+            Assert.Equal(0x1000, machine.Registers.Read(Reg16.HL));
+        }
+
+        [Theory]
+        [InlineData(Reg16.BC, Reg16.HL)]
+        [InlineData(Reg16.DE, Reg16.BC)]
+        public void EXShouldErrorIfNotGivenDEandHL(Reg16 operand1, Reg16 operand2)
+        {
+            var machine = new Machine();
+            machine.Registers.Set(operand1, 0x1000);
+            machine.Registers.Set(operand2, 0x2000);
+
+            var exception = Record.Exception(() => machine.EX(operand1, operand2));
+            Assert.IsType(typeof(System.InvalidOperationException), exception);
+        }
+
+        [Fact]
+        public void EXShouldExchangeAFandItsShadow()
+        {
+            var machine = new Machine();
+            machine.Registers.Set(Reg16.AF, 0x1000);
+            machine.Registers.Set(Reg16Shadow.AF, 0x2000);
+
+            machine.EX(Reg16.AF, Reg16Shadow.AF);
+
+            Assert.Equal(0x1000, machine.Registers.Read(Reg16Shadow.AF));
+            Assert.Equal(0x2000, machine.Registers.Read(Reg16.AF));
+        }
+
+        [Theory]
+        [InlineData(Reg16Shadow.BC)]
+        [InlineData(Reg16Shadow.DE)]
+        [InlineData(Reg16Shadow.HL)]
+        public void EXShouldErrorIfGivenAnyShadowRegisterOtherThanAF(Reg16Shadow register)
+        {
+            var machine = new Machine();
+            machine.Registers.Set(Reg16.AF, 0x1000);
+            machine.Registers.Set(register, 0x2000);
+
+            var exception = Record.Exception(() => machine.EX(Reg16.AF, register));
+            Assert.IsType(typeof(System.InvalidOperationException), exception);
+        }
+
+        [Theory]
+        [InlineData(Reg16.BC)]
+        [InlineData(Reg16.DE)]
+        [InlineData(Reg16.HL)]
+        public void EXShouldErrorIfGivenAnyRegisterOtherThanAF(Reg16 register)
+        {
+            var machine = new Machine();
+            machine.Registers.Set(register, 0x1000);
+            machine.Registers.Set(Reg16Shadow.AF, 0x2000);
+
+            var exception = Record.Exception(() => machine.EX(register, Reg16Shadow.AF));
+            Assert.IsType(typeof(System.InvalidOperationException), exception);
+        }
     }
 }

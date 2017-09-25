@@ -83,8 +83,50 @@ namespace z80vm
             this.Registers.Set(reg1, (ushort)total);
         }
 
+        /// <summary>
+        /// Usage: Exchanges the register AF with its shadow register
+        /// Flags: Yes as this is the F register
+        /// </summary>
+        /// <param name="operand1"></param>
+        /// <param name="operand2"></param>
+        public void EX(Reg16 operand1, Reg16Shadow operand2)
+        {
+            if (operand1 != Reg16.AF) throw new InvalidOperationException("The only register supported is AF");
+            if (operand2 != Reg16Shadow.AF) throw new InvalidOperationException("The only shadow register supported is AF");
+
+            var valueForOperand1 = this.Registers.Read(operand1);
+            var valueForOperand2 = this.Registers.Read(operand2);
+
+            this.Registers.Set(operand2, valueForOperand1);
+            this.Registers.Set(operand1, valueForOperand2);
+        }
+
+        /// <summary>
+        /// Usage: Exchanges the register DE with the register HL
+        /// Flags: N/A
+        /// </summary>
+        /// <param name="operand1"></param>
+        /// <param name="operand2"></param>
+        public void EX(Reg16 operand1, Reg16 operand2)
+        {
+            if (operand1 != Reg16.DE) throw new InvalidOperationException("The first operand must be DE");
+            if (operand2 != Reg16.HL) throw new InvalidOperationException("The second operand must be HL");
+
+            var valueForOperand1 = this.Registers.Read(operand1);
+            var valueForOperand2 = this.Registers.Read(operand2);
+
+            this.Registers.Set(operand2, valueForOperand1);
+            this.Registers.Set(operand1, valueForOperand2);
+        }
+
+
+        /// Usage: Exchanges the value pointed at by SP with one of the following registers:  HL,  IX or IY
+        /// Flags: N/A
         public void EX(Value operand1, Reg16 operand2)
         {
+            if (operand1.Register != Reg16.SP) throw new InvalidOperationException("The first operand must be value at SP");
+            if (operand2 != Reg16.HL && operand2 != Reg16.IX && operand2 != Reg16.IY) throw new InvalidOperationException("The second operand must be value at HL, IX or IY");
+
             // What is the current memory address?
             var memoryAddress = this.Registers.Read(operand1.Register);
 
