@@ -83,6 +83,35 @@ namespace z80vm
             this.Registers.Set(reg1, (ushort)total);
         }
 
+        public void EX(Value operand1, Reg16 operand2)
+        {
+            // What is the current memory address?
+            var memoryAddress = this.Registers.Read(operand1.Register);
+
+            // Read the current value at that address
+            var higherOrderByte = this.Memory.Read((ushort)(memoryAddress + 1));
+            var lowerOrderByte = this.Memory.Read(memoryAddress);
+            var valueForOperand1 = MakeWord(higherOrderByte, lowerOrderByte);
+
+            // Read the current value from the register
+            var valueForOperand2 = this.Registers.Read(operand2);
+            var (h, l) = valueForOperand2.Split();
+
+            // Swap them
+            this.Registers.Set(operand2, valueForOperand1);
+            this.Memory.Set((ushort)(memoryAddress + 1), h);
+            this.Memory.Set(memoryAddress, l);
+        }
+
+        /// <summary>
+        /// Combines two bytes to make a word
+        /// </summary>
+        /// <param name="highOrderByte"></param>
+        /// <param name="lowOrderByte"></param>
+        /// <returns></returns>
+        private ushort MakeWord(byte highOrderByte, byte lowOrderByte)
+            => (ushort)(((ushort)(highOrderByte << 8)) | lowOrderByte);
+
         /// <summary>
         /// SP is decreased by two and the value of reg16 is copied to the memory location pointed by the new value of SP. 
         /// It does not affect the flags.
