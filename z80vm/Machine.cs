@@ -33,12 +33,67 @@ namespace z80vm
         /// Usage: Change the address of execution whilst saving the return address on the stack
         /// Flags: Preserved
         /// </summary>
+        /// <param name="memoryAddress"></param>
+        /// <param name="condition"></param>
+        public void CALL(ushort memoryAddress, Condition condition)
+        {
+            if (IsConditionTrue(condition))
+            {
+                this.CALL(memoryAddress);
+            }
+        }
+
+        /// <summary>
+        /// Usage: Change the address of execution whilst saving the return address on the stack
+        /// Flags: Preserved
+        /// </summary>
+        /// <param name="label"></param>
+        /// <param name="condition"></param>
+        public void CALL(string label, Condition condition)
+        {
+            if (IsConditionTrue(condition))
+            {
+                this.CALL(label);
+            }
+        }
+
+        /// <summary>
+        /// Usage: Change the address of execution whilst saving the return address on the stack
+        /// Flags: Preserved
+        /// </summary>
         /// <param name="label"></param>
         public void CALL(string label)
         {
             var memoryAddress = this.Labels.Read(label);
             this.CALL(memoryAddress);
         }
+
+        private bool IsConditionTrue(Condition condition)
+        {
+            switch (condition)
+            {
+                case Condition.c:
+                    return (this.Flags.Read(Flag.C));
+                case Condition.nc:
+                    return (!this.Flags.Read(Flag.C));
+                case Condition.z:
+                    return (this.Flags.Read(Flag.Z));
+                case Condition.nz:
+                    return (!this.Flags.Read(Flag.Z));
+                case Condition.m:
+                    return (this.Flags.Read(Flag.S));
+                case Condition.pe:
+                    return (this.Flags.Read(Flag.PV));
+                case Condition.p:
+                    return (!this.Flags.Read(Flag.S));
+                case Condition.po:
+                    return (!this.Flags.Read(Flag.PV));
+                default:
+                    throw new Exception("Unknown condition - " + condition);
+            }
+        }
+
+
 
         /// <summary>
         /// There are no operands. This instruction exchanges BC with BC’, DE with DE’ and HL with HL’ at the same time. 
@@ -56,6 +111,8 @@ namespace z80vm
             swap(Reg16.DE, Reg16Shadow.DE);
             swap(Reg16.HL, Reg16Shadow.HL);
         }
+
+
 
 
 
