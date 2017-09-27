@@ -7,14 +7,14 @@ namespace z80vm.Tests
         [Fact]
         public void OnANewMachineTheSPRegisterShouldContainTheHighestPossibleMemoryAddress()
         {
-            var machine = new Machine();
+            var machine = CreateMachine();
             Assert.Equal(Memory.HIGHEST_ADDRESS, machine.Registers.Read(Reg16.SP));
         }
 
         [Fact]
         public void PushingAValueOnToTheStackShouldDecreaseTheSPRegisterByTwo()
         {
-            var machine = new Machine();
+            var machine = CreateMachine();
             var currentValueOfSP = machine.Registers.Read(Reg16.SP);
 
             machine.PUSH(Reg16.AF);
@@ -27,7 +27,7 @@ namespace z80vm.Tests
         public void PushingAValueOnToTheStackCopiesTheValueOfTheRegisterIntoTheMemoryLocationPointedToBySP(Reg16 register)
         {
             //The Z80 is little endian,  so the lowest byte is stored in the lowest address
-            var machine = new Machine();
+            var machine = CreateMachine();
 
             machine.Registers.Set(register, 0xABCD);
             machine.PUSH(register);
@@ -40,7 +40,7 @@ namespace z80vm.Tests
         [Fact]
         public void PoppingAValueFromToTheStackShouldIncreaseTheSPRegisterByTwo()
         {
-            var machine = new Machine();
+            var machine = CreateMachine();
             machine.PUSH(Reg16.AF);
 
             var currentValueOfSP = machine.Registers.Read(Reg16.SP);
@@ -59,7 +59,7 @@ namespace z80vm.Tests
         public void PoppingAValueFromTheStackCopiesTheMemoryLocationPointedToBySPToTheRegister(Reg16 register)
         {
             //The Z80 is little endian,  so the lowest byte is stored in the lowest address
-            var machine = new Machine();
+            var machine = CreateMachine();
             machine.Registers.Set(Reg16.SP, 0x1000);
             machine.Memory.Set(0x1000 + 1, 0xAA);  //High order byte
             machine.Memory.Set(0x1000, 0xBB);  //Low order byte
@@ -78,13 +78,17 @@ namespace z80vm.Tests
         [InlineData(Reg16.IY)]
         public void ShouldBeAbleToPOPaPUSHedValue(Reg16 register)
         {
-            var machine = new Machine();
+            var machine = CreateMachine();
             machine.Registers.Set(register, 0xAAAA);
             machine.PUSH(register);
             machine.Registers.Set(register, 0xBBBB);
             machine.POP(register);
 
             Assert.Equal(0xAAAA, machine.Registers.Read(register));
+        }
+        private static Machine CreateMachine()
+        {
+            return new Machine(new ConditionValidator());
         }
     }
 }

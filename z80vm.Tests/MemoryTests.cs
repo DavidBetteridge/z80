@@ -12,10 +12,14 @@ namespace z80vm.Tests
         {
             const byte ANY_VALUE = 123;
 
-            var machine = new Machine();
+            var machine = CreateMachine();
             machine.Memory.Set(memoryAddress, ANY_VALUE);
 
             Assert.Equal(ANY_VALUE, machine.Memory.Read(memoryAddress));
+        }
+        private static Machine CreateMachine()
+        {
+            return new Machine(new ConditionValidator());
         }
     }
 }

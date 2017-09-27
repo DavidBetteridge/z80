@@ -13,7 +13,7 @@ namespace z80vm.Tests
         {
             ushort A_VALUE = 0xAABB;
 
-            var machine = new Machine();
+            var machine = CreateMachine();
             machine.Registers.Set(register, A_VALUE);
 
             Assert.Equal(0xAA, machine.Registers.Read(highRegister));
@@ -29,7 +29,7 @@ namespace z80vm.Tests
         {
             ushort A_VALUE = 0xAABB;
 
-            var machine = new Machine();
+            var machine = CreateMachine();
             machine.Registers.Set(register, A_VALUE);
 
             Assert.Equal(0xBB, machine.Registers.Read(lowRegister));
@@ -44,7 +44,7 @@ namespace z80vm.Tests
         [InlineData(Reg16.IY, Reg8.IYH, Reg8.IYL)]
         public void ReadingA16BitRegisterCombinesItsHighAndLowOrderBytes(Reg16 register, Reg8 highRegister, Reg8 lowRegister)
         {
-            var machine = new Machine();
+            var machine = CreateMachine();
             machine.Registers.Set(highRegister, 0xAB);
             machine.Registers.Set(lowRegister, 0xCD);
 
@@ -70,7 +70,7 @@ namespace z80vm.Tests
         {
             var ANY_VALUE = (byte)0xAB;
 
-            var machine = new Machine();
+            var machine = CreateMachine();
             machine.Registers.Set(register, ANY_VALUE);
 
             Assert.Equal(ANY_VALUE, machine.Registers.Read(register));
@@ -89,7 +89,7 @@ namespace z80vm.Tests
         {
             var ANY_VALUE = (ushort)0xABCD;
 
-            var machine = new Machine();
+            var machine = CreateMachine();
             machine.Registers.Set(register, ANY_VALUE);
 
             Assert.Equal(ANY_VALUE, machine.Registers.Read(register));
@@ -104,7 +104,7 @@ namespace z80vm.Tests
         {
             var ANY_VALUE = (ushort)0xABCD;
 
-            var machine = new Machine();
+            var machine = CreateMachine();
             machine.Registers.Set(register, ANY_VALUE);
 
             Assert.Equal(ANY_VALUE, machine.Registers.Read(register));
@@ -116,11 +116,16 @@ namespace z80vm.Tests
             var ANY_VALUE = (ushort)0xABCD;
             var A_DIFFERENT_VALUE = (ushort)0xAAAA;
 
-            var machine = new Machine();
+            var machine = CreateMachine();
             machine.Registers.Set(Reg16.BC, ANY_VALUE);
             machine.Registers.Set(Reg16Shadow.BC, A_DIFFERENT_VALUE);
 
             Assert.Equal(ANY_VALUE, machine.Registers.Read(Reg16.BC));
+        }
+
+        private static Machine CreateMachine()
+        {
+            return new Machine(new ConditionValidator());
         }
     }
 }

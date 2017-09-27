@@ -14,7 +14,7 @@ namespace z80vm.Tests
         [InlineData(Reg8.L, 106)]
         public void ItShouldBePossibleToLoadAn8BitRegistersWithhImmediateValue(Reg8 register, byte value)
         {
-            var machine = new Machine();
+            var machine = CreateMachine();
             machine.LD(register, value);
 
             Assert.Equal(value, machine.Registers.Read(register));
@@ -23,12 +23,17 @@ namespace z80vm.Tests
         [Fact]
         public void LoadingOneRegisterShouldNotChangeAnotherRegister()
         {
-            var machine = new Machine();
+            var machine = CreateMachine();
 
             var currentValue = machine.Registers.Read(Reg8.B);
             machine.LD(Reg8.C, 123);
 
             Assert.Equal(currentValue, machine.Registers.Read(Reg8.B));
+        }
+
+        private static Machine CreateMachine()
+        {
+            return new Machine(new ConditionValidator());
         }
     }
 }

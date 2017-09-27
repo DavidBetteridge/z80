@@ -11,7 +11,7 @@ namespace z80vm.Tests
         [InlineData(Reg16.HL, Reg16Shadow.HL)]
         public void EXXShouldSwapARegisterWithItsShadow(Reg16 register, Reg16Shadow shadow)
         {
-            var machine = new Machine();
+            var machine = CreateMachine();
 
             machine.Registers.Set(register, 0xAAAA);
             machine.Registers.Set(shadow, 0xBBBB);
@@ -27,7 +27,7 @@ namespace z80vm.Tests
         [InlineData(Reg16.IY)]
         public void EXShouldExchangeTheValueOfTheTwoOperands(Reg16 operand2)
         {
-            var machine = new Machine();
+            var machine = CreateMachine();
 
             //Following the SP pointer should give us AABB
             machine.Registers.Set(Reg16.SP, 0x1000);
@@ -49,7 +49,7 @@ namespace z80vm.Tests
         [InlineData(Reg16.BC)]
         public void EXShouldErrorIfNotGivenValueAtSP(Reg16 operand1)
         {
-            var machine = new Machine();
+            var machine = CreateMachine();
             var exception = Record.Exception(() => machine.EX(valueAt(operand1), Reg16.HL));
             Assert.IsType(typeof(System.InvalidOperationException), exception);
         }
@@ -58,7 +58,7 @@ namespace z80vm.Tests
         [InlineData(Reg16.BC)]
         public void EXShouldErrorIfNotGivenHL_IX_IY(Reg16 operand2)
         {
-            var machine = new Machine();
+            var machine = CreateMachine();
             var exception = Record.Exception(() => machine.EX(valueAt(Reg16.SP), operand2));
             Assert.IsType(typeof(System.InvalidOperationException), exception);
         }
@@ -67,7 +67,7 @@ namespace z80vm.Tests
         [Fact]
         public void EXShouldExchangeDEandHL()
         {
-            var machine = new Machine();
+            var machine = CreateMachine();
             machine.Registers.Set(Reg16.DE, 0x1000);
             machine.Registers.Set(Reg16.HL, 0x2000);
 
@@ -82,7 +82,7 @@ namespace z80vm.Tests
         [InlineData(Reg16.DE, Reg16.BC)]
         public void EXShouldErrorIfNotGivenDEandHL(Reg16 operand1, Reg16 operand2)
         {
-            var machine = new Machine();
+            var machine = CreateMachine();
             machine.Registers.Set(operand1, 0x1000);
             machine.Registers.Set(operand2, 0x2000);
 
@@ -93,7 +93,7 @@ namespace z80vm.Tests
         [Fact]
         public void EXShouldExchangeAFandItsShadow()
         {
-            var machine = new Machine();
+            var machine = CreateMachine();
             machine.Registers.Set(Reg16.AF, 0x1000);
             machine.Registers.Set(Reg16Shadow.AF, 0x2000);
 
@@ -109,7 +109,7 @@ namespace z80vm.Tests
         [InlineData(Reg16Shadow.HL)]
         public void EXShouldErrorIfGivenAnyShadowRegisterOtherThanAF(Reg16Shadow register)
         {
-            var machine = new Machine();
+            var machine = CreateMachine();
             machine.Registers.Set(Reg16.AF, 0x1000);
             machine.Registers.Set(register, 0x2000);
 
@@ -123,12 +123,16 @@ namespace z80vm.Tests
         [InlineData(Reg16.HL)]
         public void EXShouldErrorIfGivenAnyRegisterOtherThanAF(Reg16 register)
         {
-            var machine = new Machine();
+            var machine = CreateMachine();
             machine.Registers.Set(register, 0x1000);
             machine.Registers.Set(Reg16Shadow.AF, 0x2000);
 
             var exception = Record.Exception(() => machine.EX(register, Reg16Shadow.AF));
             Assert.IsType(typeof(System.InvalidOperationException), exception);
+        }
+        private static Machine CreateMachine()
+        {
+            return new Machine(new ConditionValidator());
         }
     }
 }

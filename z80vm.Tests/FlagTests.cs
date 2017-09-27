@@ -15,7 +15,7 @@ namespace z80vm.Tests
         [InlineData(Flag.S)]
         public void IsShouldBePossibleToSetAndReadEveryFlag(Flag flag)
         {
-            var machine = new Machine();
+            var machine = CreateMachine();
 
             machine.Flags.Set(flag);
 
@@ -33,7 +33,7 @@ namespace z80vm.Tests
         [InlineData(Flag.S)]
         public void IsShouldBePossibleToClearAndReadEveryFlag(Flag flag)
         {
-            var machine = new Machine();
+            var machine = CreateMachine();
 
             machine.Flags.Set(flag);
             machine.Flags.Clear(flag);
@@ -44,7 +44,7 @@ namespace z80vm.Tests
         [Fact]
         public void SettingOneFlagShouldNotChangeAnother()
         {
-            var machine = new Machine();
+            var machine = CreateMachine();
 
             machine.Flags.Set(Flag.C);
 
@@ -62,7 +62,7 @@ namespace z80vm.Tests
         [InlineData(Flag.S, 0b1000_0000)]
         public void SettingAFlagShouldUpdateTheFRegister(Flag flag, byte valueOfAregister)
         {
-            var machine = new Machine();
+            var machine = CreateMachine();
 
             machine.Flags.Set(flag);
 
@@ -73,7 +73,7 @@ namespace z80vm.Tests
         [InlineData(Flag.C, Flag.PV, 0b0000_0101)]
         public void SettingTwoFlagShouldUpdateTheFRegister(Flag flag1, Flag flag2, byte valueOfFregister)
         {
-            var machine = new Machine();
+            var machine = CreateMachine();
 
             machine.Flags.Set(flag1);
             machine.Flags.Set(flag2);
@@ -92,10 +92,15 @@ namespace z80vm.Tests
         [InlineData(Flag.S, 0b1000_0000)]
         public void SettingTheFRegisterShouldUpdateTheFlags(Flag flag, byte valueOfFregister)
         {
-            var machine = new Machine();
+            var machine = CreateMachine();
             machine.Registers.Set(Reg8.F, valueOfFregister);
             
             Assert.Equal(true, machine.Flags.Read(flag));
+        }
+
+        private static Machine CreateMachine()
+        {
+            return new Machine(new ConditionValidator());
         }
     }
 }

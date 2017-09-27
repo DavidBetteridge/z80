@@ -9,7 +9,7 @@ namespace z80vm.Tests
         {
             const ushort ANY_MEMORY_ADDRESS = 0x0000;
 
-            var machine = new Machine();
+            var machine = CreateMachine();
             machine.Registers.Set(Reg16.PC, 0x1000);
 
             machine.CALL(ANY_MEMORY_ADDRESS);
@@ -23,7 +23,7 @@ namespace z80vm.Tests
         {
             const ushort ANY_MEMORY_ADDRESS = 0x0000;
 
-            var machine = new Machine();
+            var machine = CreateMachine();
             machine.Registers.Set(Reg16.PC, 0x1000);
 
             machine.CALL(ANY_MEMORY_ADDRESS);
@@ -37,7 +37,7 @@ namespace z80vm.Tests
             const ushort ANY_MEMORY_ADDRESS = 0x0000;
             const string ANY_LABEL = "Subroutine";
 
-            var machine = new Machine();
+            var machine = CreateMachine();
             machine.Labels.Set(ANY_LABEL, ANY_MEMORY_ADDRESS);
             machine.Registers.Set(Reg16.PC, 0x1000);
 
@@ -47,30 +47,18 @@ namespace z80vm.Tests
             Assert.Equal(0x1003, machine.Registers.Read(Reg16.BC));
         }
 
-        [Theory]
-        [InlineData(Condition.c, Flag.C, true)]
-        [InlineData(Condition.m, Flag.S, true)]
-        [InlineData(Condition.z, Flag.Z, true)]
-        [InlineData(Condition.pe, Flag.PV, true)]
-        [InlineData(Condition.nc, Flag.C, false)]
-        [InlineData(Condition.nz, Flag.Z, false)]
-        [InlineData(Condition.p, Flag.S, false)]
-        [InlineData(Condition.po, Flag.PV, false)]
-        public void The_Call_Should_Happen_If_The_Condition_Is_True(Condition condition, Flag flag, bool bitIsSet)
+        [Fact]
+        public void The_Call_Should_Happen_If_The_Condition_Is_True()
         {
             const ushort ANY_MEMORY_ADDRESS = 0x0000;
             const string ANY_LABEL = "Subroutine";
+            const Condition ANY_CONDITION = Condition.c;
 
-            var machine = new Machine();
+            var machine = new Machine(new FakeAlwaysTrueConditionValidator());
             machine.Labels.Set(ANY_LABEL, ANY_MEMORY_ADDRESS);
             machine.Registers.Set(Reg16.PC, 0x1000);
 
-            if (bitIsSet)
-                machine.Flags.Set(flag);
-            else
-                machine.Flags.Clear(flag);
-
-            machine.CALL(ANY_LABEL, condition);
+            machine.CALL(ANY_LABEL, ANY_CONDITION);
 
             machine.POP(Reg16.BC);
             Assert.Equal(0x1003, machine.Registers.Read(Reg16.BC));
@@ -81,7 +69,7 @@ namespace z80vm.Tests
         {
             const ushort ANY_MEMORY_ADDRESS = 0x0000;
 
-            var machine = new Machine();
+            var machine = CreateMachine();
             machine.Registers.Set(Reg16.PC, 0x1000);
             machine.Flags.Clear(Flag.C);
 
@@ -97,7 +85,7 @@ namespace z80vm.Tests
             const ushort ANY_MEMORY_ADDRESS = 0x0000;
             const string ANY_LABEL = "Subroutine";
 
-            var machine = new Machine();
+            var machine = new Machine(new FakeAlwaysFalseConditionValidator());
             machine.Labels.Set(ANY_LABEL, ANY_MEMORY_ADDRESS);
             machine.Registers.Set(Reg16.PC, 0x1000);
             machine.Flags.Clear(Flag.C);
@@ -106,6 +94,27 @@ namespace z80vm.Tests
 
             machine.POP(Reg16.BC);
             Assert.NotEqual(0x1003, machine.Registers.Read(Reg16.BC));
+        }
+
+        private static Machine CreateMachine()
+        {
+            return new Machine(new ConditionValidator());
+        }
+
+        private class FakeAlwaysTrueConditionValidator : IConditionValidator
+        {
+            public bool IsTrue(Flags flags, Condition condition)
+            {
+                return true;
+            }
+        }
+
+        private class FakeAlwaysFalseConditionValidator : IConditionValidator
+        {
+            public bool IsTrue(Flags flags, Condition condition)
+            {
+                return false;
+            }
         }
     }
 }

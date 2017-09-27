@@ -4,17 +4,20 @@ namespace z80vm
 {
     public class Machine
     {
+        private IConditionValidator conditionValidator;
+
         public Registers Registers { get; private set; }
         public Memory Memory { get; private set; }
         public Flags Flags { get; private set; }
         public Labels Labels { get; private set; }
 
-        public Machine()
+        public Machine(IConditionValidator conditionValidator)
         {
             this.Registers = new Registers();
             this.Memory = new Memory();
             this.Flags = new Flags(this.Registers);
             this.Labels = new Labels();
+            this.conditionValidator = conditionValidator;
         }
 
         /// <summary>
@@ -41,6 +44,14 @@ namespace z80vm
             this.POP(Reg16.PC);
         }
 
+        public void RET(Condition condition)
+        {
+            if (this.conditionValidator.IsTrue(this.Flags, condition))
+            {
+                this.POP(Reg16.PC);
+            }
+        }
+
         /// <summary>
         /// Usage: Change the address of execution whilst saving the return address on the stack
         /// Flags: Preserved
@@ -49,7 +60,7 @@ namespace z80vm
         /// <param name="condition"></param>
         public void CALL(ushort memoryAddress, Condition condition)
         {
-            if (IsConditionTrue(condition))
+            if (this.conditionValidator.IsTrue(this.Flags, condition))
             {
                 this.CALL(memoryAddress);
             }
@@ -63,7 +74,7 @@ namespace z80vm
         /// <param name="condition"></param>
         public void CALL(string label, Condition condition)
         {
-            if (IsConditionTrue(condition))
+            if (this.conditionValidator.IsTrue(this.Flags, condition))
             {
                 this.CALL(label);
             }
@@ -79,33 +90,6 @@ namespace z80vm
             var memoryAddress = this.Labels.Read(label);
             this.CALL(memoryAddress);
         }
-
-        private bool IsConditionTrue(Condition condition)
-        {
-            switch (condition)
-            {
-                case Condition.c:
-                    return (this.Flags.Read(Flag.C));
-                case Condition.nc:
-                    return (!this.Flags.Read(Flag.C));
-                case Condition.z:
-                    return (this.Flags.Read(Flag.Z));
-                case Condition.nz:
-                    return (!this.Flags.Read(Flag.Z));
-                case Condition.m:
-                    return (this.Flags.Read(Flag.S));
-                case Condition.pe:
-                    return (this.Flags.Read(Flag.PV));
-                case Condition.p:
-                    return (!this.Flags.Read(Flag.S));
-                case Condition.po:
-                    return (!this.Flags.Read(Flag.PV));
-                default:
-                    throw new Exception("Unknown condition - " + condition);
-            }
-        }
-
-
 
         /// <summary>
         /// There are no operands. This instruction exchanges BC with BC’, DE with DE’ and HL with HL’ at the same time. 

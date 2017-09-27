@@ -61,6 +61,7 @@
   <ItemGroup>
     <Compile Include="AddTests.cs" />
     <Compile Include="CallTests.cs" />
+    <Compile Include="ConditionValidatorTests.cs" />
     <Compile Include="ExchangeTests.cs" />
     <Compile Include="FlagTests.cs" />
     <Compile Include="LabelTests.cs" />

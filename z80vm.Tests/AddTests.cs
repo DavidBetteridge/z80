@@ -8,7 +8,7 @@ namespace z80vm.Tests
         [Fact]
         public void AddingTwo16BitRegistersShouldPutTheResultInTheFirstRegister()
         {
-            var machine = new Machine();
+            var machine = CreateMachine();
             machine.Registers.Set(Reg16.HL, 0x1);
             machine.Registers.Set(Reg16.BC, 0x2);
             machine.ADD(Reg16.HL, Reg16.BC);
@@ -19,7 +19,7 @@ namespace z80vm.Tests
         [Fact]
         public void AddingTwo16BitRegistersShouldSetTheCarryFlagWhenTheResultIsOutOfRange()
         {
-            var machine = new Machine();
+            var machine = CreateMachine();
             machine.Registers.Set(Reg16.HL, 0xAAAA);
             machine.Registers.Set(Reg16.BC, 0xBBBB);
             machine.ADD(Reg16.HL, Reg16.BC);
@@ -30,7 +30,7 @@ namespace z80vm.Tests
         [Fact]
         public void WhenTheTotalOfTheAdditionIsOutOfRangeTheResultShouldBeReduceBy65536()
         {
-            var machine = new Machine();
+            var machine = CreateMachine();
             machine.Registers.Set(Reg16.HL, 0xAAAA);
             machine.Registers.Set(Reg16.BC, 0xBBBB);
             machine.ADD(Reg16.HL, Reg16.BC);
@@ -56,8 +56,13 @@ namespace z80vm.Tests
         [InlineData(Reg16.IY, Reg16.IX)]
         public void AnErrorShouldBeThrownIfAnInvalidCombinationOf16BitRegistersAreSupplied(Reg16 register1, Reg16 register2)
         {
-            var machine = new Machine();
+            var machine = CreateMachine();
             var ex = Assert.Throws<InvalidOperationException>(() => machine.ADD(register1, register2));
+        }
+
+        private static Machine CreateMachine()
+        {
+            return new Machine(new ConditionValidator());
         }
     }
 }
