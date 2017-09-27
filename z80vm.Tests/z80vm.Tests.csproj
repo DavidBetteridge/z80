@@ -67,6 +67,7 @@
     <Compile Include="LDTests.cs" />
     <Compile Include="MemoryTests.cs" />
     <Compile Include="RegisterTests.cs" />
+    <Compile Include="RetTests.cs" />
     <Compile Include="StackTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

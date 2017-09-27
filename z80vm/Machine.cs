@@ -30,6 +30,18 @@ namespace z80vm
         }
 
         /// <summary>
+        /// Usage: ret(unconditional) or ret condition(conditional)
+        /// The word on the top of the stack is retrieved and it is used as the address of the next instruction from which the 
+        /// execution is to be continued.
+        /// This is basically a pop pc.The conditions work the same way as above, all of them can be used. 
+        /// Flags: The flags are preserved.
+        /// </summary>
+        public void RET()
+        {
+            this.POP(Reg16.PC);
+        }
+
+        /// <summary>
         /// Usage: Change the address of execution whilst saving the return address on the stack
         /// Flags: Preserved
         /// </summary>
