@@ -20,18 +20,80 @@ namespace z80vm
             this.conditionValidator = conditionValidator;
         }
 
+        #region JP
         /// <summary>
-        /// Usage: Change the address of execution whilst saving the return address on the stack
+        /// Usage: When arriving at any of these intructions, execution is immediately continued from the location given 
         /// Flags: Preserved
         /// </summary>
-        /// <param name="memoryAddress"></param>
-        public void CALL(ushort memoryAddress)
+        /// <param name="targetMemoryAddress"></param>
+        public void JP(ushort targetMemoryAddress)
         {
-            var currentPC = this.Registers.Read(Reg16.PC);
-            this.PUSH((ushort)(currentPC + 3));
-            this.Registers.Set(Reg16.PC, memoryAddress);
+            this.Registers.Set(Reg16.PC, targetMemoryAddress);
         }
 
+        /// <summary>
+        /// Usage: When arriving at any of these intructions, execution is immediately continued from the location pointed to by the label
+        /// Flags: Preserved 
+        /// </summary>
+        /// <param name="label"></param>
+        public void JP(string label)
+        {
+            var memoryAddress = this.Labels.Read(label);
+            this.JP(memoryAddress);
+        }
+
+        /// <summary>
+        /// Usage: If the operand is a register reference(e.g.jp (hl)), it means that the value of the register will be loaded into PC directly
+        /// Flags: Preserved 
+        /// </summary>
+        /// <param name="label"></param>
+        public void JP(Value value)
+        {
+            switch (value.Register)
+            {
+                case Reg16.HL:
+                case Reg16.IX:
+                case Reg16.IY:
+                    break;
+                default:
+                    throw new InvalidOperationException("Only the registers HL, IX, IH are valid");
+            }
+
+            var contentsOfRegister = this.Registers.Read(value.Register);
+            var lowOrderByte = this.Memory.Read(contentsOfRegister);
+            var highOrderByte = this.Memory.Read((ushort)(contentsOfRegister + 1));
+            var memoryAddress = MakeWord(highOrderByte, lowOrderByte);
+            this.JP(memoryAddress);
+        }
+
+        /// <summary>
+        /// Usage: When arriving at any of these intructions, execution is immediately continued from the location given 
+        /// Flags: Preserved
+        /// </summary>
+        /// <param name="targetMemoryAddress"></param>
+        public void JP(Condition condition, ushort targetMemoryAddress)
+        {
+            if (this.conditionValidator.IsTrue(this.Flags, condition))
+            {
+                this.JP(targetMemoryAddress);
+            }
+        }
+
+        /// <summary>
+        /// Usage: When arriving at any of these intructions, execution is immediately continued from the location pointed to by the label
+        /// Flags: Preserved 
+        /// </summary>
+        /// <param name="label"></param>
+        public void JP(Condition condition, string label)
+        {
+            if (this.conditionValidator.IsTrue(this.Flags, condition))
+            {
+                this.JP(label);
+            }
+        }
+        #endregion
+
+        #region RET
         /// <summary>
         /// Usage: ret(unconditional) or ret condition(conditional)
         /// The word on the top of the stack is retrieved and it is used as the address of the next instruction from which the 
@@ -50,6 +112,21 @@ namespace z80vm
             {
                 this.POP(Reg16.PC);
             }
+        }
+        #endregion
+
+        #region CALL
+
+        /// <summary>
+        /// Usage: Change the address of execution whilst saving the return address on the stack
+        /// Flags: Preserved
+        /// </summary>
+        /// <param name="memoryAddress"></param>
+        public void CALL(ushort memoryAddress)
+        {
+            var currentPC = this.Registers.Read(Reg16.PC);
+            this.PUSH((ushort)(currentPC + 3));
+            this.Registers.Set(Reg16.PC, memoryAddress);
         }
 
         /// <summary>
@@ -90,6 +167,7 @@ namespace z80vm
             var memoryAddress = this.Labels.Read(label);
             this.CALL(memoryAddress);
         }
+        #endregion
 
         /// <summary>
         /// There are no operands. This instruction exchanges BC with BC’, DE with DE’ and HL with HL’ at the same time. 
@@ -107,10 +185,6 @@ namespace z80vm
             swap(Reg16.DE, Reg16Shadow.DE);
             swap(Reg16.HL, Reg16Shadow.HL);
         }
-
-
-
-
 
         /// <summary>
         /// Usage: Adds 2 numbers together and stores the result in the first operand
@@ -163,6 +237,7 @@ namespace z80vm
             this.Registers.Set(reg1, (ushort)total);
         }
 
+        #region EX
         /// <summary>
         /// Usage: Exchanges the register AF with its shadow register
         /// Flags: Yes as this is the F register
@@ -224,16 +299,9 @@ namespace z80vm
             this.Memory.Set((ushort)(memoryAddress + 1), h);
             this.Memory.Set(memoryAddress, l);
         }
+        #endregion
 
-        /// <summary>
-        /// Combines two bytes to make a word
-        /// </summary>
-        /// <param name="highOrderByte"></param>
-        /// <param name="lowOrderByte"></param>
-        /// <returns></returns>
-        private ushort MakeWord(byte highOrderByte, byte lowOrderByte)
-            => (ushort)(((ushort)(highOrderByte << 8)) | lowOrderByte);
-
+        #region PUSH
         /// <summary>
         /// SP is decreased by two and the value of reg16 is copied to the memory location pointed by the new value of SP. 
         /// It does not affect the flags.
@@ -269,6 +337,7 @@ namespace z80vm
             this.Memory.Set((ushort)(stackPointer + 1), highOrderByte);
             this.Memory.Set((ushort)(stackPointer), lowOrderByte);
         }
+        #endregion
 
         public void LD(Reg8 register, byte value)
         {
@@ -292,5 +361,14 @@ namespace z80vm
             this.Registers.Set(register, fullByte);
 
         }
+
+        /// <summary>
+        /// Combines two bytes to make a word
+        /// </summary>
+        /// <param name="highOrderByte"></param>
+        /// <param name="lowOrderByte"></param>
+        /// <returns></returns>
+        private ushort MakeWord(byte highOrderByte, byte lowOrderByte)
+            => (ushort)(((ushort)(highOrderByte << 8)) | lowOrderByte);
     }
 }
