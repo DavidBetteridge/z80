@@ -20,6 +20,47 @@ namespace z80vm
             this.conditionValidator = conditionValidator;
         }
 
+        #region JR
+        
+        /// <summary>
+        /// Usage: Relative jumps to the address. This means that it can only jump between 128 bytes ahead or behind
+        /// Flags: Not changed
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="offset"></param>
+        public void JR(sbyte offset)
+        {
+            var currentAddress = this.Registers.Read(Reg16.PC);
+            var newAddress = (ushort)(currentAddress + offset);
+            this.Registers.Set(Reg16.PC, newAddress);
+        }
+
+        /// <summary>
+        /// Usage: Relative jumps to the address. This means that it can only jump between 128 bytes ahead or behind
+        /// Flags: Not changed
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="offset"></param>
+        public void JR(Condition condition, sbyte offset)
+        {
+            switch (condition)
+            {
+                case Condition.m:
+                case Condition.p:
+                case Condition.pe:
+                case Condition.po:
+                    throw new InvalidOperationException("Only conditions c,nc,z and nz are supported");
+                default:
+                    break;
+            }
+
+            if (this.conditionValidator.IsTrue(this.Flags, condition))
+            {
+                this.JR(offset);
+            }
+        }
+        #endregion
+
         #region JP
         /// <summary>
         /// Usage: When arriving at any of these intructions, execution is immediately continued from the location given 
@@ -42,6 +83,8 @@ namespace z80vm
             this.JP(memoryAddress);
         }
 
+
+
         /// <summary>
         /// Usage: If the operand is a register reference(e.g.jp (hl)), it means that the value of the register will be loaded into PC directly
         /// Flags: Preserved 
@@ -63,7 +106,7 @@ namespace z80vm
             this.JP(contentsOfRegister);
         }
 
-        /// <summary>
+         /// <summary>
         /// Usage: When arriving at any of these intructions, execution is immediately continued from the location given 
         /// Flags: Preserved
         /// </summary>
