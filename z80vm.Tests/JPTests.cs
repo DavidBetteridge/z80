@@ -40,11 +40,9 @@ namespace z80vm.Tests
         public void CheckThatTheProgramCounterIsChangedToTheMemoryAddressPointedToByTheContentsOfTheRegister(Reg16 register)
         {
             var machine = CreateMachine();
-            machine.Registers.Set(register, 0x1000);
-            machine.Memory.Set(0x1000, 0x00);
-            machine.Memory.Set(0x1001, 0x20);
+            machine.Registers.Set(register, 0x2000);
 
-            machine.JP(valueAt(register));
+            machine.JP(register);
 
             Assert.Equal(0x2000, machine.Registers.Read(Reg16.PC));
         }
@@ -59,7 +57,7 @@ namespace z80vm.Tests
         {
             var machine = CreateMachine();
 
-            var exception = Record.Exception(() => machine.JP(valueAt(register)));
+            var exception = Record.Exception(() => machine.JP(register));
             Assert.IsType(typeof(System.InvalidOperationException), exception);
         }
 

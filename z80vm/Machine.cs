@@ -47,9 +47,9 @@ namespace z80vm
         /// Flags: Preserved 
         /// </summary>
         /// <param name="label"></param>
-        public void JP(Value value)
+        public void JP(Reg16 register)
         {
-            switch (value.Register)
+            switch (register)
             {
                 case Reg16.HL:
                 case Reg16.IX:
@@ -59,11 +59,8 @@ namespace z80vm
                     throw new InvalidOperationException("Only the registers HL, IX, IH are valid");
             }
 
-            var contentsOfRegister = this.Registers.Read(value.Register);
-            var lowOrderByte = this.Memory.Read(contentsOfRegister);
-            var highOrderByte = this.Memory.Read((ushort)(contentsOfRegister + 1));
-            var memoryAddress = MakeWord(highOrderByte, lowOrderByte);
-            this.JP(memoryAddress);
+            var contentsOfRegister = this.Registers.Read(register);
+            this.JP(contentsOfRegister);
         }
 
         /// <summary>
