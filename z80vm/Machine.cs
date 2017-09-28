@@ -20,8 +20,35 @@ namespace z80vm
             this.conditionValidator = conditionValidator;
         }
 
+        #region DJNZ
+        /// <summary>
+        /// Usage: B is decreased, and a jr label happens if the result was not zero. 
+        /// Flags: Not changed
+        /// </summary>
+        /// <param name="offset"></param>
+        public void DJNZ(sbyte offset)
+        {
+            // Take 1 from 'b' but handling overflows
+            var b = this.Registers.Read(Reg8.B);
+            if (b == 0)
+            {
+                b = byte.MaxValue;
+            }
+            else
+            {
+                b = (byte)(b - 1);
+            }
+            this.Registers.Set(Reg8.B, b);
+
+            if (b != 0)
+            {
+                this.JR(offset);
+            }
+        }
+        #endregion
+
         #region JR
-        
+
         /// <summary>
         /// Usage: Relative jumps to the address. This means that it can only jump between 128 bytes ahead or behind
         /// Flags: Not changed
@@ -106,7 +133,7 @@ namespace z80vm
             this.JP(contentsOfRegister);
         }
 
-         /// <summary>
+        /// <summary>
         /// Usage: When arriving at any of these intructions, execution is immediately continued from the location given 
         /// Flags: Preserved
         /// </summary>
