@@ -1,15 +1,28 @@
-﻿Issues
+﻿Completed Commands
+------------------
+POP
+PUSH
+RET
+JR
+JD
+DJNZ
+EX
+EXX
+
+Part Completed Commands
+------------------
+ADD - doesn't support 8 bit operations.  Doesn't set flags?
+LD - only handles one case
+
+Issues
 ------
-
-Next Steps
-----------
-Call opcode
-Add support for 8 bit adding
-Complete LD opcode
-
+Remove label code from machine,  this is a feature of the assembler, not the machine
+Use C# 7 Pattern matching for some of the nasty switch states
 
 Bigger Bits
 -----------
 Parser
 Memory Visualisation
 Front End
+Convert commands to opcodes so that can be stored in memory
+Interupts
