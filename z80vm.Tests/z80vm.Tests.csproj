@@ -74,6 +74,7 @@
     <Compile Include="JPTests.cs" />
     <Compile Include="JRTests.cs" />
     <Compile Include="LabelTests.cs" />
+    <Compile Include="LDDTests.cs" />
     <Compile Include="LDITests.cs" />
     <Compile Include="LDTests.cs" />
     <Compile Include="MemoryTests.cs" />
