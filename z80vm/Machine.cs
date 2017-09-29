@@ -20,6 +20,40 @@ namespace z80vm
             this.conditionValidator = conditionValidator;
         }
 
+        #region LDI
+        /// <summary>
+        /// Usage: The instruction copies a byte from (HL) to (DE) (i. e. it does an ld (de),(hl)), then increases both HL and DE to advance to the next byte. It also decreases BC,
+        /// Flags: Set P/V flag if BC overflows. Z and C are not altered, but H and N are set to zero.
+        /// </summary>
+        public void LDI()
+        {
+            var hl = this.Registers.Read(Reg16.HL);
+            var de = this.Registers.Read(Reg16.DE);
+            var bc = this.Registers.Read(Reg16.BC);
+
+            var contentsOfHL = this.Memory.Read(hl);
+            this.Memory.Set(de, contentsOfHL);
+
+            this.Registers.Set(Reg16.HL, (ushort)(hl + 1));
+            this.Registers.Set(Reg16.DE, (ushort)(de + 1));
+
+            if (bc == 0)
+            {
+                // Decreasing BC would overflow
+                this.Registers.Set(Reg16.BC, ushort.MaxValue);
+                this.Flags.Set(Flag.PV);
+            }
+                else
+            {
+                this.Registers.Set(Reg16.BC, (ushort)(bc - 1));
+                this.Flags.Clear(Flag.PV);
+            }
+
+            this.Flags.Clear(Flag.H);
+            this.Flags.Clear(Flag.N);
+        }
+        #endregion
+
         #region DJNZ
         /// <summary>
         /// Usage: B is decreased, and a jr label happens if the result was not zero. 
