@@ -8,6 +8,10 @@ JD
 DJNZ
 EX
 EXX
+LDD
+LDDR
+LDI
+DIR
 
 Part Completed Commands
 ------------------
