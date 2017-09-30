@@ -9,8 +9,6 @@ namespace z80vm
         public Registers Registers { get; private set; }
         public Memory Memory { get; private set; }
         public Flags Flags { get; private set; }
-
-
         public Labels Labels { get; private set; }
 
         public Machine(IConditionValidator conditionValidator)
@@ -21,6 +19,32 @@ namespace z80vm
             this.Labels = new Labels();
             this.conditionValidator = conditionValidator;
         }
+        #region MyRegion
+        /// <summary>
+        /// This is an ldi repeated until BC reaches zero. ie This single instruction copies BC bytes from below (HL) to (DE), decreases both HL and DE by BC, and sets BC to zero.
+        /// Flags: the P/V flag holds zero after leaving the instruction
+        /// </summary>
+        public void LDDR()
+        {
+            var hl = this.Registers.Read(Reg16.HL);
+            var bc = this.Registers.Read(Reg16.BC);
+            var de = this.Registers.Read(Reg16.DE);
+
+            for (int i = 0; i < bc; i++)
+            {
+                var contentsOfHL = this.Memory.Read((ushort)(hl - i));
+                this.Memory.Set((ushort)(de - i), contentsOfHL);
+            }
+
+            this.Registers.Set(Reg16.BC, 0);
+            this.Registers.Set(Reg16.HL, (ushort)(hl - bc));
+            this.Registers.Set(Reg16.DE, (ushort)(de - bc));
+
+            this.Flags.Clear(Flag.H);
+            this.Flags.Clear(Flag.N);
+            this.Flags.Clear(Flag.PV);
+        }
+        #endregion
 
         #region LDIR
         /// <summary>
