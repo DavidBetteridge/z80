@@ -2,7 +2,7 @@
 
 namespace z80vm.Tests
 {
-    public class LDIDTests
+    public class LDDRTests
     {
         [Fact]
         public void BC_Should_Be_Set_To_Zero()
