@@ -16,7 +16,7 @@ DIR
 Part Completed Commands
 ------------------
 ADD - doesn't support 8 bit operations.  Doesn't set flags?
-LD - only handles one case
+LD - complete 16 bit.  Support for flags,  Restrictions
 
 Issues
 ------

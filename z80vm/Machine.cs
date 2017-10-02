@@ -74,6 +74,7 @@ namespace z80vm
             this.Flags.Clear(Flag.N);
             this.Flags.Clear(Flag.PV);
         }
+
         #endregion
 
         #region LDD
@@ -107,6 +108,8 @@ namespace z80vm
             this.Flags.Clear(Flag.H);
             this.Flags.Clear(Flag.N);
         }
+
+
         #endregion
 
         #region LDI
@@ -141,6 +144,7 @@ namespace z80vm
             this.Flags.Clear(Flag.H);
             this.Flags.Clear(Flag.N);
         }
+
         #endregion
 
         #region DJNZ
@@ -550,6 +554,37 @@ namespace z80vm
         public void LD(Reg8 operand1, ushort memoryAddress)
         {
             this.Registers.Set(operand1, this.Memory.Read(memoryAddress));
+        }
+
+        public void LD(Value operand1, Reg8 operand2)
+        {
+            var memoryAddress = (ushort)(this.Registers.Read(operand1.Register) + operand1.Offset);
+            var value = this.Registers.Read(operand2);
+            this.Memory.Set(memoryAddress, value);
+        }
+
+        /// <summary>
+        /// Usage: Loads the immediate value into the memory address pointed to by the register.  This memory maybe offset by -128..+127
+        /// Flags: Not changed
+        /// </summary>
+        /// <param name="operand1"></param>
+        /// <param name="operand2"></param>
+        public void LD(Value operand1, byte operand2)
+        {
+            var memoryAddress = (ushort)(this.Registers.Read(operand1.Register) + operand1.Offset);
+            this.Memory.Set(memoryAddress, operand2);
+        }
+
+        /// <summary>
+        /// Usage: Loads the value of the register into the memory address pointed to be operand 1  (ofs)
+        /// Flags: Not changed
+        /// </summary>
+        /// <param name="operand1"></param>
+        /// <param name="operand2"></param>
+        public void LD(ushort operand1, Reg8 operand2)
+        {
+            var value = this.Registers.Read(operand2);
+            this.Memory.Set(operand1, value);
         }
         #endregion
 

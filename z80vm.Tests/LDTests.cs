@@ -66,6 +66,82 @@ namespace z80vm.Tests
         }
 
         [Theory]
+        [InlineData(Reg8.A, Reg16.BC, 0xCC)]
+        [InlineData(Reg8.A, Reg16.DE, 0xAA)]
+        [InlineData(Reg8.B, Reg16.HL, 0xBB)]
+        public void ItShouldBePossibleToLoadIntoTheMemoryAddressPointedToByTheFirstOperandTheContentsOfARegister(Reg8 source, Reg16 target, byte value)
+        {
+            const ushort ANY_MEMORY_LOCATION = 0xEEEE;
+            var machine = CreateMachine();
+            machine.Memory.Set(ANY_MEMORY_LOCATION, 0);
+            machine.Registers.Set(target, ANY_MEMORY_LOCATION);
+            machine.Registers.Set(source, value);
+
+            machine.LD(valueAt(target), source);
+
+            Assert.Equal(value, machine.Memory.Read(ANY_MEMORY_LOCATION));
+        }
+
+        [Theory]
+        [InlineData(Reg16.HL, 0xBB)]
+        public void ItShouldBePossibleToLoadIntoTheMemoryAddressPointedToByTheFirstOperandAnImmediateValue(Reg16 target, byte value)
+        {
+            const ushort ANY_MEMORY_LOCATION = 0xEEEE;
+            var machine = CreateMachine();
+            machine.Memory.Set(ANY_MEMORY_LOCATION, 0);
+            machine.Registers.Set(target, ANY_MEMORY_LOCATION);
+
+            machine.LD(valueAt(target), value);
+
+            Assert.Equal(value, machine.Memory.Read(ANY_MEMORY_LOCATION));
+        }
+
+        [Theory]
+        [InlineData(Reg8.A, Reg16.IX, 10, 0xCC)]
+        [InlineData(Reg8.B, Reg16.IY, -10, 0xFF)]
+        public void ItShouldBePossibleToLoadIntoAnyOffsetedMemoryAddressPointedToByTheFirstOperandTheContentsOfARegister(Reg8 source, Reg16 target, sbyte offset, byte value)
+        {
+            const ushort ANY_MEMORY_LOCATION = 0x1010;
+            var machine = CreateMachine();
+            machine.Memory.Set(ANY_MEMORY_LOCATION, 0);
+            machine.Registers.Set(target, (ushort)(ANY_MEMORY_LOCATION - offset));
+            machine.Registers.Set(source, value);
+
+            machine.LD(valueAt(target.Add(offset)), source);
+
+            Assert.Equal(value, machine.Memory.Read(ANY_MEMORY_LOCATION));
+        }
+
+        [Theory]
+        [InlineData(Reg16.IX, 10, 0xCC)]
+        [InlineData(Reg16.IY, -10, 0xAA)]
+        public void ItShouldBePossibleToLoadIntoAnyOffsetedMemoryAddressPointedToByTheFirstOperandAnImmediateValue(Reg16 target, sbyte offset, byte value)
+        {
+            const ushort ANY_MEMORY_LOCATION = 0x1010;
+            var machine = CreateMachine();
+            machine.Memory.Set(ANY_MEMORY_LOCATION, 0);
+            machine.Registers.Set(target, (ushort)(ANY_MEMORY_LOCATION - offset));
+
+            machine.LD(valueAt(target.Add(offset)), value);
+
+            Assert.Equal(value, machine.Memory.Read(ANY_MEMORY_LOCATION));
+        }
+
+        [Theory]
+        [InlineData(Reg8.A, 0x1000, 0xCC)]
+        public void ItShouldBePossibleToLoadTheContentsOfARegisterIntoAMemoryLocation(Reg8 source, ushort memoryLocation, byte value)
+        {
+            var machine = CreateMachine();
+            machine.Memory.Set(memoryLocation, 0);
+            machine.Registers.Set(source, value);
+
+            machine.LD(memoryLocation, source);
+
+            Assert.Equal(value, machine.Memory.Read(memoryLocation));
+        }
+
+
+        [Theory]
         [InlineData(Reg8.A, 100)]
         [InlineData(Reg8.B, 101)]
         [InlineData(Reg8.C, 102)]

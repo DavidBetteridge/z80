@@ -95,7 +95,22 @@ namespace z80vm
         /// Accumulator
         /// It is the primary register for arithmetic operations and accessing memory
         /// </summary>
+        //[CanBeLoadedFrom(ImmediateValue)]
+        //[CanBeLoadedFrom(Reg8.A, Reg8.B, Reg8.C, Reg8.D, Reg8.E, Reg8.H, Reg8.L)]
         A = 0,
+
+//IXH
+//IXL
+//IYH
+//IYL
+//(BC)
+//(DE)
+//(HL)
+//(IX+n)
+//(IY+n)
+//(ofs)
+//I
+//R
 
         /// <summary>
         /// Cmmonly used as an 8-bit counter
