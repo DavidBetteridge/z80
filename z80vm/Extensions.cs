@@ -2,7 +2,7 @@
 
 namespace z80vm
 {
-    static class Extensions
+    public static class Extensions
     {
         /// <summary>
         /// Splits a 16bit number into two bytes
@@ -15,6 +15,11 @@ namespace z80vm
             var lowOrderByte = (byte)(word & 0x00FF);
 
             return (highOrderByte, lowOrderByte);
+        }
+
+        public static AddValue Add(this Reg16 register, sbyte n)
+        {
+            return new AddValue(register, n);
         }
 
         /// <summary>

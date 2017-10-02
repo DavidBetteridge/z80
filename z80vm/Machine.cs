@@ -19,6 +19,8 @@ namespace z80vm
             this.Labels = new Labels();
             this.conditionValidator = conditionValidator;
         }
+
+
         #region MyRegion
         /// <summary>
         /// This is an ldi repeated until BC reaches zero. ie This single instruction copies BC bytes from below (HL) to (DE), decreases both HL and DE by BC, and sets BC to zero.
@@ -44,6 +46,7 @@ namespace z80vm
             this.Flags.Clear(Flag.N);
             this.Flags.Clear(Flag.PV);
         }
+
         #endregion
 
         #region LDIR
@@ -526,10 +529,29 @@ namespace z80vm
         }
         #endregion
 
-        public void LD(Reg8 register, byte value)
+        #region LD
+
+        public void LD(Reg8 register, byte immediateValue)
         {
-            this.Registers.Set(register, value);
+            this.Registers.Set(register, immediateValue);
         }
+
+        public void LD(Reg8 operand1, Reg8 operand2)
+        {
+            this.Registers.Set(operand1, this.Registers.Read(operand2));
+        }
+
+        public void LD(Reg8 operand1, Value operand2)
+        {
+            var memoryAddress = (ushort)(this.Registers.Read(operand2.Register) + operand2.Offset);
+            this.Registers.Set(operand1, this.Memory.Read(memoryAddress));
+        }
+
+        public void LD(Reg8 operand1, ushort memoryAddress)
+        {
+            this.Registers.Set(operand1, this.Memory.Read(memoryAddress));
+        }
+        #endregion
 
         /// <summary>
         /// The value of the word found at the memory location pointed by SP is copied into reg16, then SP is increased by 2. 
