@@ -65,8 +65,8 @@ namespace z80vm.Tests
 
             machine.LDDR();
 
-            Assert.Equal(finalValue1, machine.Memory.Read(0x2001));
-            Assert.Equal(finalValue2, machine.Memory.Read(0x2000));
+            Assert.Equal(finalValue1, machine.Memory.ReadByte(0x2001));
+            Assert.Equal(finalValue2, machine.Memory.ReadByte(0x2000));
         }
 
         [Theory]

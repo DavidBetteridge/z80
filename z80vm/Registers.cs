@@ -95,22 +95,7 @@ namespace z80vm
         /// Accumulator
         /// It is the primary register for arithmetic operations and accessing memory
         /// </summary>
-        //[CanBeLoadedFrom(ImmediateValue)]
-        //[CanBeLoadedFrom(Reg8.A, Reg8.B, Reg8.C, Reg8.D, Reg8.E, Reg8.H, Reg8.L)]
         A = 0,
-
-//IXH
-//IXL
-//IYH
-//IYL
-//(BC)
-//(DE)
-//(HL)
-//(IX+n)
-//(IY+n)
-//(ofs)
-//I
-//R
 
         /// <summary>
         /// Cmmonly used as an 8-bit counter
@@ -305,7 +290,7 @@ namespace z80vm
                     break;
             }
 
-            return MakeWord(highOrderByte, lowOrderByte);
+            return Memory.MakeWord(highOrderByte, lowOrderByte);
         }
 
         /// <summary>
@@ -373,7 +358,7 @@ namespace z80vm
                     throw new Exception("Unknown register " + register);
             }
 
-            return MakeWord(highOrderByte, lowOrderByte);
+            return Memory.MakeWord(highOrderByte, lowOrderByte);
         }
 
         /// <summary>
@@ -418,38 +403,28 @@ namespace z80vm
 
                 case Reg8.IXH:
                     var (_, lx) = IX.Split();
-                    IX = MakeWord(value, lx);
+                    IX = Memory.MakeWord(value, lx);
                     break;
 
                 case Reg8.IXL:
                     var (hx, _) = IX.Split();
-                    IX = MakeWord(hx, value);
+                    IX = Memory.MakeWord(hx, value);
                     break;
 
                 case Reg8.IYH:
                     var (_, ly) = IY.Split();
-                    IY = MakeWord(value, ly);
+                    IY = Memory.MakeWord(value, ly);
                     break;
 
                 case Reg8.IYL:
                     var (hy, _) = IY.Split();
-                    IY = MakeWord(hy, value);
+                    IY = Memory.MakeWord(hy, value);
                     break;
 
                 default:
                     throw new Exception("Unknown register " + register);
             }
         }
-
-        /// <summary>
-        /// Combines two bytes to make a word
-        /// </summary>
-        /// <param name="highOrderByte"></param>
-        /// <param name="lowOrderByte"></param>
-        /// <returns></returns>
-        private ushort MakeWord(byte highOrderByte, byte lowOrderByte) 
-            => (ushort)(((ushort)(highOrderByte << 8)) | lowOrderByte);
-
 
         /// <summary>
         /// Sets the value of a 16bit register

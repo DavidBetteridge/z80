@@ -33,8 +33,8 @@ namespace z80vm.Tests
             machine.PUSH(register);
             var currentValueOfSP = machine.Registers.Read(Reg16.SP);
 
-            Assert.Equal(0xAB, machine.Memory.Read((ushort)(currentValueOfSP + 1)));
-            Assert.Equal(0xCD, machine.Memory.Read(currentValueOfSP));
+            Assert.Equal(0xAB, machine.Memory.ReadByte((ushort)(currentValueOfSP + 1)));
+            Assert.Equal(0xCD, machine.Memory.ReadByte(currentValueOfSP));
         }
 
         [Fact]

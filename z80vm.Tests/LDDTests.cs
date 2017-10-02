@@ -19,7 +19,7 @@ namespace z80vm.Tests
 
             machine.LDD();
 
-            Assert.Equal(100, machine.Memory.Read(0x2000));
+            Assert.Equal(100, machine.Memory.ReadByte(0x2000));
         }
 
         [Fact]

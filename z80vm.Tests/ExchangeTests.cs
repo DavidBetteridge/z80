@@ -39,8 +39,8 @@ namespace z80vm.Tests
 
             machine.EX(valueAt(Reg16.SP), operand2);
 
-            Assert.Equal(0xCC, machine.Memory.Read(0x1001));
-            Assert.Equal(0xDD, machine.Memory.Read(0x1000));
+            Assert.Equal(0xCC, machine.Memory.ReadByte(0x1001));
+            Assert.Equal(0xDD, machine.Memory.ReadByte(0x1000));
             Assert.Equal(0xAABB, machine.Registers.Read(operand2));
         }
 

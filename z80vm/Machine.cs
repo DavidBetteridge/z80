@@ -34,7 +34,7 @@ namespace z80vm
 
             for (int i = 0; i < bc; i++)
             {
-                var contentsOfHL = this.Memory.Read((ushort)(hl - i));
+                var contentsOfHL = this.Memory.ReadByte((ushort)(hl - i));
                 this.Memory.Set((ushort)(de - i), contentsOfHL);
             }
 
@@ -62,7 +62,7 @@ namespace z80vm
 
             for (int i = 0; i < bc; i++)
             {
-                var contentsOfHL = this.Memory.Read((ushort)(hl + i));
+                var contentsOfHL = this.Memory.ReadByte((ushort)(hl + i));
                 this.Memory.Set((ushort)(de + i), contentsOfHL);
             }
 
@@ -88,7 +88,7 @@ namespace z80vm
             var de = this.Registers.Read(Reg16.DE);
             var bc = this.Registers.Read(Reg16.BC);
 
-            var contentsOfHL = this.Memory.Read(hl);
+            var contentsOfHL = this.Memory.ReadByte(hl);
             this.Memory.Set(de, contentsOfHL);
 
             this.Registers.Set(Reg16.HL, (ushort)(hl - 1));
@@ -123,7 +123,7 @@ namespace z80vm
             var de = this.Registers.Read(Reg16.DE);
             var bc = this.Registers.Read(Reg16.BC);
 
-            var contentsOfHL = this.Memory.Read(hl);
+            var contentsOfHL = this.Memory.ReadByte(hl);
             this.Memory.Set(de, contentsOfHL);
 
             this.Registers.Set(Reg16.HL, (ushort)(hl + 1));
@@ -337,6 +337,8 @@ namespace z80vm
             }
         }
 
+
+
         /// <summary>
         /// Usage: Change the address of execution whilst saving the return address on the stack
         /// Flags: Preserved
@@ -351,6 +353,8 @@ namespace z80vm
             }
         }
 
+
+
         /// <summary>
         /// Usage: Change the address of execution whilst saving the return address on the stack
         /// Flags: Preserved
@@ -361,6 +365,8 @@ namespace z80vm
             var memoryAddress = this.Labels.Read(label);
             this.CALL(memoryAddress);
         }
+
+
         #endregion
 
         /// <summary>
@@ -480,18 +486,14 @@ namespace z80vm
             var memoryAddress = this.Registers.Read(operand1.Register);
 
             // Read the current value at that address
-            var higherOrderByte = this.Memory.Read((ushort)(memoryAddress + 1));
-            var lowerOrderByte = this.Memory.Read(memoryAddress);
-            var valueForOperand1 = MakeWord(higherOrderByte, lowerOrderByte);
+            var valueForOperand1 = this.Memory.ReadWord(memoryAddress);
 
             // Read the current value from the register
             var valueForOperand2 = this.Registers.Read(operand2);
-            var (h, l) = valueForOperand2.Split();
 
             // Swap them
             this.Registers.Set(operand2, valueForOperand1);
-            this.Memory.Set((ushort)(memoryAddress + 1), h);
-            this.Memory.Set(memoryAddress, l);
+            this.Memory.Set(memoryAddress, valueForOperand2);
         }
         #endregion
 
@@ -504,15 +506,11 @@ namespace z80vm
         public void PUSH(Reg16 register)
         {
             var value = this.Registers.Read(register);
-            var (highOrderByte, lowOrderByte) = value.Split();
-
             var stackPointer = this.Registers.Read(Reg16.SP);
             stackPointer = (ushort)(stackPointer - 2);
             this.Registers.Set(Reg16.SP, stackPointer);
 
-            //The Z80 is little endian,  so the lowest byte is stored in the lowest address
-            this.Memory.Set((ushort)(stackPointer + 1), highOrderByte);
-            this.Memory.Set((ushort)(stackPointer), lowOrderByte);
+            this.Memory.Set((ushort)(stackPointer), value);
         }
 
         /// <summary>
@@ -521,15 +519,10 @@ namespace z80vm
         /// <param name="value"></param>
         private void PUSH(ushort value)
         {
-            var (highOrderByte, lowOrderByte) = value.Split();
-
             var stackPointer = this.Registers.Read(Reg16.SP);
             stackPointer = (ushort)(stackPointer - 2);
             this.Registers.Set(Reg16.SP, stackPointer);
-
-            //The Z80 is little endian,  so the lowest byte is stored in the lowest address
-            this.Memory.Set((ushort)(stackPointer + 1), highOrderByte);
-            this.Memory.Set((ushort)(stackPointer), lowOrderByte);
+            this.Memory.Set((ushort)(stackPointer), value);
         }
         #endregion
 
@@ -542,20 +535,53 @@ namespace z80vm
 
         public void LD(Reg8 operand1, Reg8 operand2)
         {
-            this.Registers.Set(operand1, this.Registers.Read(operand2));
+            var value = this.Registers.Read(operand2);
+            this.Registers.Set(operand1, value);
+
+            if (operand2 == Reg8.I || operand2 == Reg8.R)
+            {
+                this.Flags.Clear(Flag.H);
+                this.Flags.Clear(Flag.N);
+
+                if (value == 0)
+                {
+                    this.Flags.Set(Flag.Z);
+                }
+                else
+                {
+                    this.Flags.Clear(Flag.Z);
+                }
+
+                if (value.ReadBit(7))
+                {
+                    // MSB is set,  so the value is negative.  Clear the sign bit
+                    this.Flags.Clear(Flag.S);
+                }
+                else
+                {
+                    // MSB isn't set,  so the value is positive.  Set the sign bit
+                    this.Flags.Set(Flag.S);
+                }
+            }
         }
 
         public void LD(Reg8 operand1, Value operand2)
         {
             var memoryAddress = (ushort)(this.Registers.Read(operand2.Register) + operand2.Offset);
-            this.Registers.Set(operand1, this.Memory.Read(memoryAddress));
+            this.Registers.Set(operand1, this.Memory.ReadByte(memoryAddress));
         }
 
         public void LD(Reg8 operand1, ushort memoryAddress)
         {
-            this.Registers.Set(operand1, this.Memory.Read(memoryAddress));
+            this.Registers.Set(operand1, this.Memory.ReadByte(memoryAddress));
         }
 
+        /// <summary>
+        /// Usage: Loads the value of the second register into the memory address pointed to by the first register.  This memory maybe offset by -128..+127.   (BC),  (IX+n)
+        /// Flags: Not changed
+        /// </summary>
+        /// <param name="operand1"></param>
+        /// <param name="operand2"></param>
         public void LD(Value operand1, Reg8 operand2)
         {
             var memoryAddress = (ushort)(this.Registers.Read(operand1.Register) + operand1.Offset);
@@ -564,7 +590,39 @@ namespace z80vm
         }
 
         /// <summary>
-        /// Usage: Loads the immediate value into the memory address pointed to by the register.  This memory maybe offset by -128..+127
+        /// Usage: Loads a 16 bit register with the contents of another 16bit register
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="source"></param>
+        public void LD(Reg16 target, Reg16 source)
+        {
+            var value = this.Registers.Read(source);
+            this.Registers.Set(target, value);
+        }
+
+        /// <summary>
+        /// Usage: Loads the 16bit register with the contents of the memory location
+        /// Flags: Not changed
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="valueInMemoryAddress"></param>
+        public void LD(Reg16 target, ValueInMemoryAddress valueInMemoryAddress)
+        {
+            this.Registers.Set(target, this.Memory.ReadByte(valueInMemoryAddress.MemoryLocation));
+        }
+
+        /// <summary>
+        /// Loads a 16BIT registry with an immediate value
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="value"></param>
+        public void LD(Reg16 target, ushort value)
+        {
+            this.Registers.Set(target, value);
+        }
+
+        /// <summary>
+        /// Usage: Loads the immediate value into the memory address pointed to by the register.  This memory maybe offset by -128..+127.   (BC),  (IX+n)
         /// Flags: Not changed
         /// </summary>
         /// <param name="operand1"></param>
@@ -586,6 +644,18 @@ namespace z80vm
             var value = this.Registers.Read(operand2);
             this.Memory.Set(operand1, value);
         }
+
+        /// <summary>
+        /// Usage: Loads the value of the registry into the memory location
+        /// Flags: Not changed
+        /// </summary>
+        /// <param name="valueInMemoryAddress"></param>
+        /// <param name="source"></param>
+        public void LD(ValueInMemoryAddress targetMemoryAddress, Reg16 source)
+        {
+            var value = this.Registers.Read(source);
+            this.Memory.Set(targetMemoryAddress.MemoryLocation, value);
+        }
         #endregion
 
         /// <summary>
@@ -597,22 +667,13 @@ namespace z80vm
         {
             var stackPointer = this.Registers.Read(Reg16.SP);
 
-            var highOrderByte = this.Memory.Read((ushort)(stackPointer + 1));
-            var lowOrderByte = this.Memory.Read((ushort)(stackPointer));
+            var highOrderByte = this.Memory.ReadByte((ushort)(stackPointer + 1));
+            var lowOrderByte = this.Memory.ReadByte((ushort)(stackPointer));
             var fullByte = (ushort)((ushort)(highOrderByte << 8) | lowOrderByte);
 
             this.Registers.Set(Reg16.SP, (ushort)(stackPointer + 2));
             this.Registers.Set(register, fullByte);
 
         }
-
-        /// <summary>
-        /// Combines two bytes to make a word
-        /// </summary>
-        /// <param name="highOrderByte"></param>
-        /// <param name="lowOrderByte"></param>
-        /// <returns></returns>
-        private ushort MakeWord(byte highOrderByte, byte lowOrderByte)
-            => (ushort)(((ushort)(highOrderByte << 8)) | lowOrderByte);
     }
 }

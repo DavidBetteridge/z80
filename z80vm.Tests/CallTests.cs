@@ -70,6 +70,7 @@ namespace z80vm.Tests
             const ushort ANY_MEMORY_ADDRESS = 0x0000;
 
             var machine = CreateMachine();
+            machine.Registers.Set(Reg16.SP, 0xF000); //Need to lower the SP so we can POP without first PUSHing
             machine.Registers.Set(Reg16.PC, 0x1000);
             machine.Flags.Clear(Flag.C);
 
@@ -86,6 +87,7 @@ namespace z80vm.Tests
             const string ANY_LABEL = "Subroutine";
 
             var machine = new Machine(new FakeAlwaysFalseConditionValidator());
+            machine.Registers.Set(Reg16.SP, 0xF000); //Need to lower the SP so we can POP without first PUSHing
             machine.Labels.Set(ANY_LABEL, ANY_MEMORY_ADDRESS);
             machine.Registers.Set(Reg16.PC, 0x1000);
             machine.Flags.Clear(Flag.C);
