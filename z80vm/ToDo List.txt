@@ -15,8 +15,8 @@ DIR
 
 Part Completed Commands
 ------------------
-ADD - doesn't support 8 bit operations.  Doesn't set flags?
-LD - rename 8bit tests.  Support for flag P/V flag,  Restrictions
+ADD - needs to set flags for 16 bit operations,  Restrictions
+LD - Support for flag P/V flag,  Restrictions
 
 Issues
 ------

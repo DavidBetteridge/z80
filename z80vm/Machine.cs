@@ -23,6 +23,7 @@ namespace z80vm
 
 
 
+
         #region MyRegion
         /// <summary>
         /// This is an ldi repeated until BC reaches zero. ie This single instruction copies BC bytes from below (HL) to (DE), decreases both HL and DE by BC, and sets BC to zero.
@@ -392,6 +393,69 @@ namespace z80vm
             swap(Reg16.HL, Reg16Shadow.HL);
         }
 
+
+        #region ADD
+
+        /// <summary>
+        /// Usage: Adds 2 numbers together and stores the result in the first operand
+        /// Flags: The N flag is reset, P/V is interpreted as overflow. The rest of the flags is modified by definition.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="op8"></param>
+        public void ADD(Reg8 a, op8 op8)
+        {
+            var currentValue = this.Registers.Read(a);
+            var valueToAdd = op8.Resolve(this.Memory, this.Registers);
+            var newTotal = (byte)(currentValue + valueToAdd);
+            this.Registers.Set(Reg8.A, newTotal);
+
+            //the Sign flag
+            if (newTotal > 127)
+            {
+                // This is an unsigned byte,  but if it was signed then the value would be negative.
+                this.Flags.Set(Flag.S);
+            }
+            else
+            {
+                this.Flags.Clear(Flag.S);
+            }
+
+            // the Zero flag
+            if (newTotal == 0)
+            {
+                this.Flags.Set(Flag.Z);
+            }
+            else
+            {
+                this.Flags.Clear(Flag.Z);
+            }
+
+            //It is set when there is a carry transfer from bit 3 to bit 4,
+            if ((byte)(currentValue & 0b1111) + (byte)(valueToAdd & 0b1111) > 0b1111)
+                this.Flags.Set(Flag.H);
+            else
+                this.Flags.Clear(Flag.H);
+
+            //indicates overflowing (leaving the 0...127 or -128...-1 intervals) 
+            if (currentValue <= 127 && newTotal > 127)
+                this.Flags.Set(Flag.PV);
+            else if (currentValue > 127 && newTotal <= 127)
+                this.Flags.Set(Flag.PV);
+            else
+                this.Flags.Clear(Flag.PV);
+
+            //indicates subtraction
+            this.Flags.Clear(Flag.N);
+
+            //the Carry flag. It is set when the last operation caused a register to step over zero in either direction.
+            var currentValueSigned = (sbyte)currentValue;
+            var newTotalSigned = (sbyte)newTotal;
+            if (currentValueSigned < 0 && newTotalSigned > 0)
+                this.Flags.Set(Flag.C);
+            else
+                this.Flags.Clear(Flag.C);
+        }
+
         /// <summary>
         /// Usage: Adds 2 numbers together and stores the result in the first operand
         /// Flags: Preserves the S, Z and P/V flags, and H is undefined. Rest of flags modified by definition.
@@ -442,6 +506,7 @@ namespace z80vm
 
             this.Registers.Set(reg1, (ushort)total);
         }
+        #endregion
 
         #region EX
         /// <summary>

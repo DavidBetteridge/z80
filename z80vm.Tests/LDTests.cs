@@ -17,7 +17,7 @@ namespace z80vm.Tests
         [InlineData(Reg8.E)]
         [InlineData(Reg8.H)]
         [InlineData(Reg8.L)]
-        public void ItShouldBePossibleToLoadAn8BitRegister(Reg8 register)
+        public void Load_An_Eight_Bit_Register(Reg8 register)
         {
             var machine = CreateMachine();
             machine.LD(register, Read8BitValue(100));
@@ -27,7 +27,7 @@ namespace z80vm.Tests
 
         [Theory]
         [InlineData(Reg16.HL, 0xBB)]
-        public void ItShouldBePossibleToLoadIntoTheMemoryAddressPointedToByTheFirstOperand(Reg16 target, byte value)
+        public void Load_A_Memory_Address_Specified_By_A_Register(Reg16 target, byte value)
         {
             const ushort ANY_MEMORY_LOCATION = 0xEEEE;
             var machine = CreateMachine();
@@ -42,7 +42,7 @@ namespace z80vm.Tests
         [Theory]
         [InlineData(Reg16.IX, 10, 0xCC)]
         [InlineData(Reg16.IY, -10, 0xAA)]
-        public void ItShouldBePossibleToLoadIntoAnyOffsetedMemoryAddressPointedToByTheFirstOperandAnImmediateValue(Reg16 target, sbyte offset, byte value)
+        public void Load_A_Memory_Address_Specified_By_A_Register_Plus_An_Offset(Reg16 target, sbyte offset, byte value)
         {
             const ushort ANY_MEMORY_LOCATION = 0x1010;
             var machine = CreateMachine();
@@ -56,7 +56,7 @@ namespace z80vm.Tests
 
         [Theory]
         [InlineData(Reg8.A, 0x1000, 0xCC)]
-        public void ItShouldBePossibleToLoadTheContentsOfARegisterIntoAMemoryLocation(Reg8 source, ushort memoryLocation, byte value)
+        public void Load_Directly_Into_A_Memory_Location(Reg8 source, ushort memoryLocation, byte value)
         {
             var machine = CreateMachine();
             machine.Memory.Set(memoryLocation, 0);
