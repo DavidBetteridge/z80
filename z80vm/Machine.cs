@@ -566,11 +566,6 @@ namespace z80vm
             }
         }
 
-        public void LD(Reg8 register, byte immediateValue)
-        {
-            this.Registers.Set(register, immediateValue);
-        }
-
         /// <summary>
         /// Usage: Loads a 16 bit register with the contents of another 16bit register
         /// </summary>
@@ -603,34 +598,10 @@ namespace z80vm
             this.Registers.Set(target, value);
         }
 
-        /// <summary>
-        /// Usage: Loads the immediate value into the memory address pointed to by the register.  This memory maybe offset by -128..+127.   (BC),  (IX+n)
-        /// Flags: Not changed
-        /// </summary>
-        /// <param name="operand1"></param>
-        /// <param name="operand2"></param>
-        public void LD(Value operand1, byte operand2)
-        {
-            var memoryAddress = (ushort)(this.Registers.Read(operand1.Register) + operand1.Offset);
-            this.Memory.Set(memoryAddress, operand2);
-        }
-
         public void LD(Value operand1, op8 op8)
         {
             var memoryAddress = (ushort)(this.Registers.Read(operand1.Register) + operand1.Offset);
             this.Memory.Set(memoryAddress, op8.Resolve(this.Memory, this.Registers));
-        }
-
-        /// <summary>
-        /// Usage: Loads the value of the register into the memory address pointed to be operand 1  (ofs)
-        /// Flags: Not changed
-        /// </summary>
-        /// <param name="operand1"></param>
-        /// <param name="operand2"></param>
-        public void LD(ushort operand1, Reg8 operand2)
-        {
-            var value = this.Registers.Read(operand2);
-            this.Memory.Set(operand1, value);
         }
 
         /// <summary>

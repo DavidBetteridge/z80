@@ -25,11 +25,6 @@
             return new Value() { Register = register, Offset = 0 };
         }
 
-        public static Value valueAt(AddValue addValue)
-        {
-            return new Value() { Register = addValue.Register, Offset = addValue.n };
-        }
-
         public static MemoryAddress valueAt(ushort memoryLocation)
         {
             return new MemoryAddress(memoryLocation);

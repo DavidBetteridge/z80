@@ -17,11 +17,6 @@ namespace z80vm
             return (highOrderByte, lowOrderByte);
         }
 
-        public static AddValue Add(this Reg16 register, sbyte n)
-        {
-            return new AddValue(register, n);
-        }
-
         /// <summary>
         /// Reads a single bit from the byte
         /// </summary>
