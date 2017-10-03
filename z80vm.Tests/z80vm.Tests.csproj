@@ -80,6 +80,7 @@
     <Compile Include="LDITests.cs" />
     <Compile Include="LDTests.cs" />
     <Compile Include="MemoryTests.cs" />
+    <Compile Include="op8Tests.cs" />
     <Compile Include="RegisterTests.cs" />
     <Compile Include="RetTests.cs" />
     <Compile Include="StackTests.cs" />

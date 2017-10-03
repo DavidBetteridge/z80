@@ -1,9 +1,9 @@
 ﻿namespace z80vm
 {
-    public class ValueInMemoryAddress
+    public class MemoryAddress
     {
         public ushort MemoryLocation { get; private set; }
-        public ValueInMemoryAddress(ushort memoryLocation)
+        public MemoryAddress(ushort memoryLocation)
         {
             MemoryLocation = memoryLocation;
         }
@@ -13,6 +13,12 @@
     {
         public Reg16 Register { get; private set; }
         public sbyte Offset { get; private set; }
+
+        public Value Add(sbyte offset)
+        {
+            this.Offset = offset;
+            return this;
+        }
 
         public static Value valueAt(Reg16 register)
         {
@@ -24,9 +30,9 @@
             return new Value() { Register = addValue.Register, Offset = addValue.n };
         }
 
-        public static ValueInMemoryAddress valueAt(ushort memoryLocation)
+        public static MemoryAddress valueAt(ushort memoryLocation)
         {
-            return new ValueInMemoryAddress(memoryLocation);
+            return new MemoryAddress(memoryLocation);
         }
     }
 }

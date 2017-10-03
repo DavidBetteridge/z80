@@ -22,6 +22,7 @@ namespace z80vm.Tests
             Assert.Equal(newAddress, machine.Registers.Read(Reg16.PC));
         }
 
+        [Theory]
         [InlineData(0xFFFF, 1)]
         [InlineData(0x0, -1)]
         public void AnErrorShouldBeReportedIfTheInstructionJumpsOutOfTheMemorySpace(ushort start, sbyte offset)

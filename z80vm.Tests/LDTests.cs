@@ -1,6 +1,7 @@
 ﻿using System;
 using Xunit;
 using static z80vm.Value;
+using static z80vm.op8;
 
 namespace z80vm.Tests
 {
@@ -9,124 +10,31 @@ namespace z80vm.Tests
         //*************************************  8-BIT COMBINATIONS ************************************************
 
         [Theory]
-        [InlineData(Reg8.A, 100)]
-        [InlineData(Reg8.B, 101)]
-        [InlineData(Reg8.C, 102)]
-        [InlineData(Reg8.D, 103)]
-        [InlineData(Reg8.E, 104)]
-        [InlineData(Reg8.H, 105)]
-        [InlineData(Reg8.L, 106)]
-        public void ItShouldBePossibleToLoadAn8BitRegistersWithhImmediateValue(Reg8 register, byte value)
+        [InlineData(Reg8.A)]
+        [InlineData(Reg8.B)]
+        [InlineData(Reg8.C)]
+        [InlineData(Reg8.D)]
+        [InlineData(Reg8.E)]
+        [InlineData(Reg8.H)]
+        [InlineData(Reg8.L)]
+        public void ItShouldBePossibleToLoadAn8BitRegister(Reg8 register)
         {
             var machine = CreateMachine();
-            machine.LD(register, value);
+            machine.LD(register, Read8BitValue(100));
 
-            Assert.Equal(value, machine.Registers.Read(register));
-        }
-
-        [Theory]
-        [InlineData(Reg8.A, Reg8.B, 123)]
-        [InlineData(Reg8.C, Reg8.D, 0xFF)]
-        [InlineData(Reg8.D, Reg8.IXH, 0xEE)]
-        public void ItShouldBeAbleToCopyToTheContentsOfOneRegisterToAnother(Reg8 source, Reg8 target, byte value)
-        {
-            var machine = CreateMachine();
-            machine.Registers.Set(source, value);
-            machine.Registers.Set(target, 0);
-
-            machine.LD(target, source);
-
-            Assert.Equal(value, machine.Registers.Read(target));
-        }
-
-        [Theory]
-        [InlineData(Reg16.BC, Reg8.A, 0xCC)]
-        [InlineData(Reg16.DE, Reg8.B, 0xFF)]
-        public void ItShouldBeAbleToCopyTheContentsOfTheAddressPointedToByOperand2IntoOperand1(Reg16 source, Reg8 target, byte value)
-        {
-            var machine = CreateMachine();
-
-            machine.Memory.Set(0xEEEE, value);
-            machine.Registers.Set(source, 0xEEEE);
-            machine.Registers.Set(target, 0);
-
-            machine.LD(target, valueAt(source));
-
-            Assert.Equal(value, machine.Registers.Read(target));
-        }
-
-        [Theory]
-        [InlineData(0xEEEE, Reg8.A, 0xCC)]
-        [InlineData(0xAAAA, Reg8.B, 0xDD)]
-        public void ItShouldBePossibleToLoadARegisterWithTheContentsOfAMemoryAddress(ushort memoryAddress, Reg8 target, byte value)
-        {
-            var machine = CreateMachine();
-
-            machine.Memory.Set(memoryAddress, value);
-            machine.LD(target, memoryAddress);
-
-            Assert.Equal(value, machine.Registers.Read(target));
-        }
-
-        [Theory]
-        [InlineData(Reg16.IX, Reg8.A, 10, 0xCC)]
-        [InlineData(Reg16.IY, Reg8.B, 127, 0xEE)]
-        public void ItShouldBeAbleToCopyTheContentsOfTheAddressPointedToByOperand2PlusAnOffsetIntoOperand1(Reg16 source, Reg8 target, sbyte offset, byte value)
-        {
-            var machine = CreateMachine();
-
-            machine.Registers.Set(source, 1000);
-            machine.Memory.Set((ushort)(1000 + offset), value);
-
-            //(IX + n)
-            machine.LD(target, valueAt(source.Add(offset)));
-
-            Assert.Equal(value, machine.Registers.Read(target));
-        }
-
-        [Theory]
-        [InlineData(Reg8.A, Reg16.BC, 0xCC)]
-        [InlineData(Reg8.A, Reg16.DE, 0xAA)]
-        [InlineData(Reg8.B, Reg16.HL, 0xBB)]
-        public void ItShouldBePossibleToLoadIntoTheMemoryAddressPointedToByTheFirstOperandTheContentsOfARegister(Reg8 source, Reg16 target, byte value)
-        {
-            const ushort ANY_MEMORY_LOCATION = 0xEEEE;
-            var machine = CreateMachine();
-            machine.Memory.Set(ANY_MEMORY_LOCATION, 0);
-            machine.Registers.Set(target, ANY_MEMORY_LOCATION);
-            machine.Registers.Set(source, value);
-
-            machine.LD(valueAt(target), source);
-
-            Assert.Equal(value, machine.Memory.ReadByte(ANY_MEMORY_LOCATION));
+            Assert.Equal(100, machine.Registers.Read(register));
         }
 
         [Theory]
         [InlineData(Reg16.HL, 0xBB)]
-        public void ItShouldBePossibleToLoadIntoTheMemoryAddressPointedToByTheFirstOperandAnImmediateValue(Reg16 target, byte value)
+        public void ItShouldBePossibleToLoadIntoTheMemoryAddressPointedToByTheFirstOperand(Reg16 target, byte value)
         {
             const ushort ANY_MEMORY_LOCATION = 0xEEEE;
             var machine = CreateMachine();
             machine.Memory.Set(ANY_MEMORY_LOCATION, 0);
             machine.Registers.Set(target, ANY_MEMORY_LOCATION);
 
-            machine.LD(valueAt(target), value);
-
-            Assert.Equal(value, machine.Memory.ReadByte(ANY_MEMORY_LOCATION));
-        }
-
-        [Theory]
-        [InlineData(Reg8.A, Reg16.IX, 10, 0xCC)]
-        [InlineData(Reg8.B, Reg16.IY, -10, 0xFF)]
-        public void ItShouldBePossibleToLoadIntoAnyOffsetedMemoryAddressPointedToByTheFirstOperandTheContentsOfARegister(Reg8 source, Reg16 target, sbyte offset, byte value)
-        {
-            const ushort ANY_MEMORY_LOCATION = 0x1010;
-            var machine = CreateMachine();
-            machine.Memory.Set(ANY_MEMORY_LOCATION, 0);
-            machine.Registers.Set(target, (ushort)(ANY_MEMORY_LOCATION - offset));
-            machine.Registers.Set(source, value);
-
-            machine.LD(valueAt(target.Add(offset)), source);
+            machine.LD(valueAt(target), Read8BitValue(value));
 
             Assert.Equal(value, machine.Memory.ReadByte(ANY_MEMORY_LOCATION));
         }
@@ -141,7 +49,7 @@ namespace z80vm.Tests
             machine.Memory.Set(ANY_MEMORY_LOCATION, 0);
             machine.Registers.Set(target, (ushort)(ANY_MEMORY_LOCATION - offset));
 
-            machine.LD(valueAt(target.Add(offset)), value);
+            machine.LD(valueAt(target).Add(offset), Read8BitValue(value));
 
             Assert.Equal(value, machine.Memory.ReadByte(ANY_MEMORY_LOCATION));
         }
@@ -154,11 +62,11 @@ namespace z80vm.Tests
             machine.Memory.Set(memoryLocation, 0);
             machine.Registers.Set(source, value);
 
-            machine.LD(memoryLocation, source);
+            machine.LD(memoryLocation, Read8BitValue(source));
 
             Assert.Equal(value, machine.Memory.ReadByte(memoryLocation));
         }
-        
+
         [Theory]
         [InlineData(Reg8.I)]
         [InlineData(Reg8.R)]
@@ -167,7 +75,7 @@ namespace z80vm.Tests
             var machine = CreateMachine();
             machine.Flags.Set(Flag.H);
 
-            machine.LD(Reg8.A, source);
+            machine.LD(Reg8.A, Read8BitValue(source));
 
             Assert.Equal(false, machine.Flags.Read(Flag.H));
         }
@@ -180,7 +88,7 @@ namespace z80vm.Tests
             var machine = CreateMachine();
             machine.Flags.Set(Flag.H);
 
-            machine.LD(Reg8.A, source);
+            machine.LD(Reg8.A, Read8BitValue(source));
 
             Assert.Equal(true, machine.Flags.Read(Flag.H));
         }
@@ -193,7 +101,7 @@ namespace z80vm.Tests
             var machine = CreateMachine();
             machine.Flags.Set(Flag.N);
 
-            machine.LD(Reg8.A, source);
+            machine.LD(Reg8.A, Read8BitValue(source));
 
             Assert.Equal(false, machine.Flags.Read(Flag.N));
         }
@@ -206,7 +114,7 @@ namespace z80vm.Tests
             var machine = CreateMachine();
             machine.Flags.Set(Flag.N);
 
-            machine.LD(Reg8.A, source);
+            machine.LD(Reg8.A, Read8BitValue(source));
 
             Assert.Equal(true, machine.Flags.Read(Flag.N));
         }
@@ -218,7 +126,7 @@ namespace z80vm.Tests
         {
             var machine = CreateMachine();
             machine.Registers.Set(source, 0);
-            machine.LD(Reg8.A, source);
+            machine.LD(Reg8.A, Read8BitValue(source));
 
             Assert.Equal(true, machine.Flags.Read(Flag.Z));
         }
@@ -231,7 +139,7 @@ namespace z80vm.Tests
             var machine = CreateMachine();
             machine.Flags.Set(Flag.Z);
             machine.Registers.Set(source, 100);
-            machine.LD(Reg8.A, source);
+            machine.LD(Reg8.A, Read8BitValue(source));
 
             Assert.Equal(false, machine.Flags.Read(Flag.Z));
         }
@@ -245,7 +153,7 @@ namespace z80vm.Tests
             machine.Flags.Set(Flag.Z);
 
             machine.Registers.Set(source, 10);
-            machine.LD(Reg8.A, source);
+            machine.LD(Reg8.A, Read8BitValue(source));
 
             Assert.Equal(true, machine.Flags.Read(Flag.Z));
         }
@@ -257,7 +165,7 @@ namespace z80vm.Tests
         {
             var machine = CreateMachine();
             machine.Registers.Set(source, value);
-            machine.LD(Reg8.A, source);
+            machine.LD(Reg8.A, Read8BitValue(source));
 
             Assert.Equal(true, machine.Flags.Read(Flag.S));
         }
@@ -270,7 +178,7 @@ namespace z80vm.Tests
             var machine = CreateMachine();
             machine.Registers.Set(source, value);
             machine.Flags.Set(Flag.S);
-            machine.LD(Reg8.A, source);
+            machine.LD(Reg8.A, Read8BitValue(source));
 
             Assert.Equal(false, machine.Flags.Read(Flag.S));
         }
@@ -283,7 +191,7 @@ namespace z80vm.Tests
             var machine = CreateMachine();
             machine.Registers.Set(source, value);
             machine.Flags.Set(Flag.S);
-            machine.LD(Reg8.A, source);
+            machine.LD(Reg8.A, Read8BitValue(source));
 
             Assert.Equal(true, machine.Flags.Read(Flag.S));
         }
@@ -354,7 +262,7 @@ namespace z80vm.Tests
             var machine = CreateMachine();
 
             var currentValue = machine.Registers.Read(Reg8.B);
-            machine.LD(Reg8.C, 123);
+            machine.LD(Reg8.C, Read8BitValue(123));
 
             Assert.Equal(currentValue, machine.Registers.Read(Reg8.B));
         }

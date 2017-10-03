@@ -21,6 +21,8 @@ namespace z80vm
         }
 
 
+
+
         #region MyRegion
         /// <summary>
         /// This is an ldi repeated until BC reaches zero. ie This single instruction copies BC bytes from below (HL) to (DE), decreases both HL and DE by BC, and sets BC to zero.
@@ -46,6 +48,8 @@ namespace z80vm
             this.Flags.Clear(Flag.N);
             this.Flags.Clear(Flag.PV);
         }
+
+
 
         #endregion
 
@@ -74,6 +78,8 @@ namespace z80vm
             this.Flags.Clear(Flag.N);
             this.Flags.Clear(Flag.PV);
         }
+
+
 
         #endregion
 
@@ -528,17 +534,12 @@ namespace z80vm
 
         #region LD
 
-        public void LD(Reg8 register, byte immediateValue)
+        public void LD(Reg8 target, op8 source)
         {
-            this.Registers.Set(register, immediateValue);
-        }
+            var value = source.Resolve(this.Memory, this.Registers);
+            this.Registers.Set(target, value);
 
-        public void LD(Reg8 operand1, Reg8 operand2)
-        {
-            var value = this.Registers.Read(operand2);
-            this.Registers.Set(operand1, value);
-
-            if (operand2 == Reg8.I || operand2 == Reg8.R)
+            if (source.Register.HasValue && (source.Register == Reg8.I || source.Register == Reg8.R))
             {
                 this.Flags.Clear(Flag.H);
                 this.Flags.Clear(Flag.N);
@@ -565,28 +566,9 @@ namespace z80vm
             }
         }
 
-        public void LD(Reg8 operand1, Value operand2)
+        public void LD(Reg8 register, byte immediateValue)
         {
-            var memoryAddress = (ushort)(this.Registers.Read(operand2.Register) + operand2.Offset);
-            this.Registers.Set(operand1, this.Memory.ReadByte(memoryAddress));
-        }
-
-        public void LD(Reg8 operand1, ushort memoryAddress)
-        {
-            this.Registers.Set(operand1, this.Memory.ReadByte(memoryAddress));
-        }
-
-        /// <summary>
-        /// Usage: Loads the value of the second register into the memory address pointed to by the first register.  This memory maybe offset by -128..+127.   (BC),  (IX+n)
-        /// Flags: Not changed
-        /// </summary>
-        /// <param name="operand1"></param>
-        /// <param name="operand2"></param>
-        public void LD(Value operand1, Reg8 operand2)
-        {
-            var memoryAddress = (ushort)(this.Registers.Read(operand1.Register) + operand1.Offset);
-            var value = this.Registers.Read(operand2);
-            this.Memory.Set(memoryAddress, value);
+            this.Registers.Set(register, immediateValue);
         }
 
         /// <summary>
@@ -606,7 +588,7 @@ namespace z80vm
         /// </summary>
         /// <param name="target"></param>
         /// <param name="valueInMemoryAddress"></param>
-        public void LD(Reg16 target, ValueInMemoryAddress valueInMemoryAddress)
+        public void LD(Reg16 target, MemoryAddress valueInMemoryAddress)
         {
             this.Registers.Set(target, this.Memory.ReadByte(valueInMemoryAddress.MemoryLocation));
         }
@@ -633,6 +615,12 @@ namespace z80vm
             this.Memory.Set(memoryAddress, operand2);
         }
 
+        public void LD(Value operand1, op8 op8)
+        {
+            var memoryAddress = (ushort)(this.Registers.Read(operand1.Register) + operand1.Offset);
+            this.Memory.Set(memoryAddress, op8.Resolve(this.Memory, this.Registers));
+        }
+
         /// <summary>
         /// Usage: Loads the value of the register into the memory address pointed to be operand 1  (ofs)
         /// Flags: Not changed
@@ -651,11 +639,17 @@ namespace z80vm
         /// </summary>
         /// <param name="valueInMemoryAddress"></param>
         /// <param name="source"></param>
-        public void LD(ValueInMemoryAddress targetMemoryAddress, Reg16 source)
+        public void LD(MemoryAddress targetMemoryAddress, Reg16 source)
         {
             var value = this.Registers.Read(source);
             this.Memory.Set(targetMemoryAddress.MemoryLocation, value);
         }
+
+        public void LD(ushort memoryAddress, op8 op8)
+        {
+            this.Memory.Set(memoryAddress, op8.Resolve(this.Memory, this.Registers));
+        }
+
         #endregion
 
         /// <summary>
