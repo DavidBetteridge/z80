@@ -27,10 +27,8 @@ namespace z80vm
         public void Set(ushort address, ushort value)
         {
             //The Z80 is little endian,  so the lowest byte is stored in the lowest address
-            var (high, low) = value.Split();
-
-            data[address + 1] = high;
-            data[address] = low;
+            data[address + 1] = value.High();
+            data[address] = value.Low();
         }
 
         /// <summary>

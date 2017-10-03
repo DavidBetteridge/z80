@@ -230,20 +230,16 @@ namespace z80vm
                     return R;
 
                 case Reg8.IXH:
-                    var (hx, _) = IX.Split();
-                    return hx;
+                    return IX.High();
 
                 case Reg8.IXL:
-                    var (_, lx) = IX.Split();
-                    return lx;
+                    return IX.Low();
 
                 case Reg8.IYH:
-                    var (hy, _) = IY.Split();
-                    return hy;
+                    return IY.High();
 
                 case Reg8.IYL:
-                    var (_, ly) = IY.Split();
-                    return ly;
+                    return IY.Low();
 
                 default:
                     throw new Exception("Unknown register " + register);
@@ -300,25 +296,23 @@ namespace z80vm
         /// <param name="word"></param>
         public void Set(Reg16Shadow register, ushort word)
         {
-            var (highOrderByte, lowOrderByte) = word.Split();
-
             switch (register)
             {
                 case Reg16Shadow.AF:
-                    A2 = highOrderByte;
-                    F2 = lowOrderByte;
+                    A2 = word.High();
+                    F2 = word.Low();
                     break;
                 case Reg16Shadow.BC:
-                    B2 = highOrderByte;
-                    C2 = lowOrderByte;
+                    B2 = word.High();
+                    C2 = word.Low(); 
                     break;
                 case Reg16Shadow.DE:
-                    D2 = highOrderByte;
-                    E2 = lowOrderByte;
+                    D2 = word.High();
+                    E2 = word.Low();
                     break;
                 case Reg16Shadow.HL:
-                    H2 = highOrderByte;
-                    L2 = lowOrderByte;
+                    H2 = word.High();
+                    L2 = word.Low();
                     break;
 
                 default:
@@ -402,23 +396,19 @@ namespace z80vm
                     break;
 
                 case Reg8.IXH:
-                    var (_, lx) = IX.Split();
-                    IX = Memory.MakeWord(value, lx);
+                    IX = Memory.MakeWord(value, IX.Low());
                     break;
 
                 case Reg8.IXL:
-                    var (hx, _) = IX.Split();
-                    IX = Memory.MakeWord(hx, value);
+                    IX = Memory.MakeWord(IX.High(), value);
                     break;
 
                 case Reg8.IYH:
-                    var (_, ly) = IY.Split();
-                    IY = Memory.MakeWord(value, ly);
+                    IY = Memory.MakeWord(value, IY.Low());
                     break;
 
                 case Reg8.IYL:
-                    var (hy, _) = IY.Split();
-                    IY = Memory.MakeWord(hy, value);
+                    IY = Memory.MakeWord(IY.High(), value);
                     break;
 
                 default:
@@ -433,25 +423,23 @@ namespace z80vm
         /// <param name="word"></param>
         public void Set(Reg16 register, ushort word)
         {
-            var (highOrderByte, lowOrderByte) = word.Split();
-
             switch (register)
             {
                 case Reg16.AF:
-                    A = highOrderByte;
-                    F = lowOrderByte;
+                    A = word.High();
+                    F = word.Low();
                     break;
                 case Reg16.BC:
-                    B = highOrderByte;
-                    C = lowOrderByte;
+                    B = word.High();
+                    C = word.Low();
                     break;
                 case Reg16.DE:
-                    D = highOrderByte;
-                    E = lowOrderByte;
+                    D = word.High();
+                    E = word.Low();
                     break;
                 case Reg16.HL:
-                    H = highOrderByte;
-                    L = lowOrderByte;
+                    H = word.High();
+                    L = word.Low();
                     break;
                 case Reg16.IX:
                     IX = word;

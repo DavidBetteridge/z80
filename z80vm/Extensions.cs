@@ -4,18 +4,20 @@ namespace z80vm
 {
     public static class Extensions
     {
+
         /// <summary>
-        /// Splits a 16bit number into two bytes
+        /// Extracts the high order byte from the word
         /// </summary>
         /// <param name="word"></param>
         /// <returns></returns>
-        public static (byte high, byte low) Split(this ushort word)
-        {
-            var highOrderByte = (byte)(word >> 8);
-            var lowOrderByte = (byte)(word & 0x00FF);
+        public static byte High(this ushort word) => (byte)(word >> 8);
 
-            return (highOrderByte, lowOrderByte);
-        }
+        /// <summary>
+        /// Extracts the low order byte from the word
+        /// </summary>
+        /// <param name="word"></param>
+        /// <returns></returns>
+        public static byte Low(this ushort word) => (byte)(word & 0x00FF);
 
         /// <summary>
         /// Reads a single bit from the byte

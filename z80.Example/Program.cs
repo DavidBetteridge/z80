@@ -38,6 +38,7 @@ namespace z80.Example
 
             // Load the contents of a register into a memory address specified by a 16bit register plus an offset (IX+n)
             machine.LD(valueAt(Reg16.IX).Add(10), Read8BitValue(Reg8.A));
+            machine.LD(valueAt(Reg16.IX), Read8BitValue(Reg8.A));
 
             // Loads a memory address with the value of a register
             machine.LD(0xFFFE, Read8BitValue(Reg8.A));
