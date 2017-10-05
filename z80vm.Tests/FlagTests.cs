@@ -100,7 +100,7 @@ namespace z80vm.Tests
 
         private static Machine CreateMachine()
         {
-            return new Machine(new ConditionValidator());
+            return new Machine(new ConditionValidator(), new FlagsEvaluator());
         }
     }
 }

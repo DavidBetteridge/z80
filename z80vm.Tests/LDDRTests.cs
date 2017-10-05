@@ -85,7 +85,7 @@ namespace z80vm.Tests
         private static Machine CreateMachine()
         {
             var conditionValidator = new Moq.Mock<IConditionValidator>();
-            return new Machine(conditionValidator.Object);
+            return new Machine(conditionValidator.Object, new FlagsEvaluator());
         }
     }
 }

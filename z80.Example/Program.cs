@@ -10,7 +10,8 @@ namespace z80.Example
         {
             // Prepare the machine
             var conditionValidator = new ConditionValidator();
-            var machine = new Machine(conditionValidator);
+            var flagsEvaluator = new FlagsEvaluator();
+            var machine = new Machine(conditionValidator, flagsEvaluator);
 
             // Load an immediate value into a register
             machine.LD(Reg8.A, Read8BitValue(100));

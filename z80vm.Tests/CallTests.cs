@@ -54,7 +54,7 @@ namespace z80vm.Tests
             const string ANY_LABEL = "Subroutine";
             const Condition ANY_CONDITION = Condition.c;
 
-            var machine = new Machine(new FakeAlwaysTrueConditionValidator());
+            var machine = new Machine(new FakeAlwaysTrueConditionValidator(), new FlagsEvaluator());
             machine.Labels.Set(ANY_LABEL, ANY_MEMORY_ADDRESS);
             machine.Registers.Set(Reg16.PC, 0x1000);
 
@@ -86,7 +86,7 @@ namespace z80vm.Tests
             const ushort ANY_MEMORY_ADDRESS = 0x0000;
             const string ANY_LABEL = "Subroutine";
 
-            var machine = new Machine(new FakeAlwaysFalseConditionValidator());
+            var machine = new Machine(new FakeAlwaysFalseConditionValidator(), new FlagsEvaluator());
             machine.Registers.Set(Reg16.SP, 0xF000); //Need to lower the SP so we can POP without first PUSHing
             machine.Labels.Set(ANY_LABEL, ANY_MEMORY_ADDRESS);
             machine.Registers.Set(Reg16.PC, 0x1000);
@@ -100,7 +100,7 @@ namespace z80vm.Tests
 
         private static Machine CreateMachine()
         {
-            return new Machine(new ConditionValidator());
+            return new Machine(new ConditionValidator(), new FlagsEvaluator());
         }
 
         private class FakeAlwaysTrueConditionValidator : IConditionValidator

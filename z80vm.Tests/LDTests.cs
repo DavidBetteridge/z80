@@ -21,7 +21,7 @@ namespace z80vm.Tests
         {
             var machine = CreateMachine();
             machine.LD(register, Read8BitValue(100));
-
+            
             Assert.Equal(100, machine.Registers.Read(register));
         }
 
@@ -269,7 +269,7 @@ namespace z80vm.Tests
 
         private static Machine CreateMachine()
         {
-            return new Machine(new ConditionValidator());
+            return new Machine(new ConditionValidator(), new FlagsEvaluator());
         }
     }
 }

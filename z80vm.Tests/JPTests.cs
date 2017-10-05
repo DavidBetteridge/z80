@@ -70,7 +70,7 @@ namespace z80vm.Tests
             var alwaysTrue = new Mock<IConditionValidator>();
             alwaysTrue.Setup(v => v.IsTrue(It.IsAny<Flags>(), ANY_CONDITION)).Returns(true);
 
-            var machine = new Machine(alwaysTrue.Object);
+            var machine = new Machine(alwaysTrue.Object, new FlagsEvaluator());
             machine.Registers.Set(Reg16.PC, 0x1000);
             machine.JP(ANY_CONDITION, 0xAAAA);
 
@@ -85,7 +85,7 @@ namespace z80vm.Tests
             var alwaysFalse = new Mock<IConditionValidator>();
             alwaysFalse.Setup(v => v.IsTrue(It.IsAny<Flags>(), ANY_CONDITION)).Returns(false);
 
-            var machine = new Machine(alwaysFalse.Object);
+            var machine = new Machine(alwaysFalse.Object, new FlagsEvaluator());
             machine.Registers.Set(Reg16.PC, 0x1000);
             machine.JP(ANY_CONDITION, 0xAAAA);
 
@@ -100,7 +100,7 @@ namespace z80vm.Tests
             var alwaysTrue = new Mock<IConditionValidator>();
             alwaysTrue.Setup(v => v.IsTrue(It.IsAny<Flags>(), ANY_CONDITION)).Returns(true);
 
-            var machine = new Machine(alwaysTrue.Object);
+            var machine = new Machine(alwaysTrue.Object, new FlagsEvaluator());
 
             machine.Labels.Set("ROUTINE", 0xBBBB);
             machine.Registers.Set(Reg16.PC, 0x1000);
@@ -117,7 +117,7 @@ namespace z80vm.Tests
             var alwaysFalse = new Mock<IConditionValidator>();
             alwaysFalse.Setup(v => v.IsTrue(It.IsAny<Flags>(), ANY_CONDITION)).Returns(false);
 
-            var machine = new Machine(alwaysFalse.Object);
+            var machine = new Machine(alwaysFalse.Object, new FlagsEvaluator());
 
             machine.Labels.Set("ROUTINE", 0xBBBB);
             machine.Registers.Set(Reg16.PC, 0x1000);
@@ -126,6 +126,6 @@ namespace z80vm.Tests
             Assert.NotEqual(0xBBBB, machine.Registers.Read(Reg16.PC));
         }
 
-        private Machine CreateMachine() => new Machine(new ConditionValidator());
+        private Machine CreateMachine() => new Machine(new ConditionValidator(), new FlagsEvaluator());
     }
 }

@@ -4,27 +4,43 @@ namespace z80vm
 {
     public class Machine
     {
-        private IConditionValidator conditionValidator;
+        private readonly IConditionValidator conditionValidator;
+
+        private readonly IFlagsEvaluator flagsEvaluator;
 
         public Registers Registers { get; private set; }
         public Memory Memory { get; private set; }
         public Flags Flags { get; private set; }
         public Labels Labels { get; private set; }
 
-        public Machine(IConditionValidator conditionValidator)
+        public Machine(IConditionValidator conditionValidator, IFlagsEvaluator flagsEvaluator)
         {
             this.Registers = new Registers();
             this.Memory = new Memory();
             this.Flags = new Flags(this.Registers);
             this.Labels = new Labels();
             this.conditionValidator = conditionValidator;
+            this.flagsEvaluator = flagsEvaluator;
         }
 
+        #region SUB
+        /// <summary>
+        /// Usage: The value of the operand is subtracted from A, and the result is also written back to 
+        /// Flags: The N flag is set, P/V is interpreted as overflow. The rest of the flags is modified by definition.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="op8"></param>
+        public void SUB(Reg8 a, op8 op8)
+        {
+            var currentValue = this.Registers.Read(Reg8.A);
+            var valueToSubtract = op8.Resolve(this.Memory, this.Registers);
+            var newValue = (byte)(currentValue - valueToSubtract);
+            this.Registers.Set(Reg8.A, newValue);
+            this.Flags.Set(Flag.N);
+        }
+        #endregion
 
-
-
-
-        #region MyRegion
+        #region LDDR
         /// <summary>
         /// This is an ldi repeated until BC reaches zero. ie This single instruction copies BC bytes from below (HL) to (DE), decreases both HL and DE by BC, and sets BC to zero.
         /// Flags: the P/V flag holds zero after leaving the instruction
@@ -409,51 +425,16 @@ namespace z80vm
             var newTotal = (byte)(currentValue + valueToAdd);
             this.Registers.Set(Reg8.A, newTotal);
 
-            //the Sign flag
-            if (newTotal > 127)
-            {
-                // This is an unsigned byte,  but if it was signed then the value would be negative.
-                this.Flags.Set(Flag.S);
-            }
-            else
-            {
-                this.Flags.Clear(Flag.S);
-            }
-
-            // the Zero flag
-            if (newTotal == 0)
-            {
-                this.Flags.Set(Flag.Z);
-            }
-            else
-            {
-                this.Flags.Clear(Flag.Z);
-            }
-
+            this.flagsEvaluator.Evalulate(this.Flags, (sbyte)currentValue, (sbyte)newTotal);
+    
             //It is set when there is a carry transfer from bit 3 to bit 4,
             if ((byte)(currentValue & 0b1111) + (byte)(valueToAdd & 0b1111) > 0b1111)
                 this.Flags.Set(Flag.H);
             else
                 this.Flags.Clear(Flag.H);
 
-            //indicates overflowing (leaving the 0...127 or -128...-1 intervals) 
-            if (currentValue <= 127 && newTotal > 127)
-                this.Flags.Set(Flag.PV);
-            else if (currentValue > 127 && newTotal <= 127)
-                this.Flags.Set(Flag.PV);
-            else
-                this.Flags.Clear(Flag.PV);
-
             //indicates subtraction
             this.Flags.Clear(Flag.N);
-
-            //the Carry flag. It is set when the last operation caused a register to step over zero in either direction.
-            var currentValueSigned = (sbyte)currentValue;
-            var newTotalSigned = (sbyte)newTotal;
-            if (currentValueSigned < 0 && newTotalSigned > 0)
-                this.Flags.Set(Flag.C);
-            else
-                this.Flags.Clear(Flag.C);
         }
 
         /// <summary>

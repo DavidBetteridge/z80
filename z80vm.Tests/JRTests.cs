@@ -14,7 +14,7 @@ namespace z80vm.Tests
         public void TheProgramCounterShouldBeAdvancedByTheSuppliedValue(sbyte offset, ushort newAddress)
         {
             var conditionValidator = new Moq.Mock<IConditionValidator>();
-            var machine = new Machine(conditionValidator.Object);
+            var machine = new Machine(conditionValidator.Object, new FlagsEvaluator());
             machine.Registers.Set(Reg16.PC, 1000);
 
             machine.JR(offset);
@@ -28,7 +28,7 @@ namespace z80vm.Tests
         public void AnErrorShouldNotBeReportedIfTheInstructionJumpsOutOfTheMemorySpace(ushort start, sbyte offset)
         {
             var conditionValidator = new Moq.Mock<IConditionValidator>();
-            var machine = new Machine(conditionValidator.Object);
+            var machine = new Machine(conditionValidator.Object, new FlagsEvaluator());
             machine.Registers.Set(Reg16.PC, start);
 
             Assert.True(true);
@@ -40,7 +40,7 @@ namespace z80vm.Tests
             var conditionValidator = new Moq.Mock<IConditionValidator>();
             conditionValidator.Setup(s => s.IsTrue(It.IsAny<Flags>(), It.IsAny<Condition>())).Returns(true);
 
-            var machine = new Machine(conditionValidator.Object);
+            var machine = new Machine(conditionValidator.Object, new FlagsEvaluator());
             machine.Registers.Set(Reg16.PC, 1000);
 
             machine.JR(Condition.c, 1);
@@ -58,7 +58,7 @@ namespace z80vm.Tests
             var conditionValidator = new Moq.Mock<IConditionValidator>();
             conditionValidator.Setup(s => s.IsTrue(It.IsAny<Flags>(), condition)).Returns(false);
 
-            var machine = new Machine(conditionValidator.Object);
+            var machine = new Machine(conditionValidator.Object, new FlagsEvaluator());
             machine.Registers.Set(Reg16.PC, 1000);
 
             machine.JR(condition, 1);
@@ -74,7 +74,7 @@ namespace z80vm.Tests
         public void AnErrorShouldBeReportedIfAnUnsupportedConditionIsSupplied(Condition condition)
         {
             var conditionValidator = new Moq.Mock<IConditionValidator>();
-            var machine = new Machine(conditionValidator.Object);
+            var machine = new Machine(conditionValidator.Object, new FlagsEvaluator());
 
             var exception = Record.Exception(() => machine.JR(condition, 1));
             Assert.IsType(typeof(System.InvalidOperationException), exception);

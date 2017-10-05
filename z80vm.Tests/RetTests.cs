@@ -38,7 +38,7 @@ namespace z80vm.Tests
             const ushort ANY_ADDRESS = 0xABCD;
 
             var conditionValidator = new FakeAlwaysTrueConditionValidator();
-            var machine = new Machine(conditionValidator);
+            var machine = new Machine(conditionValidator, new FlagsEvaluator());
             machine.Registers.Set(Reg16.BC, ANY_ADDRESS);
             machine.PUSH(Reg16.BC);
 
@@ -58,7 +58,7 @@ namespace z80vm.Tests
             const ushort ANY_OTHER_ADDRESS = 0xEEEE;
 
             var conditionValidator = new FakeAlwaysFalseConditionValidator();
-            var machine = new Machine(conditionValidator);
+            var machine = new Machine(conditionValidator, new FlagsEvaluator());
             machine.Registers.Set(Reg16.BC, ANY_ADDRESS);
             machine.Registers.Set(Reg16.PC, ANY_OTHER_ADDRESS);
             machine.PUSH(Reg16.BC);
@@ -88,7 +88,7 @@ namespace z80vm.Tests
 
         private static Machine CreateMachine()
         {
-            return new Machine(new ConditionValidator());
+            return new Machine(new ConditionValidator(), new FlagsEvaluator());
         }
     }
 }
