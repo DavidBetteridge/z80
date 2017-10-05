@@ -1,0 +1,69 @@
+﻿// This embedded file is queried at run time to provide the list of valid instructions.
+// n is an 8bit number   nn is a 16bit number
+adc a,a
+adc a,b
+adc a,c
+adc a,d
+adc a,e
+adc a,h
+adc a,l
+adc a,ixh
+adc a,ixl
+adc a,iyh
+adc a,iyl
+adc a,(hl)
+adc a,(ix+n)
+adc a,(iy+n)
+adc a,n
+
+adc hl,bc
+adc hl,de
+adc hl,hl
+adc hl,sp
+
+add a,a
+add a,b
+add a,c
+add a,d
+add a,e
+add a,h
+add a,l
+add a,ixh
+add a,ixl
+add a,iyh
+add a,ixl
+add a,(hl)
+add a,(ix+n)
+add a,(iy+n)
+add a,n
+
+add hl,bc
+add hl,de
+add hl,hl
+add hl,sp
+
+add ix,bc
+add ix,de
+add ix,ix
+add ix,sp
+
+add iy,bc
+add iy,de
+add iy,iy
+add iy,sp
+
+and a
+and b
+and c
+and d
+and e
+and h
+and l
+and ixh
+and ixl
+and iyh
+and iyl
+and (hl)
+and (ix+n)
+and (iy+n)
+and n

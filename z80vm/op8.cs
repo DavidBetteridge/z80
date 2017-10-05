@@ -30,6 +30,7 @@ namespace z80vm
         }
 
         public Reg8? Register => this.register;
+        public Value Value => this.value;
 
         public byte Resolve(Memory memory, Registers registers)
         {
@@ -43,6 +44,18 @@ namespace z80vm
                 return registers.Read(this.register.Value);
         }
 
-
+        public override string ToString()
+        {
+            if (immediate.HasValue)
+                return "n";
+            else if (memoryAddress != null)
+                return "(nn)";
+            else if (value != null && value.Offset == 0)
+                return $"({value.Register.ToString().ToLower()})";
+            else if (value != null && value.Offset != 0)
+                return $"({value.Register.ToString().ToLower()}+n)";
+            else
+                return register.Value.ToString().ToLower();
+        }
     }
 }

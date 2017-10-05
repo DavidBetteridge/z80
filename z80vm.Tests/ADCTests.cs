@@ -1,10 +1,29 @@
 ﻿using Xunit;
 using static z80vm.op8;
+using static z80vm.Value;
 
 namespace z80vm.Tests
 {
     public class ADCTests
     {
+        [Fact]
+        public void AnErrorIsReportedIfTheFirstRegisterIsNotA()
+        {
+            var machine = CreateMachine();
+
+            var exception = Record.Exception(() => machine.ADC(Reg8.B, Read8BitValue(1)));
+            Assert.IsType(typeof(System.InvalidOperationException), exception);
+        }
+
+        [Fact]
+        public void AnErrorIsReportedIfTheSecondOperandIsTheAddressWithSP()
+        {
+            var machine = CreateMachine();
+
+            var exception = Record.Exception(() => machine.ADC(Reg8.A, Read8BitValue(valueAt(Reg16.SP))));
+            Assert.IsType(typeof(System.InvalidOperationException), exception);
+        }
+
         [Theory]
         [InlineData(100, 101)]
         [InlineData(0, 1)]

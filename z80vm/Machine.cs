@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Linq;
+using System.IO;
+using System.Reflection;
 
 namespace z80vm
 {
@@ -424,6 +427,8 @@ namespace z80vm
         /// <param name="op8"></param>
         public void ADC(Reg8 a, op8 op8)
         {
+            IsCommandAllowed($"adc {a.ToString().ToLower()},{op8.ToString()}");
+
             var currentValue = this.Registers.Read(Reg8.A);
             var valueToAdd = op8.Resolve(this.Memory, this.Registers);
             var newValue = (byte)(currentValue + valueToAdd);
@@ -436,6 +441,20 @@ namespace z80vm
             this.flagsEvaluator.Evalulate(this.Flags, (sbyte)currentValue, (sbyte)newValue);
 
             this.Flags.Clear(Flag.N);
+        }
+
+        private static void IsCommandAllowed(string command)
+        {
+            var assembly = typeof(Machine).GetTypeInfo().Assembly;
+            var resourceName = "z80vm.AllowedInstructions.txt";
+
+            using (var stream = assembly.GetManifestResourceStream(resourceName))
+            using (var reader = new StreamReader(stream))
+            {
+                var result = reader.ReadToEnd();
+                var lines = result.Split(new[] { System.Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                if (!lines.Contains(command)) throw new InvalidOperationException("Invalid operand combination - " + command);
+            }
         }
 
         /// <summary>

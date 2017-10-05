@@ -8,4 +8,12 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="AllowedInstructions.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="AllowedInstructions.txt" />
+  </ItemGroup>
+
 </Project>
