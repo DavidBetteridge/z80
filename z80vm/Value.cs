@@ -7,7 +7,10 @@
         {
             MemoryLocation = memoryLocation;
         }
+
+        public override string ToString() => "(nn)";
     }
+
 
     public class Value
     {
@@ -28,6 +31,14 @@
         public static MemoryAddress valueAt(ushort memoryLocation)
         {
             return new MemoryAddress(memoryLocation);
+        }
+
+        public override string ToString()
+        {
+            if (Offset == 0)
+                return $"({Register.ToString().ToLower()})";
+            else
+                return $"({Register.ToString().ToLower()}+n)";
         }
     }
 }

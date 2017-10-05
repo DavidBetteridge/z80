@@ -49,11 +49,9 @@ namespace z80vm
             if (immediate.HasValue)
                 return "n";
             else if (memoryAddress != null)
-                return "(nn)";
-            else if (value != null && value.Offset == 0)
-                return $"({value.Register.ToString().ToLower()})";
-            else if (value != null && value.Offset != 0)
-                return $"({value.Register.ToString().ToLower()}+n)";
+                return memoryAddress.ToString();
+            else if (value != null)
+                return value.ToString();
             else
                 return register.Value.ToString().ToLower();
         }
