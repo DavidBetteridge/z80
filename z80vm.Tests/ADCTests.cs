@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using Moq;
+using Xunit;
 using static z80vm.op8;
 using static z80vm.Value;
 
@@ -7,20 +8,15 @@ namespace z80vm.Tests
     public class ADCTests
     {
         [Fact]
-        public void AnErrorIsReportedIfTheFirstRegisterIsNotA()
+        public void AnErrorIsReportedIfThe8BITCommandIsNotValid()
         {
+            // Setup the machine so that all commands are invalid
             var machine = CreateMachine();
+            var commandValidator = new Moq.Mock<ICommandValidator>();
+            commandValidator.Setup(a => a.EnsureCommandIsValid(It.IsAny<object>(), It.IsAny<object>(), It.IsAny<string>())).Throws(new System.InvalidOperationException("Oh no"));
+            machine.SetCommandValidator(commandValidator.Object);
 
             var exception = Record.Exception(() => machine.ADC(Reg8.B, Read8BitValue(1)));
-            Assert.IsType(typeof(System.InvalidOperationException), exception);
-        }
-
-        [Fact]
-        public void AnErrorIsReportedIfTheSecondOperandIsTheAddressWithSP()
-        {
-            var machine = CreateMachine();
-
-            var exception = Record.Exception(() => machine.ADC(Reg8.A, Read8BitValue(valueAt(Reg16.SP))));
             Assert.IsType(typeof(System.InvalidOperationException), exception);
         }
 
@@ -110,6 +106,21 @@ namespace z80vm.Tests
             Assert.False(machine.Flags.Read(Flag.Z));
             Assert.Equal(1, callCount);
         }
+
+        //---------------------------
+        [Fact]
+        public void AnErrorIsReportedIfThe16BITCommandIsNotValid()
+        {
+            // Setup the machine so that all commands are invalid
+            var machine = CreateMachine();
+            var commandValidator = new Moq.Mock<ICommandValidator>();
+            commandValidator.Setup(a => a.EnsureCommandIsValid(It.IsAny<object>(), It.IsAny<object>(), It.IsAny<string>())).Throws(new System.InvalidOperationException("Oh no"));
+            machine.SetCommandValidator(commandValidator.Object);
+
+            var exception = Record.Exception(() => machine.ADC(Reg16.AF, Reg16.AF));
+            Assert.IsType(typeof(System.InvalidOperationException), exception);
+        }
+
 
         [Theory]
         [InlineData(1000, 1001)]

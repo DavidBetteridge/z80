@@ -8,15 +8,22 @@ namespace z80vm
     public class Machine
     {
         private readonly IConditionValidator conditionValidator;
-
         private readonly IFlagsEvaluator flagsEvaluator;
+        private ICommandValidator commandValidator;
 
         public Registers Registers { get; private set; }
         public Memory Memory { get; private set; }
         public Flags Flags { get; private set; }
         public Labels Labels { get; private set; }
 
-
+        /// <summary>
+        /// Override the command validator
+        /// </summary>
+        /// <param name="commandValidator"></param>
+        public void SetCommandValidator(ICommandValidator commandValidator)
+        {
+            this.commandValidator = commandValidator;
+        }
 
         public Machine(IConditionValidator conditionValidator, IFlagsEvaluator flagsEvaluator)
         {
@@ -26,6 +33,7 @@ namespace z80vm
             this.Labels = new Labels();
             this.conditionValidator = conditionValidator;
             this.flagsEvaluator = flagsEvaluator;
+            this.commandValidator = new CommandValidator();
         }
 
         #region SUB
@@ -427,7 +435,7 @@ namespace z80vm
         /// <param name="op8"></param>
         public void ADC(Reg8 a, op8 op8)
         {
-            IsCommandAllowed($"adc {a.ToString().ToLower()},{op8.ToString()}");
+            this.commandValidator.EnsureCommandIsValid(a, op8);
 
             var currentValue = this.Registers.Read(Reg8.A);
             var valueToAdd = op8.Resolve(this.Memory, this.Registers);
@@ -443,19 +451,7 @@ namespace z80vm
             this.Flags.Clear(Flag.N);
         }
 
-        private static void IsCommandAllowed(string command)
-        {
-            var assembly = typeof(Machine).GetTypeInfo().Assembly;
-            var resourceName = "z80vm.AllowedInstructions.txt";
 
-            using (var stream = assembly.GetManifestResourceStream(resourceName))
-            using (var reader = new StreamReader(stream))
-            {
-                var result = reader.ReadToEnd();
-                var lines = result.Split(new[] { System.Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-                if (!lines.Contains(command)) throw new InvalidOperationException("Invalid operand combination - " + command);
-            }
-        }
 
         /// <summary>
         /// Usage: The sum of the two operands plus the carry flag (0 or 1) is calculated, and the result is written back into the first operand.
@@ -465,6 +461,8 @@ namespace z80vm
         /// <param name="operand2"></param>
         public void ADC(Reg16 operand1, Reg16 operand2)
         {
+            this.commandValidator.EnsureCommandIsValid(operand1, operand2);
+
             var currentValue = this.Registers.Read(operand1);
             var valueToAdd = this.Registers.Read(operand2);
             var newValue = (ushort)(currentValue + valueToAdd);
