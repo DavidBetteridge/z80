@@ -726,14 +726,10 @@ namespace z80vm
         public void POP(Reg16 register)
         {
             var stackPointer = this.Registers.Read(Reg16.SP);
-
-            var highOrderByte = this.Memory.ReadByte((ushort)(stackPointer + 1));
-            var lowOrderByte = this.Memory.ReadByte((ushort)(stackPointer));
-            var fullByte = (ushort)((ushort)(highOrderByte << 8) | lowOrderByte);
+            var fullByte = this.Memory.ReadWord(stackPointer);
 
             this.Registers.Set(Reg16.SP, (ushort)(stackPointer + 2));
             this.Registers.Set(register, fullByte);
-
         }
     }
 }
