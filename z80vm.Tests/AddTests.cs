@@ -1,6 +1,5 @@
 ﻿using Xunit;
 using System;
-using static z80vm.Value;
 using static z80vm.op8;
 
 namespace z80vm.Tests
@@ -28,8 +27,6 @@ namespace z80vm.Tests
             fe.Setup(f => f.Evalulate(machine.Flags, 0, 2)).Callback(() => 
             {
                 machine.Flags.Set(Flag.C);
-                machine.Flags.Set(Flag.H);
-                machine.Flags.Set(Flag.N);
                 machine.Flags.Set(Flag.PV);
                 machine.Flags.Set(Flag.S);
                 machine.Flags.Set(Flag.Z);
@@ -39,8 +36,6 @@ namespace z80vm.Tests
             machine.ADD(Reg8.A, Read8BitValue(2));
 
             Assert.True(machine.Flags.Read(Flag.C));
-            //Assert.True(machine.Flags.Read(Flag.H));
-            //Assert.True(machine.Flags.Read(Flag.N));
             Assert.True(machine.Flags.Read(Flag.PV));
             Assert.True(machine.Flags.Read(Flag.S));
             Assert.True(machine.Flags.Read(Flag.Z));
@@ -57,8 +52,6 @@ namespace z80vm.Tests
             fe.Setup(f => f.Evalulate(machine.Flags, 0, 2)).Callback(() =>
             {
                 machine.Flags.Clear(Flag.C);
-                machine.Flags.Clear(Flag.H);
-                machine.Flags.Clear(Flag.N);
                 machine.Flags.Clear(Flag.PV);
                 machine.Flags.Clear(Flag.S);
                 machine.Flags.Clear(Flag.Z);
@@ -68,8 +61,6 @@ namespace z80vm.Tests
             machine.ADD(Reg8.A, Read8BitValue(2));
 
             Assert.False(machine.Flags.Read(Flag.C));
-            //Assert.True(machine.Flags.Read(Flag.H));
-            //Assert.True(machine.Flags.Read(Flag.N));
             Assert.False(machine.Flags.Read(Flag.PV));
             Assert.False(machine.Flags.Read(Flag.S));
             Assert.False(machine.Flags.Read(Flag.Z));
@@ -86,49 +77,6 @@ namespace z80vm.Tests
 
             Assert.Equal(false, machine.Flags.Read(Flag.N));
         }
-
-        //[Fact]
-        //public void Adding_2_8Bit_Values_Should_Set_The_S_Flag_When_The_Accumlator_Changes_From_Postive_To_Negative()
-        //{
-        //    var machine = CreateMachine();
-        //    machine.Registers.Set(Reg8.A, 127);
-        //    machine.ADD(Reg8.A, Read8BitValue(1));
-
-        //    Assert.Equal(true, machine.Flags.Read(Flag.S));
-        //}
-
-        //[Fact]
-        //public void Adding_2_8Bit_Values_Should_Clear_The_S_Flag_When_The_Accumlator_Doesnt_Changes_From_Postive_To_Negative()
-        //{
-        //    var machine = CreateMachine();
-        //    machine.Flags.Set(Flag.S);
-        //    machine.Registers.Set(Reg8.A, 100);
-        //    machine.ADD(Reg8.A, Read8BitValue(1));
-
-        //    Assert.Equal(false, machine.Flags.Read(Flag.S));
-        //}
-
-        //[Fact]
-        //public void Adding_2_8Bit_Values_Should_Set_The_Z_Flag_When_The_Total_Is_Zero()
-        //{
-        //    var machine = CreateMachine();
-        //    machine.Registers.Set(Reg8.A, 0);
-        //    machine.ADD(Reg8.A, Read8BitValue(0L));
-
-        //    Assert.Equal(true, machine.Flags.Read(Flag.Z));
-        //}
-
-        //[Fact]
-        //public void Adding_2_8Bit_Values_Should_Clear_The_Z_Flag_When_The_Total_Is_Not_Zero()
-        //{
-        //    var machine = CreateMachine();
-        //    machine.Registers.Set(Reg8.A, 0);
-        //    machine.Flags.Set(Flag.Z);
-
-        //    machine.ADD(Reg8.A, Read8BitValue(1));
-
-        //    Assert.Equal(false, machine.Flags.Read(Flag.Z));
-        //}
 
         [Theory]
         [InlineData(0b1111, 0b0001)]
@@ -153,56 +101,7 @@ namespace z80vm.Tests
 
             Assert.Equal(false, machine.Flags.Read(Flag.H));
         }
-
-
-        //[Theory]
-        //[InlineData(127, 1)]
-        //[InlineData(255, 1)]
-        //public void Adding_2_8Bit_Values_Should_Set_The_PV_Flag_When_There_Is_An_Overflow(byte lhs, byte rhs)
-        //{
-        //    var machine = CreateMachine();
-        //    machine.Registers.Set(Reg8.A, lhs);
-        //    machine.ADD(Reg8.A, Read8BitValue(rhs));
-
-        //    Assert.Equal(true, machine.Flags.Read(Flag.PV));
-        //}
-
-        //[Theory]
-        //[InlineData(120, 1)]
-        //public void Adding_2_8Bit_Values_Should_Not_Set_The_PV_Flag_When_There_Is_Not_An_Overflow(byte lhs, byte rhs)
-        //{
-        //    var machine = CreateMachine();
-        //    machine.Registers.Set(Reg8.A, lhs);
-        //    machine.Flags.Set(Flag.PV);
-
-        //    machine.ADD(Reg8.A, Read8BitValue(rhs));
-
-        //    Assert.Equal(false, machine.Flags.Read(Flag.PV));
-        //}
-
-        //[Theory]
-        //[InlineData(0b1111_1111, 2)]
-        //public void Adding_2_8Bit_Values_Should_Set_The_C_Flag_When_The_Register_Steps_Over_Zero(byte lhs, byte rhs)
-        //{
-        //    var machine = CreateMachine();
-        //    machine.Registers.Set(Reg8.A, lhs);
-        //    machine.ADD(Reg8.A, Read8BitValue(rhs));
-
-        //    Assert.Equal(true, machine.Flags.Read(Flag.C));
-        //}
-
-        //[Theory]
-        //[InlineData(1, 1)]
-        //public void Adding_2_8Bit_Values_Should_Clear_The_C_Flag_When_The_Register_DoesNot_Step_Over_Zero(byte lhs, byte rhs)
-        //{
-        //    var machine = CreateMachine();
-        //    machine.Registers.Set(Reg8.A, lhs);
-        //    machine.Flags.Set(Flag.C);
-
-        //    machine.ADD(Reg8.A, Read8BitValue(rhs));
-
-        //    Assert.Equal(false, machine.Flags.Read(Flag.C));
-        //}
+        
 
         [Fact]
         public void AddingTwo16BitRegistersShouldPutTheResultInTheFirstRegister()

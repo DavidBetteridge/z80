@@ -5,9 +5,9 @@ namespace z80vm.Tests
     public class FlagsEvaluatorTests
     {
         [Theory]
-        [InlineData(-100, 100)]
-        [InlineData(-100, 0)]
-        public void Set_The_S_Flag_When_The_Value_Changes_From_Negative_To_Positive(sbyte from, sbyte to)
+        [InlineData(100, -1)]
+        [InlineData(0, -10)]
+        public void Set_The_S_Flag_When_The_Value_Changes_From_Positive_To_Negative(sbyte from, sbyte to)
         {
             SetupEvalulator(out var fe, out var flags);
 
@@ -17,12 +17,12 @@ namespace z80vm.Tests
         }
 
         [Fact]
-        public void Clear_The_S_Flag_When_The_Value_Does_Not_Change_From_Negative_To_Positive()
+        public void Clear_The_S_Flag_When_The_Value_Does_Not_Change_From_Positive_To_Negative()
         {
             SetupEvalulator(out var fe, out var flags);
             flags.Set(Flag.S);
 
-            fe.Evalulate(flags, -100, -50);
+            fe.Evalulate(flags, 100, 50);
 
             Assert.False(flags.Read(Flag.S));
         }

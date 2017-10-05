@@ -13,6 +13,8 @@ namespace z80vm
         public Flags Flags { get; private set; }
         public Labels Labels { get; private set; }
 
+
+
         public Machine(IConditionValidator conditionValidator, IFlagsEvaluator flagsEvaluator)
         {
             this.Registers = new Registers();
@@ -36,6 +38,9 @@ namespace z80vm
             var valueToSubtract = op8.Resolve(this.Memory, this.Registers);
             var newValue = (byte)(currentValue - valueToSubtract);
             this.Registers.Set(Reg8.A, newValue);
+
+            this.flagsEvaluator.Evalulate(this.Flags, (sbyte)currentValue, (sbyte)newValue);
+
             this.Flags.Set(Flag.N);
         }
         #endregion
@@ -95,6 +100,7 @@ namespace z80vm
             this.Flags.Clear(Flag.N);
             this.Flags.Clear(Flag.PV);
         }
+
 
 
 
@@ -409,6 +415,49 @@ namespace z80vm
             swap(Reg16.HL, Reg16Shadow.HL);
         }
 
+        #region ADC
+        /// <summary>
+        /// Usage: The sum of the two operands plus the carry flag (0 or 1) is calculated, and the result is written back into the first operand.
+        /// Flags: The N flag is reset, P/V is interpreted as overflow. The rest of the flags is modified by definition. 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="op8"></param>
+        public void ADC(Reg8 a, op8 op8)
+        {
+            var currentValue = this.Registers.Read(Reg8.A);
+            var valueToAdd = op8.Resolve(this.Memory, this.Registers);
+            var newValue = (byte)(currentValue + valueToAdd);
+
+            if (this.Flags.Read(Flag.C))
+                newValue++;
+
+            this.Registers.Set(Reg8.A, newValue);
+
+            this.flagsEvaluator.Evalulate(this.Flags, (sbyte)currentValue, (sbyte)newValue);
+
+            this.Flags.Clear(Flag.N);
+        }
+
+        /// <summary>
+        /// Usage: The sum of the two operands plus the carry flag (0 or 1) is calculated, and the result is written back into the first operand.
+        /// Flags: The N flag is reset, P/V is interpreted as overflow. The rest of the flags is modified by definition. The H flag is undefined.
+        /// </summary>
+        /// <param name="operand1"></param>
+        /// <param name="operand2"></param>
+        public void ADC(Reg16 operand1, Reg16 operand2)
+        {
+            var currentValue = this.Registers.Read(operand1);
+            var valueToAdd = this.Registers.Read(operand2);
+            var newValue = (ushort)(currentValue + valueToAdd);
+
+            if (this.Flags.Read(Flag.C))
+                newValue++;
+
+            this.Registers.Set(operand1, newValue);
+        }
+
+
+        #endregion
 
         #region ADD
 
@@ -426,7 +475,7 @@ namespace z80vm
             this.Registers.Set(Reg8.A, newTotal);
 
             this.flagsEvaluator.Evalulate(this.Flags, (sbyte)currentValue, (sbyte)newTotal);
-    
+
             //It is set when there is a carry transfer from bit 3 to bit 4,
             if ((byte)(currentValue & 0b1111) + (byte)(valueToAdd & 0b1111) > 0b1111)
                 this.Flags.Set(Flag.H);

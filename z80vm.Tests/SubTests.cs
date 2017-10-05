@@ -26,6 +26,30 @@ namespace z80vm.Tests
             Assert.Equal(true, machine.Flags.Read(Flag.N));
         }
 
+        [Fact]
+        public void Subing_2_8Bit_Values_Should_Call_The_Flag_Evaluator_And_Set_All_The_Flags()
+        {
+            var callCount = 0;
+            var fe = new Moq.Mock<IFlagsEvaluator>();
+            var machine = new Machine(new ConditionValidator(), fe.Object);
+            fe.Setup(f => f.Evalulate(machine.Flags, 0, -2)).Callback(() =>
+            {
+                machine.Flags.Set(Flag.C);
+                machine.Flags.Set(Flag.PV);
+                machine.Flags.Set(Flag.S);
+                machine.Flags.Set(Flag.Z);
+                callCount++;
+            });
+
+            machine.SUB(Reg8.A, Read8BitValue(2));
+
+            Assert.True(machine.Flags.Read(Flag.C));
+            Assert.True(machine.Flags.Read(Flag.PV));
+            Assert.True(machine.Flags.Read(Flag.S));
+            Assert.True(machine.Flags.Read(Flag.Z));
+            Assert.Equal(1, callCount);
+        }
+
         private static Machine CreateMachine()
         {
             return new Machine(new ConditionValidator(), new FlagsEvaluator());
