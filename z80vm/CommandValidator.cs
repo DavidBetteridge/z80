@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace z80vm
 {
@@ -14,6 +15,9 @@ namespace z80vm
     /// </summary>
     public class CommandValidator : ICommandValidator
     {
+        /// <summary>
+        /// A cache of the allowed commands
+        /// </summary>
         private HashSet<string> lines;
 
         /// <summary>
@@ -23,6 +27,27 @@ namespace z80vm
         /// <param name="operand2">The value of the second parameter</param>
         /// <param name="command">The name of the command,  or the calling method is not supplied.  For example SUB</param>
         public void EnsureCommandIsValid(object operand1, object operand2, [System.Runtime.CompilerServices.CallerMemberName] string command = "")
+        {
+            LoadValidCommands();
+
+            command = command.ToLower() + " " + $"{operand1.ToString()},{operand2.ToString()}".ToLower();
+            if (!lines.Contains(command)) throw new InvalidOperationException("Invalid operand combination - " + command);
+        }
+
+        /// <summary>
+        /// Checks that the command is valid with this operands  Throws an exception if not
+        /// </summary>
+        /// <param name="operand1">The value of the first parameter</param>
+        /// <param name="command">The name of the command,  or the calling method is not supplied.  For example INC</param>
+        public void EnsureCommandIsValid(object operand1, [CallerMemberName] string command = "")
+        {
+            LoadValidCommands();
+
+            command = command.ToLower() + " " + $"{operand1.ToString()}".ToLower();
+            if (!lines.Contains(command)) throw new InvalidOperationException("Invalid operand combination - " + command);
+        }
+
+        private void LoadValidCommands()
         {
             if (lines == null)
             {
@@ -39,9 +64,6 @@ namespace z80vm
                     this.lines = new HashSet<string>(linesInFile);
                 }
             }
-
-            command = command.ToLower() + " " + $"{operand1.ToString()},{operand2.ToString()}".ToLower();
-            if (!lines.Contains(command)) throw new InvalidOperationException("Invalid operand combination - " + command);
         }
     }
 }

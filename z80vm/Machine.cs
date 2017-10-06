@@ -9,6 +9,7 @@ namespace z80vm
         private ICommandValidator commandValidator;
 
         public Registers Registers { get; private set; }
+
         public Memory Memory { get; private set; }
         public Flags Flags { get; private set; }
         public Labels Labels { get; private set; }
@@ -51,6 +52,22 @@ namespace z80vm
             this.commandValidator = new CommandValidator();
         }
 
+        #region INC
+        /// <summary>
+        /// Usage: Increments the value of the operand by one. 
+        /// Flags: 8-bit increments preserve the C flag, reset N, treat P/V as overflow and modify the others by definition
+        /// </summary>
+        /// <param name="op8"></param>
+        public void INC(op8 op8)
+        {
+            this.commandValidator.EnsureCommandIsValid(op8);
+
+            var currentValue = op8.Read(this.Memory, this.Registers);
+            var newValue = (byte)(currentValue + 1);
+            op8.Set(this.Memory, this.Registers, newValue);
+        }
+        #endregion
+
         #region SUB
         /// <summary>
         /// Usage: The value of the operand is subtracted from A, and the result is also written back to 
@@ -61,7 +78,7 @@ namespace z80vm
         public void SUB(Reg8 a, op8 op8)
         {
             var currentValue = this.Registers.Read(Reg8.A);
-            var valueToSubtract = op8.Resolve(this.Memory, this.Registers);
+            var valueToSubtract = op8.Read(this.Memory, this.Registers);
             var newValue = (byte)(currentValue - valueToSubtract);
             this.Registers.Set(Reg8.A, newValue);
 
@@ -453,7 +470,7 @@ namespace z80vm
             this.commandValidator.EnsureCommandIsValid(a, op8);
 
             var currentValue = this.Registers.Read(Reg8.A);
-            var valueToAdd = op8.Resolve(this.Memory, this.Registers);
+            var valueToAdd = op8.Read(this.Memory, this.Registers);
             var newValue = (byte)(currentValue + valueToAdd);
 
             if (this.Flags.Read(Flag.C))
@@ -504,7 +521,7 @@ namespace z80vm
             this.commandValidator.EnsureCommandIsValid(a, op8);
 
             var currentValue = this.Registers.Read(a);
-            var valueToAdd = op8.Resolve(this.Memory, this.Registers);
+            var valueToAdd = op8.Read(this.Memory, this.Registers);
             var newTotal = (byte)(currentValue + valueToAdd);
             this.Registers.Set(Reg8.A, newTotal);
 
@@ -639,7 +656,7 @@ namespace z80vm
 
         public void LD(Reg8 target, op8 source)
         {
-            var value = source.Resolve(this.Memory, this.Registers);
+            var value = source.Read(this.Memory, this.Registers);
             this.Registers.Set(target, value);
 
             if (source.Register.HasValue && (source.Register == Reg8.I || source.Register == Reg8.R))
@@ -704,7 +721,7 @@ namespace z80vm
         public void LD(Value operand1, op8 op8)
         {
             var memoryAddress = (ushort)(this.Registers.Read(operand1.Register) + operand1.Offset);
-            this.Memory.Set(memoryAddress, op8.Resolve(this.Memory, this.Registers));
+            this.Memory.Set(memoryAddress, op8.Read(this.Memory, this.Registers));
         }
 
         /// <summary>
@@ -721,7 +738,7 @@ namespace z80vm
 
         public void LD(ushort memoryAddress, op8 op8)
         {
-            this.Memory.Set(memoryAddress, op8.Resolve(this.Memory, this.Registers));
+            this.Memory.Set(memoryAddress, op8.Read(this.Memory, this.Registers));
         }
 
         #endregion

@@ -72,6 +72,7 @@
     <Compile Include="EXTests.cs" />
     <Compile Include="FlagsEvaluatorTests.cs" />
     <Compile Include="FlagTests.cs" />
+    <Compile Include="INCTests.cs" />
     <Compile Include="JPTests.cs" />
     <Compile Include="JRTests.cs" />
     <Compile Include="LabelTests.cs" />

@@ -17,14 +17,13 @@ Part Completed Commands
 ------------------
 ADD - needs to set flags for 16 bit operations
 ADC - needs to set flags for 16 bit operations
+INC - needs to set flags and support 16 bit operations
 LD - Support for flag P/V flag,  Restrictions
 SUB - Started
-
 
 Issues
 ------
 Remove label code from machine,  this is a feature of the assembler, not the machine
-Use C# 7 Pattern matching for some of the nasty switch states
 
 Bigger Bits
 -----------

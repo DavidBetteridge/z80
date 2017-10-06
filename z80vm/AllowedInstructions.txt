@@ -67,3 +67,25 @@ and (hl)
 and (ix+n)
 and (iy+n)
 and n
+
+inc a
+inc b
+inc c
+inc d
+inc e
+inc h
+inc l
+inc ixh
+inc ixl
+inc iyh
+inc iyl
+inc (hl)
+inc (ix+n)
+inc (iy+n)
+
+inc bc
+inc de
+inc hl
+inc ix
+inc iy
+inc sp

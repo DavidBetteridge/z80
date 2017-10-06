@@ -1,4 +1,6 @@
-﻿namespace z80vm
+﻿using System;
+
+namespace z80vm
 {
     public class op8
     {
@@ -30,7 +32,7 @@
         public Reg8? Register => this.register;
         public Value Value => this.value;
 
-        public byte Resolve(Memory memory, Registers registers)
+        public byte Read(Memory memory, Registers registers)
         {
             if (immediate.HasValue)
                 return immediate.Value;
@@ -52,6 +54,18 @@
                 return value.ToString();
             else
                 return register.Value.ToString().ToLower();
+        }
+
+        public void Set(Memory memory, Registers registers, byte newValue)
+        {
+            if (immediate.HasValue)
+                throw new InvalidOperationException("Immediate values cannot be updated");
+            else if (memoryAddress != null)
+                memory.Set(memoryAddress.MemoryLocation, newValue);
+            else if (this.value != null)
+                memory.Set((ushort)(registers.Read(value.Register) + value.Offset), newValue);
+            else
+                registers.Set(this.register.Value, newValue);
         }
     }
 }
