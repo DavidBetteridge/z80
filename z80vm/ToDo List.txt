@@ -15,7 +15,7 @@ DIR
 
 Part Completed Commands
 ------------------
-ADD - needs to set flags for 16 bit operations,  Restrictions
+ADD - needs to set flags for 16 bit operations
 ADC - needs to set flags for 16 bit operations
 LD - Support for flag P/V flag,  Restrictions
 SUB - Started

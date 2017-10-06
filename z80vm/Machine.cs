@@ -4,8 +4,8 @@ namespace z80vm
 {
     public class Machine
     {
-        private readonly IConditionValidator conditionValidator;
-        private readonly IFlagsEvaluator flagsEvaluator;
+        private IConditionValidator conditionValidator;
+        private IFlagsEvaluator flagsEvaluator;
         private ICommandValidator commandValidator;
 
         public Registers Registers { get; private set; }
@@ -22,14 +22,32 @@ namespace z80vm
             this.commandValidator = commandValidator;
         }
 
-        public Machine(IConditionValidator conditionValidator, IFlagsEvaluator flagsEvaluator)
+        /// <summary>
+        /// Override the condition validator
+        /// </summary>
+        /// <param name="conditionValidator"></param>
+        public void SetConditionValidator(IConditionValidator conditionValidator)
+        {
+            this.conditionValidator = conditionValidator;
+        }
+
+        /// <summary>
+        /// Override the flags evaluator
+        /// </summary>
+        /// <param name="conditionValidator"></param>
+        public void SetFlagsEvaluator(IFlagsEvaluator flagsEvaluator)
+        {
+            this.flagsEvaluator = flagsEvaluator;
+        }
+
+        public Machine()
         {
             this.Registers = new Registers();
             this.Memory = new Memory();
             this.Flags = new Flags(this.Registers);
             this.Labels = new Labels();
-            this.conditionValidator = conditionValidator;
-            this.flagsEvaluator = flagsEvaluator;
+            this.conditionValidator = new ConditionValidator();
+            this.flagsEvaluator = new FlagsEvaluator();
             this.commandValidator = new CommandValidator();
         }
 

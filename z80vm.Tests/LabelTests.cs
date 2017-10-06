@@ -2,7 +2,7 @@
 
 namespace z80vm.Tests
 {
-    public class LabelTests
+    public class LabelTests : TestBase
     {
         [Fact]
         public void It_Should_Be_Possible_Define_And_Read_Back_A_Label()
@@ -41,9 +41,6 @@ namespace z80vm.Tests
             Assert.IsType(typeof(System.InvalidOperationException), exception);
         }
 
-        private static Machine CreateMachine()
-        {
-            return new Machine(new ConditionValidator(), new FlagsEvaluator());
-        }
+
     }
 }

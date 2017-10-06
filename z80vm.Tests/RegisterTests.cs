@@ -2,7 +2,7 @@
 
 namespace z80vm.Tests
 {
-    public class RegisterTests
+    public class RegisterTests : TestBase
     {
         [Theory]
         [InlineData(Reg16.AF, Reg8.A)]
@@ -121,11 +121,6 @@ namespace z80vm.Tests
             machine.Registers.Set(Reg16Shadow.BC, A_DIFFERENT_VALUE);
 
             Assert.Equal(ANY_VALUE, machine.Registers.Read(Reg16.BC));
-        }
-
-        private static Machine CreateMachine()
-        {
-            return new Machine(new ConditionValidator(), new FlagsEvaluator());
         }
     }
 }

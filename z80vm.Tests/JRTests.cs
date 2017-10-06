@@ -4,7 +4,7 @@ using Xunit;
 
 namespace z80vm.Tests
 {
-    public class JRTests
+    public class JRTests : TestBase
     {
         [Theory]
         [InlineData(100, 1100)]
@@ -13,8 +13,7 @@ namespace z80vm.Tests
         [InlineData(127, 1127)]
         public void TheProgramCounterShouldBeAdvancedByTheSuppliedValue(sbyte offset, ushort newAddress)
         {
-            var conditionValidator = new Moq.Mock<IConditionValidator>();
-            var machine = new Machine(conditionValidator.Object, new FlagsEvaluator());
+            var machine = CreateMachine();
             machine.Registers.Set(Reg16.PC, 1000);
 
             machine.JR(offset);
@@ -27,8 +26,7 @@ namespace z80vm.Tests
         [InlineData(0x0, -1)]
         public void AnErrorShouldNotBeReportedIfTheInstructionJumpsOutOfTheMemorySpace(ushort start, sbyte offset)
         {
-            var conditionValidator = new Moq.Mock<IConditionValidator>();
-            var machine = new Machine(conditionValidator.Object, new FlagsEvaluator());
+            var machine = CreateMachine();
             machine.Registers.Set(Reg16.PC, start);
 
             Assert.True(true);
@@ -37,10 +35,7 @@ namespace z80vm.Tests
         [Fact]
         public void TheJumpShouldHappenWhenTheConditionIsTrue()
         {
-            var conditionValidator = new Moq.Mock<IConditionValidator>();
-            conditionValidator.Setup(s => s.IsTrue(It.IsAny<Flags>(), It.IsAny<Condition>())).Returns(true);
-
-            var machine = new Machine(conditionValidator.Object, new FlagsEvaluator());
+            var machine = CreateMachineWhereAllConditionsAreValid();
             machine.Registers.Set(Reg16.PC, 1000);
 
             machine.JR(Condition.c, 1);
@@ -55,10 +50,8 @@ namespace z80vm.Tests
         [InlineData(Condition.nz)]
         public void TheJumpShouldNotHappenWhenTheConditionIsFalse(Condition condition)
         {
-            var conditionValidator = new Moq.Mock<IConditionValidator>();
-            conditionValidator.Setup(s => s.IsTrue(It.IsAny<Flags>(), condition)).Returns(false);
+            var machine = CreateMachineWhereAllConditionsAreInvalid();
 
-            var machine = new Machine(conditionValidator.Object, new FlagsEvaluator());
             machine.Registers.Set(Reg16.PC, 1000);
 
             machine.JR(condition, 1);
@@ -73,8 +66,7 @@ namespace z80vm.Tests
         [InlineData(Condition.po)]
         public void AnErrorShouldBeReportedIfAnUnsupportedConditionIsSupplied(Condition condition)
         {
-            var conditionValidator = new Moq.Mock<IConditionValidator>();
-            var machine = new Machine(conditionValidator.Object, new FlagsEvaluator());
+            var machine = CreateMachine();
 
             var exception = Record.Exception(() => machine.JR(condition, 1));
             Assert.IsType(typeof(System.InvalidOperationException), exception);

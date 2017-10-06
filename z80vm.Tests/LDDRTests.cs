@@ -2,7 +2,7 @@
 
 namespace z80vm.Tests
 {
-    public class LDDRTests
+    public class LDDRTests : TestBase
     {
         [Fact]
         public void BC_Should_Be_Set_To_Zero()
@@ -82,10 +82,6 @@ namespace z80vm.Tests
             Assert.Equal(false, machine.Flags.Read(flag));
         }
 
-        private static Machine CreateMachine()
-        {
-            var conditionValidator = new Moq.Mock<IConditionValidator>();
-            return new Machine(conditionValidator.Object, new FlagsEvaluator());
-        }
+
     }
 }

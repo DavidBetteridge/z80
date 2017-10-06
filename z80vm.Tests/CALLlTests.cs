@@ -2,7 +2,7 @@
 
 namespace z80vm.Tests
 {
-    public class CallTests
+    public class CALLlTests : TestBase
     {
         [Fact]
         public void The_Address_Of_The_Instruction_Immediately_Following_The_Call_Is_Saved_To_The_Stack()
@@ -54,7 +54,7 @@ namespace z80vm.Tests
             const string ANY_LABEL = "Subroutine";
             const Condition ANY_CONDITION = Condition.c;
 
-            var machine = new Machine(new FakeAlwaysTrueConditionValidator(), new FlagsEvaluator());
+            var machine = CreateMachineWhereAllConditionsAreValid();
             machine.Labels.Set(ANY_LABEL, ANY_MEMORY_ADDRESS);
             machine.Registers.Set(Reg16.PC, 0x1000);
 
@@ -86,7 +86,8 @@ namespace z80vm.Tests
             const ushort ANY_MEMORY_ADDRESS = 0x0000;
             const string ANY_LABEL = "Subroutine";
 
-            var machine = new Machine(new FakeAlwaysFalseConditionValidator(), new FlagsEvaluator());
+            var machine = CreateMachineWhereAllConditionsAreInvalid();
+
             machine.Registers.Set(Reg16.SP, 0xF000); //Need to lower the SP so we can POP without first PUSHing
             machine.Labels.Set(ANY_LABEL, ANY_MEMORY_ADDRESS);
             machine.Registers.Set(Reg16.PC, 0x1000);
@@ -98,26 +99,7 @@ namespace z80vm.Tests
             Assert.NotEqual(0x1003, machine.Registers.Read(Reg16.BC));
         }
 
-        private static Machine CreateMachine()
-        {
-            return new Machine(new ConditionValidator(), new FlagsEvaluator());
-        }
 
-        private class FakeAlwaysTrueConditionValidator : IConditionValidator
-        {
-            public bool IsTrue(Flags flags, Condition condition)
-            {
-                return true;
-            }
-        }
-
-        private class FakeAlwaysFalseConditionValidator : IConditionValidator
-        {
-            public bool IsTrue(Flags flags, Condition condition)
-            {
-                return false;
-            }
-        }
     }
 }
 

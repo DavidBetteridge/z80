@@ -1,18 +1,8 @@
-﻿using Moq;
-using Xunit;
-using static z80vm.Value;
+﻿using Xunit;
 namespace z80vm.Tests
 {
-    public class JPTests
+    public class JPTests : TestBase
     {
-        //        JP and JR
-        //Syntax: jp/jr label or(hl)/(ix)/(iy) (unconditional) or jp/jr condition, label (conditional)
-        //When arriving at any of these intructions, execution is immediately continued from the location denoted by the label given
-        //(you can use numbers instead of labels of course). If the operand is a register reference(e.g.jp (hl)), 
-        //it means that the value of the register will be loaded into PC directly; these jumps can be unconditional only.
-        //Otherwise, if the condition is not fulfilled, execution continues as if there wasn’t any jump.The flags are preserved in all the cases.The conditions can be the following:
-
-
         [Fact]
         public void CheckThatTheProgramCounterIsChangedToTheSuppliedMemoryAddress()
         {
@@ -67,10 +57,8 @@ namespace z80vm.Tests
         {
             const Condition ANY_CONDITION = Condition.c;
 
-            var alwaysTrue = new Mock<IConditionValidator>();
-            alwaysTrue.Setup(v => v.IsTrue(It.IsAny<Flags>(), ANY_CONDITION)).Returns(true);
+            var machine = CreateMachineWhereAllConditionsAreValid();
 
-            var machine = new Machine(alwaysTrue.Object, new FlagsEvaluator());
             machine.Registers.Set(Reg16.PC, 0x1000);
             machine.JP(ANY_CONDITION, 0xAAAA);
 
@@ -82,10 +70,7 @@ namespace z80vm.Tests
         {
             const Condition ANY_CONDITION = Condition.c;
 
-            var alwaysFalse = new Mock<IConditionValidator>();
-            alwaysFalse.Setup(v => v.IsTrue(It.IsAny<Flags>(), ANY_CONDITION)).Returns(false);
-
-            var machine = new Machine(alwaysFalse.Object, new FlagsEvaluator());
+            var machine = CreateMachineWhereAllConditionsAreInvalid();
             machine.Registers.Set(Reg16.PC, 0x1000);
             machine.JP(ANY_CONDITION, 0xAAAA);
 
@@ -97,10 +82,8 @@ namespace z80vm.Tests
         {
             const Condition ANY_CONDITION = Condition.c;
 
-            var alwaysTrue = new Mock<IConditionValidator>();
-            alwaysTrue.Setup(v => v.IsTrue(It.IsAny<Flags>(), ANY_CONDITION)).Returns(true);
+            var machine = CreateMachineWhereAllConditionsAreValid();
 
-            var machine = new Machine(alwaysTrue.Object, new FlagsEvaluator());
 
             machine.Labels.Set("ROUTINE", 0xBBBB);
             machine.Registers.Set(Reg16.PC, 0x1000);
@@ -114,10 +97,7 @@ namespace z80vm.Tests
         {
             const Condition ANY_CONDITION = Condition.c;
 
-            var alwaysFalse = new Mock<IConditionValidator>();
-            alwaysFalse.Setup(v => v.IsTrue(It.IsAny<Flags>(), ANY_CONDITION)).Returns(false);
-
-            var machine = new Machine(alwaysFalse.Object, new FlagsEvaluator());
+            var machine = CreateMachineWhereAllConditionsAreInvalid();
 
             machine.Labels.Set("ROUTINE", 0xBBBB);
             machine.Registers.Set(Reg16.PC, 0x1000);
@@ -126,6 +106,5 @@ namespace z80vm.Tests
             Assert.NotEqual(0xBBBB, machine.Registers.Read(Reg16.PC));
         }
 
-        private Machine CreateMachine() => new Machine(new ConditionValidator(), new FlagsEvaluator());
     }
 }

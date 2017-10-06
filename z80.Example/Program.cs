@@ -9,9 +9,7 @@ namespace z80.Example
         static void Main(string[] args)
         {
             // Prepare the machine
-            var conditionValidator = new ConditionValidator();
-            var flagsEvaluator = new FlagsEvaluator();
-            var machine = new Machine(conditionValidator, flagsEvaluator);
+            var machine = new Machine();
 
             // Load an immediate value into a register
             machine.LD(Reg8.A, Read8BitValue(100));

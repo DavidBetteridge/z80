@@ -5,16 +5,15 @@ using Moq;
 
 namespace z80vm.Tests
 {
-    public class AddTests
+    public class ADDTests : TestBase
     {
+        /******************************************************************************************************************
+        *  Tests for the 8 BIT Version of this command
+        *******************************************************************************************************************/
         [Fact]
         public void AnErrorIsReportedIfThe8BITCommandIsNotValid()
         {
-            // Setup the machine so that all commands are invalid
-            var machine = CreateMachine();
-            var commandValidator = new Moq.Mock<ICommandValidator>();
-            commandValidator.Setup(a => a.EnsureCommandIsValid(It.IsAny<object>(), It.IsAny<object>(), It.IsAny<string>())).Throws(new System.InvalidOperationException("Oh no"));
-            machine.SetCommandValidator(commandValidator.Object);
+            var machine = CreateMachineWhereAllCommandsAreInvalid();
 
             var exception = Record.Exception(() => machine.ADD(Reg8.B, Read8BitValue(1)));
             Assert.IsType(typeof(System.InvalidOperationException), exception);
@@ -35,9 +34,10 @@ namespace z80vm.Tests
         [Fact]
         public void Adding_2_8Bit_Values_Should_Call_The_Flag_Evaluator_And_Set_All_The_Flags()
         {
+            var machine = CreateMachine();
+
             var callCount = 0;
             var fe = new Moq.Mock<IFlagsEvaluator>();
-            var machine = new Machine(new ConditionValidator(), fe.Object);
             fe.Setup(f => f.Evalulate(machine.Flags, 0, 2)).Callback(() => 
             {
                 machine.Flags.Set(Flag.C);
@@ -46,6 +46,7 @@ namespace z80vm.Tests
                 machine.Flags.Set(Flag.Z);
                 callCount++;
             });
+            machine.SetFlagsEvaluator(fe.Object);
 
             machine.ADD(Reg8.A, Read8BitValue(2));
 
@@ -60,9 +61,10 @@ namespace z80vm.Tests
         [Fact]
         public void Adding_2_8Bit_Values_Should_Call_The_Flag_Evaluator_And_Clear_All_The_Flags()
         {
+            var machine = CreateMachine();
+
             var callCount = 0;
             var fe = new Moq.Mock<IFlagsEvaluator>();
-            var machine = new Machine(new ConditionValidator(), fe.Object);
             fe.Setup(f => f.Evalulate(machine.Flags, 0, 2)).Callback(() =>
             {
                 machine.Flags.Clear(Flag.C);
@@ -71,6 +73,7 @@ namespace z80vm.Tests
                 machine.Flags.Clear(Flag.Z);
                 callCount++;
             });
+            machine.SetFlagsEvaluator(fe.Object);
 
             machine.ADD(Reg8.A, Read8BitValue(2));
 
@@ -185,9 +188,5 @@ namespace z80vm.Tests
             var ex = Assert.Throws<InvalidOperationException>(() => machine.ADD(register1, register2));
         }
 
-        private static Machine CreateMachine()
-        {
-            return new Machine(new ConditionValidator(), new FlagsEvaluator());
-        }
     }
 }

@@ -3,7 +3,7 @@ using Xunit;
 
 namespace z80vm.Tests
 {
-    public class RetTests
+    public class RETTests : TestBase
     {
         [Fact]
         public void TheAddressOfNextInstructionShouldBeSetToTheWordOnTheTopOfStack()
@@ -37,8 +37,8 @@ namespace z80vm.Tests
             const Condition ANY_CONDITION = Condition.c;
             const ushort ANY_ADDRESS = 0xABCD;
 
-            var conditionValidator = new FakeAlwaysTrueConditionValidator();
-            var machine = new Machine(conditionValidator, new FlagsEvaluator());
+            var machine = CreateMachineWhereAllConditionsAreValid();
+
             machine.Registers.Set(Reg16.BC, ANY_ADDRESS);
             machine.PUSH(Reg16.BC);
 
@@ -57,8 +57,8 @@ namespace z80vm.Tests
             const ushort ANY_ADDRESS = 0xABCD;
             const ushort ANY_OTHER_ADDRESS = 0xEEEE;
 
-            var conditionValidator = new FakeAlwaysFalseConditionValidator();
-            var machine = new Machine(conditionValidator, new FlagsEvaluator());
+            var machine = CreateMachineWhereAllConditionsAreInvalid();
+
             machine.Registers.Set(Reg16.BC, ANY_ADDRESS);
             machine.Registers.Set(Reg16.PC, ANY_OTHER_ADDRESS);
             machine.PUSH(Reg16.BC);
@@ -70,25 +70,6 @@ namespace z80vm.Tests
             Assert.Equal(ANY_OTHER_ADDRESS, machine.Registers.Read(Reg16.PC));
         }
 
-        private class FakeAlwaysTrueConditionValidator : IConditionValidator
-        {
-            public bool IsTrue(Flags flags, Condition condition)
-            {
-                return true;
-            }
-        }
 
-        private class FakeAlwaysFalseConditionValidator : IConditionValidator
-        {
-            public bool IsTrue(Flags flags, Condition condition)
-            {
-                return false;
-            }
-        }
-
-        private static Machine CreateMachine()
-        {
-            return new Machine(new ConditionValidator(), new FlagsEvaluator());
-        }
     }
 }

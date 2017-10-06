@@ -2,7 +2,7 @@
 
 namespace z80vm.Tests
 {
-    public class FlagTests
+    public class FlagTests : TestBase
     {
         [Theory]
         [InlineData(Flag.C)]
@@ -98,9 +98,6 @@ namespace z80vm.Tests
             Assert.Equal(true, machine.Flags.Read(flag));
         }
 
-        private static Machine CreateMachine()
-        {
-            return new Machine(new ConditionValidator(), new FlagsEvaluator());
-        }
+
     }
 }

@@ -63,11 +63,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ADCTests.cs" />
-    <Compile Include="AddTests.cs" />
-    <Compile Include="CallTests.cs" />
+    <Compile Include="ADDTests.cs" />
+    <Compile Include="CALLlTests.cs" />
     <Compile Include="ConditionValidatorTests.cs" />
     <Compile Include="DJNZTests.cs" />
-    <Compile Include="ExchangeTests.cs" />
+    <Compile Include="EXXTests.cs" />
+    <Compile Include="EXTests.cs" />
     <Compile Include="FlagsEvaluatorTests.cs" />
     <Compile Include="FlagTests.cs" />
     <Compile Include="JPTests.cs" />
@@ -81,10 +82,11 @@
     <Compile Include="MemoryTests.cs" />
     <Compile Include="op8Tests.cs" />
     <Compile Include="RegisterTests.cs" />
-    <Compile Include="RetTests.cs" />
+    <Compile Include="RETTests.cs" />
     <Compile Include="StackTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SubTests.cs" />
+    <None Include="SUBTestscs" />
+    <Compile Include="TestBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

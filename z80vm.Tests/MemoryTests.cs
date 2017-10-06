@@ -2,7 +2,7 @@
 
 namespace z80vm.Tests
 {
-    public class MemoryTests
+    public class MemoryTests : TestBase
     {
         [Theory]
         [InlineData(0)]
@@ -30,9 +30,5 @@ namespace z80vm.Tests
             Assert.Equal(value, machine.Memory.ReadWord(memoryAddress));
         }
 
-        private static Machine CreateMachine()
-        {
-            return new Machine(new ConditionValidator(), new FlagsEvaluator());
-        }
     }
 }

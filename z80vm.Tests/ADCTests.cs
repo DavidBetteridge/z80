@@ -1,20 +1,17 @@
-﻿using Moq;
-using Xunit;
+﻿using Xunit;
 using static z80vm.op8;
-using static z80vm.Value;
 
 namespace z80vm.Tests
 {
-    public class ADCTests
+    public class ADCTests : TestBase
     {
+        /******************************************************************************************************************
+        *  Tests for the 8 BIT Version of this command
+        *******************************************************************************************************************/
         [Fact]
         public void AnErrorIsReportedIfThe8BITCommandIsNotValid()
         {
-            // Setup the machine so that all commands are invalid
-            var machine = CreateMachine();
-            var commandValidator = new Moq.Mock<ICommandValidator>();
-            commandValidator.Setup(a => a.EnsureCommandIsValid(It.IsAny<object>(), It.IsAny<object>(), It.IsAny<string>())).Throws(new System.InvalidOperationException("Oh no"));
-            machine.SetCommandValidator(commandValidator.Object);
+            var machine = CreateMachineWhereAllCommandsAreInvalid();
 
             var exception = Record.Exception(() => machine.ADC(Reg8.B, Read8BitValue(1)));
             Assert.IsType(typeof(System.InvalidOperationException), exception);
@@ -58,9 +55,10 @@ namespace z80vm.Tests
         [Fact]
         public void The_Flag_Evalulator_Should_Be_Called_And_All_Flags_Set()
         {
+            var machine = CreateMachine();
+
             var callCount = 0;
             var fe = new Moq.Mock<IFlagsEvaluator>();
-            var machine = new Machine(new ConditionValidator(), fe.Object);
             fe.Setup(f => f.Evalulate(machine.Flags, 0, 2)).Callback(() =>
             {
                 machine.Flags.Set(Flag.C);
@@ -69,6 +67,7 @@ namespace z80vm.Tests
                 machine.Flags.Set(Flag.Z);
                 callCount++;
             });
+            machine.SetFlagsEvaluator(fe.Object);
 
             machine.ADC(Reg8.A, Read8BitValue(2));
 
@@ -82,9 +81,10 @@ namespace z80vm.Tests
         [Fact]
         public void The_Flag_Evalulator_Should_Be_Called_And_All_Flags_Cleared()
         {
+            var machine = CreateMachine();
+
             var callCount = 0;
             var fe = new Moq.Mock<IFlagsEvaluator>();
-            var machine = new Machine(new ConditionValidator(), fe.Object);
             fe.Setup(f => f.Evalulate(machine.Flags, 0, 3)).Callback(() =>
             {
                 machine.Flags.Clear(Flag.C);
@@ -98,6 +98,8 @@ namespace z80vm.Tests
             machine.Flags.Set(Flag.S);
             machine.Flags.Set(Flag.Z);
 
+            machine.SetFlagsEvaluator(fe.Object);
+
             machine.ADC(Reg8.A, Read8BitValue(2));
 
             Assert.False(machine.Flags.Read(Flag.C));
@@ -107,20 +109,17 @@ namespace z80vm.Tests
             Assert.Equal(1, callCount);
         }
 
-        //---------------------------
+        /********************************************************************************************************************
+         *  Tests for the 16 BIT Version of this command
+         *******************************************************************************************************************/
         [Fact]
         public void AnErrorIsReportedIfThe16BITCommandIsNotValid()
         {
-            // Setup the machine so that all commands are invalid
-            var machine = CreateMachine();
-            var commandValidator = new Moq.Mock<ICommandValidator>();
-            commandValidator.Setup(a => a.EnsureCommandIsValid(It.IsAny<object>(), It.IsAny<object>(), It.IsAny<string>())).Throws(new System.InvalidOperationException("Oh no"));
-            machine.SetCommandValidator(commandValidator.Object);
+            var machine = CreateMachineWhereAllCommandsAreInvalid();
 
             var exception = Record.Exception(() => machine.ADC(Reg16.AF, Reg16.AF));
             Assert.IsType(typeof(System.InvalidOperationException), exception);
         }
-
 
         [Theory]
         [InlineData(1000, 1001)]
@@ -148,9 +147,6 @@ namespace z80vm.Tests
             Assert.Equal(expectedValue, machine.Registers.Read(Reg16.HL));
         }
 
-        private static Machine CreateMachine()
-        {
-            return new Machine(new ConditionValidator(), new FlagsEvaluator());
-        }
+
     }
 }

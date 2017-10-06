@@ -2,7 +2,7 @@
 
 namespace z80vm.Tests
 {
-    public class DJNZTests
+    public class DJNZTests : TestBase
     {
         [Fact]
         public void BShouldBeDecreasedByOne()
@@ -52,10 +52,5 @@ namespace z80vm.Tests
             Assert.Equal(1000, machine.Registers.Read(Reg16.PC));
         }
 
-        private static Machine CreateMachine()
-        {
-            var conditionValidator = new Moq.Mock<IConditionValidator>();
-            return new Machine(conditionValidator.Object, new FlagsEvaluator());
-        }
     }
 }

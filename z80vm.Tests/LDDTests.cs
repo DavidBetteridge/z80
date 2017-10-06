@@ -2,7 +2,7 @@
 
 namespace z80vm.Tests
 {
-    public class LDDTests
+    public class LDDTests : TestBase
     {
         [Fact]
         public void The_Contents_At_HL_Should_Be_Copied_To_The_Contents_Of_DE()
@@ -110,10 +110,5 @@ namespace z80vm.Tests
             Assert.Equal(false, machine.Flags.Read(Flag.N));
         }
 
-        private static Machine CreateMachine()
-        {
-            var conditionValidator = new Moq.Mock<IConditionValidator>();
-            return new Machine(conditionValidator.Object, new FlagsEvaluator());
-        }
     }
 }

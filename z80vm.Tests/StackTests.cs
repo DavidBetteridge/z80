@@ -2,7 +2,7 @@
 
 namespace z80vm.Tests
 {
-    public class StackTests
+    public class StackTests : TestBase
     {
         [Fact]
         public void OnANewMachineTheSPRegisterShouldContainTheHighestPossibleMemoryAddress()
@@ -86,9 +86,6 @@ namespace z80vm.Tests
 
             Assert.Equal(0xAAAA, machine.Registers.Read(register));
         }
-        private static Machine CreateMachine()
-        {
-            return new Machine(new ConditionValidator(), new FlagsEvaluator());
-        }
+
     }
 }

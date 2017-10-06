@@ -3,7 +3,7 @@ using static z80vm.Value;
 
 namespace z80vm.Tests
 {
-    public class op8Tests
+    public class op8Tests : TestBase
     {
         [Theory]
         [InlineData(Reg8.A, 100, "a")]
@@ -81,9 +81,6 @@ namespace z80vm.Tests
             Assert.Equal(value, actualValue);
             Assert.Equal(textVersion, op.ToString());
         }
-        private static Machine CreateMachine()
-        {
-            return new Machine(new ConditionValidator(), new FlagsEvaluator());
-        }
+
     }
 }

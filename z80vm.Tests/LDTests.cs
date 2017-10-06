@@ -5,7 +5,7 @@ using static z80vm.op8;
 
 namespace z80vm.Tests
 {
-    public class LDTests
+    public class LDTests : TestBase
     {
         //*************************************  8-BIT COMBINATIONS ************************************************
 
@@ -267,9 +267,5 @@ namespace z80vm.Tests
             Assert.Equal(currentValue, machine.Registers.Read(Reg8.B));
         }
 
-        private static Machine CreateMachine()
-        {
-            return new Machine(new ConditionValidator(), new FlagsEvaluator());
-        }
     }
 }
