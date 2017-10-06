@@ -2,7 +2,7 @@
 
 namespace z80vm.Tests
 {
-    public class CALLlTests : TestBase
+    public class CALLTests : TestBase
     {
         [Fact]
         public void The_Address_Of_The_Instruction_Immediately_Following_The_Call_Is_Saved_To_The_Stack()
