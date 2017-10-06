@@ -64,7 +64,8 @@
   <ItemGroup>
     <Compile Include="ADCTests.cs" />
     <Compile Include="ADDTests.cs" />
-    <Compile Include="CALLlTests.cs" />
+    <Compile Include="CALLTests.cs" />
+    <Compile Include="CommandValidatorTests.cs" />
     <Compile Include="ConditionValidatorTests.cs" />
     <Compile Include="DJNZTests.cs" />
     <Compile Include="EXXTests.cs" />

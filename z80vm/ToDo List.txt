@@ -20,7 +20,6 @@ ADC - needs to set flags for 16 bit operations
 LD - Support for flag P/V flag,  Restrictions
 SUB - Started
 
-I think CommandValidator will need it's own unit tests,  plus some caching
 
 Issues
 ------
