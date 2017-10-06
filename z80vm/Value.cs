@@ -8,6 +8,10 @@
             MemoryLocation = memoryLocation;
         }
 
+        /// <summary>
+        /// Returns the text version of this op code used for command validation.
+        /// </summary>
+        /// <returns></returns>
         public override string ToString() => "(nn)";
     }
 
@@ -33,6 +37,11 @@
             return new MemoryAddress(memoryLocation);
         }
 
+        /// <summary>
+        /// Returns the text version of this op code used for command validation.  For example (SP+n) .
+        /// Note it returns 'n' not the actual number
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             if (Offset == 0)

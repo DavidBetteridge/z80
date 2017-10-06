@@ -19,29 +19,17 @@ namespace z80vm.Tests
         }
 
         [Theory]
-        [InlineData(Reg8.A,0,1)]
-        [InlineData(Reg8.B,100,101)]
-        public void TheValueOfTheOperandRegisterShouldBeIncrementedByOne(Reg8 register, byte startingValue,  byte expectedValue)
+        [InlineData(0,1)]
+        [InlineData(100,101)]
+        public void TheValueOfTheOperandShouldBeIncrementedByOne(byte startingValue,  byte expectedValue)
         {
-            var machine = CreateMachine();
-            machine.Registers.Set(register, startingValue);
+            var machine = CreateMachineWhereAllCommandsAreValid();
+            var operand = new Moq.Mock<Iop8>();
+            operand.Setup(o => o.Read(machine.Memory, machine.Registers)).Returns(startingValue);
 
-            machine.INC(Read8BitValue(register));
+            machine.INC(operand.Object);
 
-            Assert.Equal(expectedValue, machine.Registers.Read(register));
-        }
-
-        [Theory]
-        [InlineData(Reg16.HL, 0xFFFF, 0, 1)]
-        public void TheValueHeldInTheReferencedMemoryShouldBeIncrementedByOne(Reg16 register, ushort memoryAddress, byte startingValue, byte expectedValue)
-        {
-            var machine = CreateMachine();
-            machine.Memory.Set(memoryAddress, startingValue);
-            machine.Registers.Set(register, memoryAddress);
-
-            machine.INC(Read8BitValue(valueAt(register)));
-
-            Assert.Equal(expectedValue, machine.Memory.ReadByte(memoryAddress));
+            operand.Verify(o => o.Set(machine.Memory, machine.Registers, expectedValue), Moq.Times.Once);
         }
     }
 }

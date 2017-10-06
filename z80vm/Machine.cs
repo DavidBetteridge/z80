@@ -58,7 +58,7 @@ namespace z80vm
         /// Flags: 8-bit increments preserve the C flag, reset N, treat P/V as overflow and modify the others by definition
         /// </summary>
         /// <param name="op8"></param>
-        public void INC(op8 op8)
+        public void INC(Iop8 op8)
         {
             this.commandValidator.EnsureCommandIsValid(op8);
 

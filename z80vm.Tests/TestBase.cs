@@ -33,6 +33,20 @@ namespace z80vm.Tests
             return machine;
         }
 
+        /// <summary>
+        /// Creates a machine where all operands supplied for a command will be classed as valid.
+        /// </summary>
+        /// <returns></returns>
+        protected Machine CreateMachineWhereAllCommandsAreValid()
+        {
+            // Setup the machine so that all commands are valid
+            var machine = CreateMachine();
+            var commandValidator = new Moq.Mock<ICommandValidator>();
+            commandValidator.Setup(a => a.EnsureCommandIsValid(It.IsAny<object>(), It.IsAny<object>(), It.IsAny<string>()));
+            machine.SetCommandValidator(commandValidator.Object);
+
+            return machine;
+        }
 
         /// <summary>
         /// Creates a machine where regardless of the current flag state,  all conditions will evalulate to False
