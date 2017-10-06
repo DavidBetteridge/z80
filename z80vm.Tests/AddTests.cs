@@ -1,11 +1,25 @@
 ﻿using Xunit;
 using System;
 using static z80vm.op8;
+using Moq;
 
 namespace z80vm.Tests
 {
     public class AddTests
     {
+        [Fact]
+        public void AnErrorIsReportedIfThe8BITCommandIsNotValid()
+        {
+            // Setup the machine so that all commands are invalid
+            var machine = CreateMachine();
+            var commandValidator = new Moq.Mock<ICommandValidator>();
+            commandValidator.Setup(a => a.EnsureCommandIsValid(It.IsAny<object>(), It.IsAny<object>(), It.IsAny<string>())).Throws(new System.InvalidOperationException("Oh no"));
+            machine.SetCommandValidator(commandValidator.Object);
+
+            var exception = Record.Exception(() => machine.ADD(Reg8.B, Read8BitValue(1)));
+            Assert.IsType(typeof(System.InvalidOperationException), exception);
+        }
+
         [Theory]
         [InlineData(100, 101)]
         [InlineData(0, 1)]
@@ -101,7 +115,20 @@ namespace z80vm.Tests
 
             Assert.Equal(false, machine.Flags.Read(Flag.H));
         }
-        
+
+
+        [Fact]
+        public void AnErrorIsReportedIfThe16BITCommandIsNotValid()
+        {
+            // Setup the machine so that all commands are invalid
+            var machine = CreateMachine();
+            var commandValidator = new Moq.Mock<ICommandValidator>();
+            commandValidator.Setup(a => a.EnsureCommandIsValid(It.IsAny<object>(), It.IsAny<object>(), It.IsAny<string>())).Throws(new System.InvalidOperationException("Oh no"));
+            machine.SetCommandValidator(commandValidator.Object);
+
+            var exception = Record.Exception(() => machine.ADD(Reg16.HL, Reg16.BC));
+            Assert.IsType(typeof(System.InvalidOperationException), exception);
+        }
 
         [Fact]
         public void AddingTwo16BitRegistersShouldPutTheResultInTheFirstRegister()

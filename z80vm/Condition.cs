@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace z80vm
+﻿namespace z80vm
 {
     public enum Condition
     {
@@ -45,9 +41,5 @@ namespace z80vm
         /// parity/overflow is not set
         /// </summary>
         po
-    }
-    public class Conditions
-    {
-
     }
 }

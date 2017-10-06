@@ -4,7 +4,6 @@ namespace z80vm
 {
     public static class Extensions
     {
-
         /// <summary>
         /// Extracts the high order byte from the word
         /// </summary>

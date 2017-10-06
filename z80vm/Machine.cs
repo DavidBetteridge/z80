@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.IO;
-using System.Reflection;
 
 namespace z80vm
 {
@@ -486,6 +483,8 @@ namespace z80vm
         /// <param name="op8"></param>
         public void ADD(Reg8 a, op8 op8)
         {
+            this.commandValidator.EnsureCommandIsValid(a, op8);
+
             var currentValue = this.Registers.Read(a);
             var valueToAdd = op8.Resolve(this.Memory, this.Registers);
             var newTotal = (byte)(currentValue + valueToAdd);
@@ -511,33 +510,7 @@ namespace z80vm
         /// <param name="reg2"></param>
         public void ADD(Reg16 reg1, Reg16 reg2)
         {
-            switch (reg1)
-            {
-                case Reg16.HL:
-                case Reg16.IX:
-                case Reg16.IY:
-                    break;
-
-                default:
-                    throw new InvalidOperationException();
-            }
-
-            switch (reg2)
-            {
-                case Reg16.AF:
-                case Reg16.PC:
-                    throw new InvalidOperationException();
-            }
-
-            if ((reg1 == Reg16.HL && reg2 == Reg16.IX) ||
-                (reg1 == Reg16.HL && reg2 == Reg16.IY) ||
-                (reg1 == Reg16.IX && reg2 == Reg16.HL) ||
-                (reg1 == Reg16.IX && reg2 == Reg16.IY) ||
-                (reg1 == Reg16.IY && reg2 == Reg16.HL) ||
-                (reg1 == Reg16.IY && reg2 == Reg16.IX))
-            {
-                throw new InvalidOperationException();
-            }
+            this.commandValidator.EnsureCommandIsValid(reg1, reg2);
 
             var value1 = this.Registers.Read(reg1);
             var value2 = this.Registers.Read(reg2);

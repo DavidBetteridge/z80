@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace z80vm
+﻿namespace z80vm
 {
     public class op8
     {
