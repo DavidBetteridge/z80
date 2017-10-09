@@ -22,6 +22,14 @@ INC - needs to set flags and support 16 bit operations
 NEG - needs to set flags
 LD - Support for flag P/V flag,  Restrictions
 SUB - Started
+DAA - Started
+
+Parser
+------
+Support Prefixes (DD, CB, ED and DDCB)
+Support Labels
+Error handling,  invalid commands,  invalid operands
+Cache lookup table
 
 Issues
 ------
@@ -30,8 +38,8 @@ Remove label code from machine,  this is a feature of the assembler, not the mac
 
 Bigger Bits
 -----------
-Parser
 Memory Visualisation
 Front End
-Convert commands to opcodes so that can be stored in memory
+Runner 
+Debugger
 Interupts
