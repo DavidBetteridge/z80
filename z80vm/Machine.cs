@@ -14,6 +14,21 @@ namespace z80vm
         public Flags Flags { get; private set; }
         public Labels Labels { get; private set; }
 
+        #region DAA
+        /// <summary>
+        /// Usage: When this instruction is executed, the A register is BCD corrected using the contents of the flags. The exact process is the following: if the least significant four bits of A contain a non-BCD digit (i. e. it is greater than 9) or the H flag is set, then $06 is added to the register. Then the four most significant bits are checked. If this more significant digit also happens to be greater than 9 or the C flag is set, then $60 is added. If this second addition was needed, the C flag is set after execution, otherwise it is reset.
+        /// Flags: The N flag is preserved, P/V is parity and the others are altered by definition.
+        /// </summary>
+        public void DAA()
+        {
+            var currentValue = this.Registers.Read(Reg8.A);
+            if (currentValue > 9)
+                currentValue = (byte)(currentValue + 6);
+            this.Registers.Set(Reg8.A, currentValue);
+
+        }
+        #endregion
+
         #region MyRegion
         /// <summary>
         /// Usage: The value in A is multiplied by -1 (two’s complement). 

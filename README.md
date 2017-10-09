@@ -1,7 +1,20 @@
 # z80
 A z80 virtual machine
 
-## Example
+## Example Parser
+
+```C#
+// Prepare the assembler
+var assembler = new Assembler();
+
+// Parse a single instruction,  this will return 3 bytes
+//  0x32 - this represents the LD (nn), A instruction
+//  0b0000_0001 - this is the higher order byte of 500
+//  0b1111_0100 - this is the lower order byte of 500
+var bytes = assembler.Parse("LD (500),A");
+```
+
+## Example Virtual Machine
 
 ```C#
 using z80vm;

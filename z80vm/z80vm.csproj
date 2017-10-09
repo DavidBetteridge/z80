@@ -10,10 +10,12 @@
 
   <ItemGroup>
     <None Remove="AllowedInstructions.txt" />
+    <None Remove="z80Instructions.txt" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="AllowedInstructions.txt" />
+    <EmbeddedResource Include="z80Instructions.txt" />
   </ItemGroup>
 
 </Project>

@@ -67,6 +67,7 @@
     <Compile Include="CALLTests.cs" />
     <Compile Include="CommandValidatorTests.cs" />
     <Compile Include="ConditionValidatorTests.cs" />
+    <Compile Include="DAATests.cs" />
     <Compile Include="DECTests.cs" />
     <Compile Include="DJNZTests.cs" />
     <Compile Include="EXXTests.cs" />

@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.4</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="z80Instructions.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\z80vm\z80vm.csproj" />
+  </ItemGroup>
+
+</Project>
