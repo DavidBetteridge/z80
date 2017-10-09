@@ -14,6 +14,19 @@ namespace z80vm
         public Flags Flags { get; private set; }
         public Labels Labels { get; private set; }
 
+        #region MyRegion
+        /// <summary>
+        /// Usage: The value in A is multiplied by -1 (two’s complement). 
+        /// Flags: The N flag is set, P/V is interpreted as overflow. The rest of the flags is modified by definition.
+        /// </summary>
+        public void NEG()
+        {
+            var currentValue = (sbyte)this.Registers.Read(Reg8.A);
+            var newValue = (sbyte)(currentValue * -1);
+            this.Registers.Set(Reg8.A, (byte)newValue);
+        }
+        #endregion
+
         #region DEC
         /// <summary>
         /// Usage: Decrements the value of the operand by one.

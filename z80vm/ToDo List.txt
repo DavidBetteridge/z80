@@ -19,6 +19,7 @@ ADD - needs to set flags for 16 bit operations
 ADC - needs to set flags for 16 bit operations
 DEC - needs to set flags
 INC - needs to set flags and support 16 bit operations
+NEG - needs to set flags
 LD - Support for flag P/V flag,  Restrictions
 SUB - Started
 

@@ -83,6 +83,7 @@
     <Compile Include="LDITests.cs" />
     <Compile Include="LDTests.cs" />
     <Compile Include="MemoryTests.cs" />
+    <Compile Include="NEGTests.cs" />
     <Compile Include="op8Tests.cs" />
     <Compile Include="RegisterTests.cs" />
     <Compile Include="RETTests.cs" />
