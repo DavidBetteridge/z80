@@ -14,6 +14,37 @@ namespace z80vm
         public Flags Flags { get; private set; }
         public Labels Labels { get; private set; }
 
+        #region DEC
+        /// <summary>
+        /// Usage: Decrements the value of the operand by one.
+        /// Flags: 8-bit decrements preserve the C flag, set N, treat P/V as overflow and modify the others by definition. 
+        /// </summary>
+        /// <param name="operand"></param>
+        public void DEC(Iop8 operand)
+        {
+            this.commandValidator.EnsureCommandIsValid(operand);
+
+            var currentValue = operand.Read(this.Memory, this.Registers);
+            var newValue = (byte)(currentValue - 1);
+            operand.Set(this.Memory, this.Registers, newValue);
+        }
+
+        /// <summary>
+        /// Usage: Decrements the value of the operand by one.
+        /// Flags: 16-bit decrements do not alter any of the flags.
+        /// </summary>
+        /// <param name="operand"></param>
+        public void DEC(Reg16 operand)
+        {
+            this.commandValidator.EnsureCommandIsValid(operand);
+
+            var currentValue = this.Registers.Read(operand);
+            var newValue = (byte)(currentValue - 1);
+            this.Registers.Set(operand, newValue);
+        }
+
+        #endregion
+
         /// <summary>
         /// Override the command validator
         /// </summary>
@@ -40,6 +71,7 @@ namespace z80vm
         {
             this.flagsEvaluator = flagsEvaluator;
         }
+
 
         public Machine()
         {

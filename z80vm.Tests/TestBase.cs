@@ -28,6 +28,7 @@ namespace z80vm.Tests
             var machine = CreateMachine();
             var commandValidator = new Moq.Mock<ICommandValidator>();
             commandValidator.Setup(a => a.EnsureCommandIsValid(It.IsAny<object>(), It.IsAny<object>(), It.IsAny<string>())).Throws(new System.InvalidOperationException("Oh no"));
+            commandValidator.Setup(a => a.EnsureCommandIsValid(It.IsAny<object>(), It.IsAny<string>())).Throws(new System.InvalidOperationException("Oh no"));
             machine.SetCommandValidator(commandValidator.Object);
 
             return machine;
@@ -43,6 +44,8 @@ namespace z80vm.Tests
             var machine = CreateMachine();
             var commandValidator = new Moq.Mock<ICommandValidator>();
             commandValidator.Setup(a => a.EnsureCommandIsValid(It.IsAny<object>(), It.IsAny<object>(), It.IsAny<string>()));
+            commandValidator.Setup(a => a.EnsureCommandIsValid(It.IsAny<object>(), It.IsAny<string>()));
+
             machine.SetCommandValidator(commandValidator.Object);
 
             return machine;

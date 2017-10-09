@@ -30,7 +30,6 @@ namespace z80vm
         }
 
         public Reg8? Register => this.register;
-        public Value Value => this.value;
 
         public byte Read(Memory memory, Registers registers)
         {
