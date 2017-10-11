@@ -27,8 +27,6 @@ DAA - Started
 Parser
 ------
 Support Labels
-Error handling,  invalid commands,  invalid operands
-Cache lookup table
 RST commands
 
 Issues

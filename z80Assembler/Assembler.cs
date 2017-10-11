@@ -6,14 +6,18 @@ namespace z80Assembler
 {
     public class Assembler
     {
+        private readonly InstructionLookups instructionLookups;
+        public Assembler()
+        {
+            this.instructionLookups = new InstructionLookups();
+            this.instructionLookups.Load();
+        }
+
         public IEnumerable<byte> Parse(string command)
         {
             var results = new List<byte>();
 
-            var lookup = new InstructionLookups();
-            lookup.Load();
-
-            var hex = lookup.LookupHexCodeFromNormalisedCommand(this.Normalise(command));
+            var hex = this.instructionLookups.LookupHexCodeFromNormalisedCommand(this.Normalise(command));
             if (hex.Second() != 0) results.Add(hex.Second());
             if (hex.Third() != 0) results.Add(hex.Third());
             results.Add(hex.Final());

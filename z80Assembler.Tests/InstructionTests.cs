@@ -155,6 +155,16 @@ namespace z80Assembler.Tests
             Assert.Equal(0xCB, instructions.Skip(1).First());
             Assert.Equal(0x0D, instructions.Skip(2).First());
         }
+
+        [Fact]
+        public void An_Invalid_Command_Show_Throw_An_Error()
+        {
+            var assembler = new Assembler();
+            
+            var exception = Record.Exception(() => assembler.Parse("ADD B,A"));
+            Assert.IsType<ParseException>(exception);
+            Assert.Equal("Invalid command", exception.Message);
+        }
     }
 }
 

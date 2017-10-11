@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace z80Assembler
 {
@@ -68,7 +67,10 @@ namespace z80Assembler
             if (eds.ContainsKey(normal))
                 return (int)(0xED00 | eds[normal].Hex);
 
-            return (int)(0xDDCB00 | ddcbs[normal].Hex);
+            if (ddcbs.ContainsKey(normal))
+                return (int)(0xDDCB00 | ddcbs[normal].Hex);
+
+            throw new ParseException("Invalid command");
         }
 
         public int Count()
