@@ -23,6 +23,47 @@ namespace z80Assembler.Tests
             Assert.Equal(expected, lookup.Normal);
         }
 
+
+        [Theory]
+        [InlineData("|[09 | 009] | ADD  HL,BC | ADD  IX,BC | RRC   C | *NOP | *LD    C,RRC(IX + d) |", "ADD IX,BC")]
+        [InlineData("|[7b | 123] | LD   A, E | +LD   A, E | BIT   7, E | LD    SP, (nn) | *BIT   7, (IX + d) |", "+LD A,E")]
+
+        public void Check_That_DDPrefixes_Can_Be_Extracted_From_Lines(string line, string expected)
+        {
+            var lookup = new InstructionLookup(line);
+            Assert.Equal(expected, lookup.DDPrefix);
+        }
+
+        [Theory]
+        [InlineData("|[09 | 009] | ADD  HL,BC | ADD  IX,BC | RRC   C | *NOP | *LD    C,RRC(IX + d) |", "RRC C")]
+        [InlineData("|[7b | 123] | LD   A, E | +LD   A, E | BIT   7, E | LD    SP, (nn) | *BIT   7, (IX + d) |", "BIT 7,E")]
+
+        public void Check_That_CBPrefixes_Can_Be_Extracted_From_Lines(string line, string expected)
+        {
+            var lookup = new InstructionLookup(line);
+            Assert.Equal(expected, lookup.CBPrefix);
+        }
+
+        [Theory]
+        [InlineData("|[09 | 009] | ADD  HL,BC | ADD  IX,BC | RRC   C | *NOP | *LD    C,RRC(IX + d) |", "NOP")]
+        [InlineData("|[7b | 123] | LD   A, E | +LD   A, E | BIT   7, E | LD    SP, (nn) | *BIT   7, (IX + d) |", "LD SP,(n)")]
+
+        public void Check_That_EDPrefixes_Can_Be_Extracted_From_Lines(string line, string expected)
+        {
+            var lookup = new InstructionLookup(line);
+            Assert.Equal(expected, lookup.EDPrefix);
+        }
+
+        [Theory]
+        [InlineData("|[09 | 009] | ADD  HL,BC | ADD  IX,BC | RRC   C | *NOP | *LD    C,RRC(IX + d) |", "LD C,RRC(IX + d)")]
+        [InlineData("|[7b | 123] | LD   A, E | +LD   A, E | BIT   7, E | LD    SP, (nn) | *BIT   7, (IX + d) |", "BIT 7,(IX + d)")]
+
+        public void Check_That_DDCBPrefixes_Can_Be_Extracted_From_Lines(string line, string expected)
+        {
+            var lookup = new InstructionLookup(line);
+            Assert.Equal(expected, lookup.DDCBPrefix);
+        }
+
         [Fact]
         public void Check_That_256_Instructions_Are_Loaded()
         {
@@ -39,7 +80,7 @@ namespace z80Assembler.Tests
             var instructionLookup = new InstructionLookups();
             instructionLookup.Load();
 
-            var hex = instructionLookup.LookupHexCodeFromNormal("NOP");
+            var hex = instructionLookup.LookupHexCodeFromNormalisedCommand("NOP");
 
             Assert.Equal(0x00, hex);
         }
@@ -50,7 +91,7 @@ namespace z80Assembler.Tests
             var instructionLookup = new InstructionLookups();
             instructionLookup.Load();
 
-            var hex = instructionLookup.LookupHexCodeFromNormal("LD BC,n");
+            var hex = instructionLookup.LookupHexCodeFromNormalisedCommand("LD BC,n");
 
             Assert.Equal(0x01, hex);
         }

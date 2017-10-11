@@ -100,5 +100,61 @@ namespace z80Assembler.Tests
             Assert.Equal(0b1111_0100, instructions.Skip(1).First());
             Assert.Equal(0b0000_0001, instructions.Skip(2).First());
         }
+
+
+        //DD Tests
+        [Fact]
+        public void ADD_IX_A_Should_Be_Converted_To_0xDD_0x09()
+        {
+            var assembler = new Assembler();
+
+            var instructions = assembler.Parse("ADD   IX,BC");
+
+            Assert.Equal(2, instructions.Count());
+            Assert.Equal(0xDD, instructions.First());
+            Assert.Equal(0x09, instructions.Skip(1).First());
+        }
+
+
+        //CB Tests
+        [Fact]
+        public void RRC_HL_Should_Be_Converted_To_0xCB_0x0E()
+        {
+            var assembler = new Assembler();
+
+            var instructions = assembler.Parse("RRC  (HL)");
+
+            Assert.Equal(2, instructions.Count());
+            Assert.Equal(0xCB, instructions.First());
+            Assert.Equal(0x0E, instructions.Skip(1).First());
+        }
+
+        //EDTests
+        [Fact]
+        public void IN_B_C_Should_Be_Converted_To_0xED_0x40()
+        {
+            var assembler = new Assembler();
+
+            var instructions = assembler.Parse("IN    B,(C)");
+
+            Assert.Equal(2, instructions.Count());
+            Assert.Equal(0xED, instructions.First());
+            Assert.Equal(0x40, instructions.Skip(1).First());
+        }
+
+        //DDCB |[ 0d  *LD    L,RRC (IX+d)
+        [Fact]
+        public void LD_L_RRC_IX_D_Should_Be_Converted_To_0xDDCB_0x0D()
+        {
+            var assembler = new Assembler();
+
+            var instructions = assembler.Parse("LD    L,RRC (IX+d)");
+
+            Assert.Equal(3, instructions.Count());
+            Assert.Equal(0xDD, instructions.First());
+            Assert.Equal(0xCB, instructions.Skip(1).First());
+            Assert.Equal(0x0D, instructions.Skip(2).First());
+        }
     }
 }
+

@@ -13,8 +13,10 @@ namespace z80Assembler
             var lookup = new InstructionLookups();
             lookup.Load();
 
-            var hex = lookup.LookupHexCodeFromNormal(this.Normalise(command));
-            results.Add(hex);
+            var hex = lookup.LookupHexCodeFromNormalisedCommand(this.Normalise(command));
+            if (hex.Second() != 0) results.Add(hex.Second());
+            if (hex.Third() != 0) results.Add(hex.Third());
+            results.Add(hex.Final());
 
             // Remove the command from the start
             command = command.Trim();
