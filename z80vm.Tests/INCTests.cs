@@ -15,7 +15,7 @@ namespace z80vm.Tests
             var machine = CreateMachineWhereAllCommandsAreInvalid();
 
             var exception = Record.Exception(() => machine.INC(Read8BitValue(Reg8.A)));
-            Assert.IsType(typeof(System.InvalidOperationException), exception);
+            Assert.IsType<System.InvalidOperationException>(exception);
         }
 
         [Theory]

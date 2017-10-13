@@ -29,8 +29,8 @@ namespace z80Assembler
             var cleaned = value
                 .Trim()
                 .Replace(", ", ",")
-                .Replace("*", "")
-                .Replace("nn", "n");
+                .Replace("*", "");
+                //.Replace("nn", "n");
 
             while (cleaned.Contains("  "))
                 cleaned = cleaned.Replace("  ", " ");

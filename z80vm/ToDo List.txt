@@ -12,6 +12,7 @@ LDD
 LDDR
 LDI
 DIR
+NOP (that was tricky)
 
 Part Completed Commands
 ------------------

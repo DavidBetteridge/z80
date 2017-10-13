@@ -46,7 +46,7 @@ namespace z80Assembler.Tests
 
         [Theory]
         [InlineData("|[09 | 009] | ADD  HL,BC | ADD  IX,BC | RRC   C | *NOP | *LD    C,RRC(IX + d) |", "NOP")]
-        [InlineData("|[7b | 123] | LD   A, E | +LD   A, E | BIT   7, E | LD    SP, (nn) | *BIT   7, (IX + d) |", "LD SP,(n)")]
+        [InlineData("|[7b | 123] | LD   A, E | +LD   A, E | BIT   7, E | LD    SP, (nn) | *BIT   7, (IX + d) |", "LD SP,(nn)")]
 
         public void Check_That_EDPrefixes_Can_Be_Extracted_From_Lines(string line, string expected)
         {

@@ -11,8 +11,22 @@ namespace z80vm
         public Registers Registers { get; private set; }
 
         public Memory Memory { get; private set; }
+
+
+
         public Flags Flags { get; private set; }
         public Labels Labels { get; private set; }
+
+        #region NOP
+        /// <summary>
+        /// Usage: Wastes time
+        /// Flags: None
+        /// </summary>
+        public void NOP()
+        {
+            // Could waste 4 clock cycles here.
+        }
+        #endregion
 
         #region DAA
         /// <summary>
