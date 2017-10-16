@@ -2,7 +2,7 @@
 
 namespace z80vm
 {
-    public class op8 : Iop8
+    public class op8 : IOp8
     {
         private Reg8? register;
         private byte? immediate;

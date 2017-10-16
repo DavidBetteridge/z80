@@ -79,5 +79,84 @@ namespace z80Assembler.Tests
 
             Assert.Equal(9, machine.Registers.Read(Reg8.C));
         }
+
+        [Fact]
+        public void ADD_A_123_Should_Invoke_The_ADD_A_n_Command()
+        {
+            var machine = new Machine();
+            var commandRunner = new CommandRunner(machine);
+
+            machine.Registers.Set(Reg8.A, 10);
+            commandRunner.RunCommand("ADD A,123");
+
+            Assert.Equal(133, machine.Registers.Read(Reg8.A));
+        }
+
+        [Fact]
+        public void CALL_Should_Invoke_The_CALL_Command()
+        {
+            var machine = new Machine();
+            var commandRunner = new CommandRunner(machine);
+
+            commandRunner.RunCommand("CALL 100");
+
+            Assert.Equal(100, machine.Registers.Read(Reg16.PC));
+        }
+
+        [Fact]
+        public void Read_THE_NOP_Command_From_Memory()
+        {
+            var machine = new Machine();
+            machine.Registers.Set(Reg16.PC, 100);
+            machine.Memory.Set(100, 0x00);
+
+            var commandRunner = new CommandRunner(machine);
+            commandRunner.RunNextCommand();
+
+            Assert.Equal(101, machine.Registers.Read(Reg16.PC));
+        }
+
+        [Fact]
+        public void Read_THE_DEC_C_Command_From_Memory()
+        {
+            var machine = new Machine();
+            machine.Registers.Set(Reg16.PC, 100);
+            machine.Memory.Set(100, 0x0d);
+            machine.Registers.Set(Reg8.C, 10);
+
+            var commandRunner = new CommandRunner(machine);
+            commandRunner.RunNextCommand();
+
+            Assert.Equal(9, machine.Registers.Read(Reg8.C));
+        }
+
+        [Fact]
+        public void Read_THE_CALL_100_Command_From_Memory()
+        {
+            var machine = new Machine();
+            machine.Registers.Set(Reg16.PC, 12);
+            machine.Memory.Set(12, 0xcd);
+            machine.Memory.Set(13, 1000);
+
+            var commandRunner = new CommandRunner(machine);
+            commandRunner.RunNextCommand();
+
+            Assert.Equal(1000, machine.Registers.Read(Reg16.PC));
+        }
+
+        [Fact]
+        public void Read_THE_ADD_A_123_Command_From_Memory()
+        {
+            var machine = new Machine();
+            machine.Registers.Set(Reg16.PC, 12);
+            machine.Memory.Set(12, 0xc6);
+            machine.Memory.Set(13, 123);
+            machine.Registers.Set(Reg8.A, 10);
+
+            var commandRunner = new CommandRunner(machine);
+            commandRunner.RunNextCommand();
+
+            Assert.Equal(133, machine.Registers.Read(Reg8.A));
+        }
     }
 }

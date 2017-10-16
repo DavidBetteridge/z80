@@ -30,7 +30,8 @@ namespace z80Assembler
                             .Split(new[] { System.Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
                             .Skip(3)
                             .Take(256)
-                            .Select(l => new InstructionLookup(l));
+                            .Select(l => new InstructionLookup(l))
+                            .ToArray();
 
                 this.normals = lines.ToDictionary(a => a.Normal.Replace("nn", "n"));
                 this.dds = lines.ToDictionary(a => a.DDPrefix.Replace("nn", "n"));
@@ -63,16 +64,16 @@ namespace z80Assembler
                 return normals[normal].Hex;
 
             if (dds.ContainsKey(normal))
-                return (int)(0xDD00 | dds[normal].Hex);
+                return 0xDD00 | dds[normal].Hex;
 
             if (cbs.ContainsKey(normal))
-                return (int)(0xCB00 | cbs[normal].Hex);
+                return 0xCB00 | cbs[normal].Hex;
 
             if (eds.ContainsKey(normal))
-                return (int)(0xED00 | eds[normal].Hex);
+                return 0xED00 | eds[normal].Hex;
 
             if (ddcbs.ContainsKey(normal))
-                return (int)(0xDDCB00 | ddcbs[normal].Hex);
+                return 0xDDCB00 | ddcbs[normal].Hex;
 
             throw new ParseException("Invalid command");
         }

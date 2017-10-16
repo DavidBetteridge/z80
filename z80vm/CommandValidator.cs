@@ -58,7 +58,7 @@ namespace z80vm
                 {
                     var result = reader.ReadToEnd();
                     var linesInFile = result
-                                        .Split(new[] { System.Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
+                                        .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
                                         .Select(l => l.Trim())
                                         .Where(l => !string.IsNullOrWhiteSpace(l));
                     this.lines = new HashSet<string>(linesInFile);

@@ -1,6 +1,6 @@
 ﻿namespace z80vm
 {
-    public interface Iop8
+    public interface IOp8
     {
         Reg8? Register { get; }
 

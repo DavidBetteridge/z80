@@ -62,7 +62,7 @@ namespace z80vm
         /// Flags: 8-bit decrements preserve the C flag, set N, treat P/V as overflow and modify the others by definition. 
         /// </summary>
         /// <param name="operand"></param>
-        public void DEC(Iop8 operand)
+        public void DEC(IOp8 operand)
         {
             this.commandValidator.EnsureCommandIsValid(operand);
 
@@ -132,7 +132,7 @@ namespace z80vm
         /// Flags: 8-bit increments preserve the C flag, reset N, treat P/V as overflow and modify the others by definition
         /// </summary>
         /// <param name="op8"></param>
-        public void INC(Iop8 op8)
+        public void INC(IOp8 op8)
         {
             this.commandValidator.EnsureCommandIsValid(op8);
 

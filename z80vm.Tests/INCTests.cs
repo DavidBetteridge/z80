@@ -24,7 +24,7 @@ namespace z80vm.Tests
         public void TheValueOfTheOperandShouldBeIncrementedByOne(byte startingValue,  byte expectedValue)
         {
             var machine = CreateMachineWhereAllCommandsAreValid();
-            var operand = new Moq.Mock<Iop8>();
+            var operand = new Moq.Mock<IOp8>();
             operand.Setup(o => o.Read(machine.Memory, machine.Registers)).Returns(startingValue);
 
             machine.INC(operand.Object);
