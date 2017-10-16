@@ -1,6 +1,20 @@
 # z80
 A z80 virtual machine
 
+## Example Program Runner
+Once a program has been loaded into memory it can executed step-by-step as follows:
+
+```C#
+var commandRunner = new CommandRunner(machine);
+while (true)
+{
+    commandRunner.RunNextCommand();
+    Console.WriteLine("Press any key to run the next command");
+    Console.ReadKey(true);
+}
+```
+
+
 ## Example Parser
 
 ```C#
