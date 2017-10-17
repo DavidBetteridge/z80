@@ -1,6 +1,18 @@
 # z80
 A z80 virtual machine
 
+## Example Program Loader
+
+```C#
+// Load the program
+var loader = new Loader(machine);
+loader.LoadCommands(@"
+LD A, 10
+LD B, 10
+ADD A, B
+HALT");
+```
+
 ## Example Program Runner
 Once a program has been loaded into memory it can executed step-by-step as follows:
 

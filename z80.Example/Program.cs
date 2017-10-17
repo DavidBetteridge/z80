@@ -1,4 +1,5 @@
-﻿using z80Assembler;
+﻿using System;
+using z80Assembler;
 using z80vm;
 using static z80vm.op8;
 using static z80vm.Value;
@@ -21,6 +22,23 @@ namespace z80.Example
 
             // Prepare the machine
             var machine = new Machine();
+
+            // Load the program
+            var loader = new Loader(machine);
+            loader.LoadCommands(@"
+LD A, 10
+LD B, 10
+ADD A, B
+HALT");
+
+            var commandRunner = new CommandRunner(machine);
+            while (true)
+            {
+                commandRunner.RunNextCommand();
+                Console.WriteLine("Press any key to run the next command");
+                Console.ReadKey(true);
+            }
+
 
             // Load an immediate value into a register
             machine.LD(Reg8.A, Read8BitValue(100));

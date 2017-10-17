@@ -78,6 +78,7 @@
   <ItemGroup>
     <Compile Include="InstructionLookupTests.cs" />
     <Compile Include="InstructionTests.cs" />
+    <Compile Include="LoaderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RunnerTests.cs" />
   </ItemGroup>
