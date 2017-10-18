@@ -35,15 +35,19 @@
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.cmdRun = new System.Windows.Forms.Button();
             this.cmdStep = new System.Windows.Forms.Button();
-            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.label3 = new System.Windows.Forms.Label();
             this.lvMemory = new System.Windows.Forms.ListView();
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.label4 = new System.Windows.Forms.Label();
+            this.lvFlags = new System.Windows.Forms.ListView();
+            this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // scintilla
@@ -102,6 +106,11 @@
             this.columnHeader3.Text = "Value (Hex)";
             this.columnHeader3.Width = 97;
             // 
+            // columnHeader4
+            // 
+            this.columnHeader4.Text = "Value (Dec)";
+            this.columnHeader4.Width = 79;
+            // 
             // cmdRun
             // 
             this.cmdRun.Location = new System.Drawing.Point(15, 408);
@@ -122,11 +131,6 @@
             this.cmdStep.Text = "Step";
             this.cmdStep.UseVisualStyleBackColor = true;
             this.cmdStep.Click += new System.EventHandler(this.cmdStep_Click);
-            // 
-            // columnHeader4
-            // 
-            this.columnHeader4.Text = "Value (Dec)";
-            this.columnHeader4.Width = 79;
             // 
             // label3
             // 
@@ -167,11 +171,44 @@
             // 
             this.columnHeader8.Text = "Decimal";
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(449, 418);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(63, 17);
+            this.label4.TabIndex = 8;
+            this.label4.Text = "The Flags";
+            // 
+            // lvFlags
+            // 
+            this.lvFlags.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader9,
+            this.columnHeader10});
+            this.lvFlags.Location = new System.Drawing.Point(452, 443);
+            this.lvFlags.Name = "lvFlags";
+            this.lvFlags.Size = new System.Drawing.Size(451, 358);
+            this.lvFlags.TabIndex = 9;
+            this.lvFlags.UseCompatibleStateImageBehavior = false;
+            this.lvFlags.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader9
+            // 
+            this.columnHeader9.Text = "Flag";
+            this.columnHeader9.Width = 68;
+            // 
+            // columnHeader10
+            // 
+            this.columnHeader10.Text = "Value";
+            this.columnHeader10.Width = 178;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1404, 546);
+            this.ClientSize = new System.Drawing.Size(1404, 813);
+            this.Controls.Add(this.lvFlags);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.lvMemory);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.cmdStep);
@@ -207,6 +244,10 @@
         private System.Windows.Forms.ColumnHeader columnHeader6;
         private System.Windows.Forms.ColumnHeader columnHeader7;
         private System.Windows.Forms.ColumnHeader columnHeader8;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.ListView lvFlags;
+        private System.Windows.Forms.ColumnHeader columnHeader9;
+        private System.Windows.Forms.ColumnHeader columnHeader10;
     }
 }
 

@@ -1,6 +1,11 @@
 # z80
 A z80 virtual machine
 
+## Debugger
+The debugger in action
+
+![Debugger](https://github.com/davidbetteridge/z80/raw/debugger.PNG "Debugger")
+
 ## Example Program Loader
 
 ```C#
@@ -18,9 +23,10 @@ Once a program has been loaded into memory it can executed step-by-step as follo
 
 ```C#
 var commandRunner = new CommandRunner(machine);
-while (true)
+var halted = false;
+while (!halted)
 {
-    commandRunner.RunNextCommand();
+    halted = commandRunner.RunNextCommand();
     Console.WriteLine("Press any key to run the next command");
     Console.ReadKey(true);
 }

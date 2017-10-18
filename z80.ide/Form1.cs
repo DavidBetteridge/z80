@@ -20,7 +20,7 @@ namespace z80.ide
         private CommandRunner _commandRunner;
         private void DisplayRegisters()
         {
-            void DisplayRegister(string type, string name, byte value)
+            void DisplayRegister(string type, string name, ushort value)
             {
                 var li = this.lvRegisters.Items.Add(type);
                 li.SubItems.Add(name);
@@ -29,11 +29,35 @@ namespace z80.ide
             }
 
             this.lvRegisters.Items.Clear();
+
             DisplayRegister("8 Bit Register", "A", _machine.Registers.Read(Reg8.A));
             DisplayRegister("8 Bit Register", "B", _machine.Registers.Read(Reg8.B));
             DisplayRegister("8 Bit Register", "C", _machine.Registers.Read(Reg8.C));
             DisplayRegister("8 Bit Register", "D", _machine.Registers.Read(Reg8.D));
+            DisplayRegister("8 Bit Register", "E", _machine.Registers.Read(Reg8.E));
+            DisplayRegister("8 Bit Register", "F", _machine.Registers.Read(Reg8.F));
+            DisplayRegister("8 Bit Register", "H", _machine.Registers.Read(Reg8.H));
+            DisplayRegister("8 Bit Register", "I", _machine.Registers.Read(Reg8.I));
+            DisplayRegister("8 Bit Register", "IXH", _machine.Registers.Read(Reg8.IXH));
+            DisplayRegister("8 Bit Register", "IXL", _machine.Registers.Read(Reg8.IXL));
+            DisplayRegister("8 Bit Register", "IYH", _machine.Registers.Read(Reg8.IYH));
+            DisplayRegister("8 Bit Register", "IYL", _machine.Registers.Read(Reg8.IYL));
+            DisplayRegister("8 Bit Register", "L", _machine.Registers.Read(Reg8.L));
+            DisplayRegister("8 Bit Register", "R", _machine.Registers.Read(Reg8.R));
 
+            DisplayRegister("16 But Register", "AF", _machine.Registers.Read(Reg16.AF));
+            DisplayRegister("16 But Register", "BC", _machine.Registers.Read(Reg16.BC));
+            DisplayRegister("16 But Register", "DE", _machine.Registers.Read(Reg16.DE));
+            DisplayRegister("16 But Register", "HL", _machine.Registers.Read(Reg16.HL));
+            DisplayRegister("16 But Register", "IX", _machine.Registers.Read(Reg16.IX));
+            DisplayRegister("16 But Register", "IY", _machine.Registers.Read(Reg16.IY));
+            DisplayRegister("16 But Register", "PC", _machine.Registers.Read(Reg16.PC));
+            DisplayRegister("16 But Register", "SP", _machine.Registers.Read(Reg16.SP));
+
+            DisplayRegister("Shadow Register", "AF", _machine.Registers.Read(Reg16Shadow.AF));
+            DisplayRegister("Shadow Register", "BC", _machine.Registers.Read(Reg16Shadow.BC));
+            DisplayRegister("Shadow Register", "DE", _machine.Registers.Read(Reg16Shadow.DE));
+            DisplayRegister("Shadow Register", "HL", _machine.Registers.Read(Reg16Shadow.HL));
         }
 
         private void DisplayMemory()
@@ -51,6 +75,24 @@ namespace z80.ide
 
         }
 
+        private void DisplayFlags()
+        {
+            lvFlags.Items.Clear();
+
+            void Display(string name, bool value)
+            {
+                var li = this.lvFlags.Items.Add(name);
+                li.SubItems.Add(value.ToString());
+            }
+
+            Display("Carry", _machine.Flags.Read(Flag.C));
+            Display("HalfCarry", _machine.Flags.Read(Flag.H));
+            Display("Subtraction", _machine.Flags.Read(Flag.N));
+            Display("Parity/Overflow", _machine.Flags.Read(Flag.PV));
+            Display("Sign", _machine.Flags.Read(Flag.S));
+            Display("Zero", _machine.Flags.Read(Flag.Z));
+
+        }
         public void Configure()
         {
             var marker = scintilla.Markers[CURRENTLINE_MARKER];
@@ -193,6 +235,9 @@ HALT";
             _currentLineNumber = 0;
             scintilla.Lines[_currentLineNumber].MarkerAdd(CURRENTLINE_MARKER);
 
+            DisplayRegisters();
+            DisplayMemory();
+            DisplayFlags();
         }
 
         private void cmdStep_Click(object sender, EventArgs e)
@@ -200,6 +245,7 @@ HALT";
             _commandRunner.RunNextCommand();
             DisplayRegisters();
             DisplayMemory();
+            DisplayFlags();
 
             scintilla.Lines[_currentLineNumber].MarkerDelete(CURRENTLINE_MARKER);
             _currentLineNumber++;
