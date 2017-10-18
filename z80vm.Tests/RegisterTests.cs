@@ -122,5 +122,24 @@ namespace z80vm.Tests
 
             Assert.Equal(ANY_VALUE, machine.Registers.Read(Reg16.BC));
         }
+
+        [Theory]
+        [InlineData(Reg8Shadow.A)]
+        [InlineData(Reg8Shadow.B)]
+        [InlineData(Reg8Shadow.C)]
+        [InlineData(Reg8Shadow.D)]
+        [InlineData(Reg8Shadow.E)]
+        [InlineData(Reg8Shadow.F)]
+        [InlineData(Reg8Shadow.H)]
+        [InlineData(Reg8Shadow.L)]
+        public void IsShouldBePossibleToWriteAndReadFromEvery8BitShadowRegister(Reg8Shadow register)
+        {
+            var ANY_VALUE = (byte)0xAB;
+
+            var machine = CreateMachine();
+            machine.Registers.Set(register, ANY_VALUE);
+
+            Assert.Equal(ANY_VALUE, machine.Registers.Read(register));
+        }
     }
 }

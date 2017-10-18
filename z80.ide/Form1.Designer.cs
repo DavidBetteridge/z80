@@ -55,7 +55,7 @@
             this.scintilla.Location = new System.Drawing.Point(12, 33);
             this.scintilla.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.scintilla.Name = "scintilla";
-            this.scintilla.Size = new System.Drawing.Size(401, 358);
+            this.scintilla.Size = new System.Drawing.Size(401, 710);
             this.scintilla.TabIndex = 0;
             this.scintilla.Text = "button1";
             // 
@@ -113,18 +113,18 @@
             // 
             // cmdRun
             // 
-            this.cmdRun.Location = new System.Drawing.Point(15, 408);
+            this.cmdRun.Location = new System.Drawing.Point(105, 764);
             this.cmdRun.Name = "cmdRun";
             this.cmdRun.Size = new System.Drawing.Size(89, 37);
             this.cmdRun.TabIndex = 4;
-            this.cmdRun.Text = "Run";
+            this.cmdRun.Text = "Load";
             this.cmdRun.UseVisualStyleBackColor = true;
             this.cmdRun.Click += new System.EventHandler(this.cmdRun_Click);
             // 
             // cmdStep
             // 
             this.cmdStep.Enabled = false;
-            this.cmdStep.Location = new System.Drawing.Point(121, 408);
+            this.cmdStep.Location = new System.Drawing.Point(211, 764);
             this.cmdStep.Name = "cmdStep";
             this.cmdStep.Size = new System.Drawing.Size(89, 37);
             this.cmdStep.TabIndex = 5;
@@ -135,7 +135,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(938, 9);
+            this.label3.Location = new System.Drawing.Point(919, 9);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(82, 17);
             this.label3.TabIndex = 6;
@@ -148,9 +148,9 @@
             this.columnHeader6,
             this.columnHeader7,
             this.columnHeader8});
-            this.lvMemory.Location = new System.Drawing.Point(941, 33);
+            this.lvMemory.Location = new System.Drawing.Point(922, 33);
             this.lvMemory.Name = "lvMemory";
-            this.lvMemory.Size = new System.Drawing.Size(451, 358);
+            this.lvMemory.Size = new System.Drawing.Size(470, 710);
             this.lvMemory.TabIndex = 7;
             this.lvMemory.UseCompatibleStateImageBehavior = false;
             this.lvMemory.View = System.Windows.Forms.View.Details;
@@ -158,18 +158,22 @@
             // columnHeader5
             // 
             this.columnHeader5.Text = "Address";
+            this.columnHeader5.Width = 113;
             // 
             // columnHeader6
             // 
             this.columnHeader6.Text = "Binary";
+            this.columnHeader6.Width = 105;
             // 
             // columnHeader7
             // 
             this.columnHeader7.Text = "Hex";
+            this.columnHeader7.Width = 102;
             // 
             // columnHeader8
             // 
             this.columnHeader8.Text = "Decimal";
+            this.columnHeader8.Width = 140;
             // 
             // label4
             // 
@@ -187,7 +191,7 @@
             this.columnHeader10});
             this.lvFlags.Location = new System.Drawing.Point(452, 443);
             this.lvFlags.Name = "lvFlags";
-            this.lvFlags.Size = new System.Drawing.Size(451, 358);
+            this.lvFlags.Size = new System.Drawing.Size(451, 300);
             this.lvFlags.TabIndex = 9;
             this.lvFlags.UseCompatibleStateImageBehavior = false;
             this.lvFlags.View = System.Windows.Forms.View.Details;

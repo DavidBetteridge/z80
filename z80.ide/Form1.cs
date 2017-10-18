@@ -45,6 +45,15 @@ namespace z80.ide
             DisplayRegister("8 Bit Register", "L", _machine.Registers.Read(Reg8.L));
             DisplayRegister("8 Bit Register", "R", _machine.Registers.Read(Reg8.R));
 
+            DisplayRegister("8 Bit Shadow Register", "A", _machine.Registers.Read(Reg8Shadow.A));
+            DisplayRegister("8 Bit Shadow Register", "B", _machine.Registers.Read(Reg8Shadow.B));
+            DisplayRegister("8 Bit Shadow Register", "C", _machine.Registers.Read(Reg8Shadow.C));
+            DisplayRegister("8 Bit Shadow Register", "D", _machine.Registers.Read(Reg8Shadow.D));
+            DisplayRegister("8 Bit Shadow Register", "E", _machine.Registers.Read(Reg8Shadow.E));
+            DisplayRegister("8 Bit Shadow Register", "F", _machine.Registers.Read(Reg8Shadow.F));
+            DisplayRegister("8 Bit Shadow Register", "H", _machine.Registers.Read(Reg8Shadow.H));
+            DisplayRegister("8 Bit Shadow Register", "L", _machine.Registers.Read(Reg8Shadow.L));
+
             DisplayRegister("16 Bit Register", "AF", _machine.Registers.Read(Reg16.AF));
             DisplayRegister("16 Bit Register", "BC", _machine.Registers.Read(Reg16.BC));
             DisplayRegister("16 Bit Register", "DE", _machine.Registers.Read(Reg16.DE));
@@ -54,10 +63,12 @@ namespace z80.ide
             DisplayRegister("16 Bit Register", "PC", _machine.Registers.Read(Reg16.PC));
             DisplayRegister("16 Bit Register", "SP", _machine.Registers.Read(Reg16.SP));
 
-            DisplayRegister("Shadow Register", "AF", _machine.Registers.Read(Reg16Shadow.AF));
-            DisplayRegister("Shadow Register", "BC", _machine.Registers.Read(Reg16Shadow.BC));
-            DisplayRegister("Shadow Register", "DE", _machine.Registers.Read(Reg16Shadow.DE));
-            DisplayRegister("Shadow Register", "HL", _machine.Registers.Read(Reg16Shadow.HL));
+            DisplayRegister("16 Bit Shadow Register", "AF", _machine.Registers.Read(Reg16Shadow.AF));
+            DisplayRegister("16 Bit Shadow Register", "BC", _machine.Registers.Read(Reg16Shadow.BC));
+            DisplayRegister("16 Bit Shadow Register", "DE", _machine.Registers.Read(Reg16Shadow.DE));
+            DisplayRegister("16 Bit Shadow Register", "HL", _machine.Registers.Read(Reg16Shadow.HL));
+
+            this.lvRegisters.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
         }
 
         private void DisplayMemory()
@@ -65,7 +76,7 @@ namespace z80.ide
             this.lvMemory.Items.Clear();
             for (byte address = 0; address < 100; address++)
             {
-                var li = this.lvMemory.Items.Add(address.ToString("X2"));
+                var li = this.lvMemory.Items.Add("0x" + address.ToString("X2"));
                 var v = _machine.Memory.ReadByte(address);
 
                 li.SubItems.Add(Convert.ToString(v, 2).PadLeft(8, '0'));
@@ -92,6 +103,7 @@ namespace z80.ide
             Display("Sign", _machine.Flags.Read(Flag.S));
             Display("Zero", _machine.Flags.Read(Flag.Z));
 
+            this.lvFlags.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
         }
         public void Configure()
         {

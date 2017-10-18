@@ -164,6 +164,54 @@ namespace z80vm
         IYL = 13
     }
 
+    /// <summary>
+    /// Used to specify an 8bit shadow register
+    /// </summary>
+    public enum Reg8Shadow
+    {
+        /// <summary>
+        /// Accumulator
+        /// It is the primary register for arithmetic operations and accessing memory
+        /// </summary>
+        A = 0,
+
+        /// <summary>
+        /// Cmmonly used as an 8-bit counter
+        /// </summary>
+        B = 1,
+
+        /// <summary>
+        /// Used to interface with hardware ports
+        /// </summary>
+        C = 2,
+
+        /// <summary>
+        /// Not normally used in its 8-bit form. Instead, it is used in conjuncture with E
+        /// </summary>
+        D = 3,
+
+        /// <summary>
+        /// Not normally used in its 8-bit form. Instead, it is used in conjuncture with D
+        /// </summary>
+        E = 4,
+
+        /// <summary>
+        /// Not normally used in its 8-bit form. Instead, it is used in conjuncture with L
+        /// </summary>
+        H = 5,
+
+        /// <summary>
+        /// Not normally used in its 8-bit form. Instead, it is used in conjuncture with H
+        /// </summary>
+        L = 6,
+
+        /// <summary>
+        /// Flags
+        /// It is the one register you cannot mess with on the byte level
+        /// </summary>
+        F = 7,
+    }
+
     public class Registers
     {
         // All 8 bit registers
@@ -241,6 +289,36 @@ namespace z80vm
                 case Reg8.IYL:
                     return IY.Low();
 
+                default:
+                    throw new Exception("Unknown register " + register);
+            }
+        }
+
+        /// <summary>
+        /// Reads the value of an 8bit shadow register
+        /// </summary>
+        /// <param name="register"></param>
+        /// <returns></returns>
+        public byte Read(Reg8Shadow register)
+        {
+            switch (register)
+            {
+                case Reg8Shadow.A:
+                    return A2;
+                case Reg8Shadow.B:
+                    return B2;
+                case Reg8Shadow.C:
+                    return C2;
+                case Reg8Shadow.D:
+                    return D2;
+                case Reg8Shadow.E:
+                    return E2;
+                case Reg8Shadow.H:
+                    return H2;
+                case Reg8Shadow.L:
+                    return L2;
+                case Reg8Shadow.F:
+                    return F2;
                 default:
                     throw new Exception("Unknown register " + register);
             }
@@ -411,6 +489,45 @@ namespace z80vm
                     IY = Memory.MakeWord(IY.High(), value);
                     break;
 
+                default:
+                    throw new Exception("Unknown register " + register);
+            }
+        }
+
+
+        /// <summary>
+        /// Sets the value of an 8bit shadow register (not normally used)
+        /// </summary>
+        /// <param name="register"></param>
+        /// <param name="value"></param>
+        public void Set(Reg8Shadow register, byte value)
+        {
+            switch (register)
+            {
+                case Reg8Shadow.A:
+                    A2 = value;
+                    break;
+                case Reg8Shadow.B:
+                    B2 = value;
+                    break;
+                case Reg8Shadow.C:
+                    C2 = value;
+                    break;
+                case Reg8Shadow.D:
+                    D2 = value;
+                    break;
+                case Reg8Shadow.E:
+                    E2 = value;
+                    break;
+                case Reg8Shadow.H:
+                    H2 = value;
+                    break;
+                case Reg8Shadow.L:
+                    L2 = value;
+                    break;
+                case Reg8Shadow.F:
+                    F2 = value;
+                    break;
                 default:
                     throw new Exception("Unknown register " + register);
             }
