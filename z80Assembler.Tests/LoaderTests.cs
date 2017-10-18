@@ -41,6 +41,15 @@ INC D");
             Assert.Equal(0x14, machine.Memory.ReadByte(0x01));
         }
 
+        [Fact]
+        public void ItShouldBePossibleToLoadACommandWithTakesAnOperand()
+        {
+            var machine = new Machine();
+            var loader = new Loader(machine);
+            loader.LoadCommands(@"CALL 100");
+            Assert.Equal(0xcd, machine.Memory.ReadByte(0x00));
+            Assert.Equal(100, machine.Memory.ReadWord(0x01));
+        }
 
         //With one operand
         //With two operands

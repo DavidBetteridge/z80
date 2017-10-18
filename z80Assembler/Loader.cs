@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using z80vm;
 
 namespace z80Assembler
@@ -24,8 +23,12 @@ namespace z80Assembler
         public void LoadCommand(string command)
         {
             var opCode = _assembler.Parse(command);
-            _machine.Memory.Set(_nextAddress, opCode[0]);
-            _nextAddress++;
+
+            foreach (var part in opCode)
+            {
+                _machine.Memory.Set(_nextAddress, part);
+                _nextAddress++;
+            }
         }
 
         /// <summary>
@@ -34,7 +37,7 @@ namespace z80Assembler
         /// <param name="commands"></param>
         public void LoadCommands(string commands)
         {
-            foreach (var command in commands.Split(new[] { System.Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var command in commands.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
             {
                 LoadCommand(command);
             }

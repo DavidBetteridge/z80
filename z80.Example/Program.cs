@@ -8,18 +8,8 @@ namespace z80.Example
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            // Prepare the assembler
-            var assembler = new Assembler();
-
-            // Parse a single instruction,  this will return 3 bytes
-            // 0 : 0x32 - this represents the LD (nn), A instruction
-            // 1 : 0b0000_0001 - this is the higher order byte of 500
-            // 2 : 0b1111_0100 - this is the lower order byte of 500
-            var bytes = assembler.Parse("LD (500),A");
-
-
             // Prepare the machine
             var machine = new Machine();
 
@@ -39,6 +29,15 @@ HALT");
                 Console.ReadKey(true);
             }
 
+
+            // Prepare the assembler
+            var assembler = new Assembler();
+
+            // Parse a single instruction,  this will return 3 bytes
+            // 0 : 0x32 - this represents the LD (nn), A instruction
+            // 1 : 0b0000_0001 - this is the higher order byte of 500
+            // 2 : 0b1111_0100 - this is the lower order byte of 500
+            var bytes = assembler.Parse("LD (500),A");
 
             // Load an immediate value into a register
             machine.LD(Reg8.A, Read8BitValue(100));
