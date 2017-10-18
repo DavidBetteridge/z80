@@ -45,14 +45,14 @@ namespace z80.ide
             DisplayRegister("8 Bit Register", "L", _machine.Registers.Read(Reg8.L));
             DisplayRegister("8 Bit Register", "R", _machine.Registers.Read(Reg8.R));
 
-            DisplayRegister("16 But Register", "AF", _machine.Registers.Read(Reg16.AF));
-            DisplayRegister("16 But Register", "BC", _machine.Registers.Read(Reg16.BC));
-            DisplayRegister("16 But Register", "DE", _machine.Registers.Read(Reg16.DE));
-            DisplayRegister("16 But Register", "HL", _machine.Registers.Read(Reg16.HL));
-            DisplayRegister("16 But Register", "IX", _machine.Registers.Read(Reg16.IX));
-            DisplayRegister("16 But Register", "IY", _machine.Registers.Read(Reg16.IY));
-            DisplayRegister("16 But Register", "PC", _machine.Registers.Read(Reg16.PC));
-            DisplayRegister("16 But Register", "SP", _machine.Registers.Read(Reg16.SP));
+            DisplayRegister("16 Bit Register", "AF", _machine.Registers.Read(Reg16.AF));
+            DisplayRegister("16 Bit Register", "BC", _machine.Registers.Read(Reg16.BC));
+            DisplayRegister("16 Bit Register", "DE", _machine.Registers.Read(Reg16.DE));
+            DisplayRegister("16 Bit Register", "HL", _machine.Registers.Read(Reg16.HL));
+            DisplayRegister("16 Bit Register", "IX", _machine.Registers.Read(Reg16.IX));
+            DisplayRegister("16 Bit Register", "IY", _machine.Registers.Read(Reg16.IY));
+            DisplayRegister("16 Bit Register", "PC", _machine.Registers.Read(Reg16.PC));
+            DisplayRegister("16 Bit Register", "SP", _machine.Registers.Read(Reg16.SP));
 
             DisplayRegister("Shadow Register", "AF", _machine.Registers.Read(Reg16Shadow.AF));
             DisplayRegister("Shadow Register", "BC", _machine.Registers.Read(Reg16Shadow.BC));
