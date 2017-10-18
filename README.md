@@ -4,7 +4,7 @@ A z80 virtual machine
 ## Debugger
 The debugger in action
 
-![Debugger](https://github.com/davidbetteridge/z80/raw/debugger.PNG "Debugger")
+![Debugger](https://github.com/DavidBetteridge/z80/blob/master/debugger.PNG "Debugger")
 
 ## Example Program Loader
 
