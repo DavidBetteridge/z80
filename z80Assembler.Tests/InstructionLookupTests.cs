@@ -80,7 +80,7 @@ namespace z80Assembler.Tests
             var instructionLookup = new InstructionLookups();
             instructionLookup.Load();
 
-            var hex = instructionLookup.LookupHexCodeFromNormalisedCommand("NOP");
+            instructionLookup.TryLookupHexCodeFromNormalisedCommand("NOP", out var hex);
 
             Assert.Equal(0x00, hex);
         }
@@ -91,9 +91,40 @@ namespace z80Assembler.Tests
             var instructionLookup = new InstructionLookups();
             instructionLookup.Load();
 
-            var hex = instructionLookup.LookupHexCodeFromNormalisedCommand("LD BC,n");
+            instructionLookup.TryLookupHexCodeFromNormalisedCommand("LD BC,n", out var hex);
 
             Assert.Equal(0x01, hex);
+        }
+
+        [Fact]
+        public void Given_NOP_TheLengthShouldBe_1()
+        {
+            var assembler = new Assembler();
+
+
+            var length = assembler.CalculateCommandLength("NOP");
+
+            Assert.Equal(1, length);
+        }
+
+        [Fact]
+        public void Given_CallN_TheLengthShouldBe_3()
+        {
+            var assembler = new Assembler();
+
+            var length = assembler.CalculateCommandLength("CALL 123");
+
+            Assert.Equal(3, length);
+        }
+
+        [Fact]
+        public void Given_AnInvalidCommand_TheLengthShouldBe_0()
+        {
+            var assembler = new Assembler();
+
+            var length = assembler.CalculateCommandLength("RUBBISH");
+
+            Assert.Equal(0, length);
         }
     }
 }

@@ -136,9 +136,6 @@ namespace z80.ide
             scintilla.Lexer = Lexer.Asm;
             scintilla.WordChars = alphaChars + numericChars + accentedChars;
 
-            var a = (scintilla.DescribeKeywordSets());
-
-            // Console.WriteLine(scintilla.DescribeKeywordSets());
 
             //0 CPU instructions
             //1 FPU instructions
@@ -151,6 +148,8 @@ namespace z80.ide
 
             scintilla.SetKeywords(0, "adc add and bit call ccf cp cpd cpdr cpi cpir cpl daa dec di djnz ei ex exx halt im in inc ind indr ini inir jp jr ld ldd lddr ldi ldir neg nop or otdr otir out outd outi pop push res ret reti retn rl rla rlc rlca rld rr rra rrc rrca rrd rst sbc scf set sla sll sra srl sub xor");
             scintilla.SetKeywords(2, "a b c d e f");
+            scintilla.SetKeywords(6, "{");
+            scintilla.SetKeywords(7, "}");
 
             // Instruct the lexer to calculate folding
             scintilla.SetProperty("fold", "1");
@@ -192,12 +191,15 @@ namespace z80.ide
             scintilla.LexerLanguage = "asm";
             Configure();
             scintilla.Text = @"LD A, 10
+CALL 6
+LD B, 20
 LD B, 10
 ADD A, B
 HALT";
             _machine = new Machine();
             DisplayRegisters();
             DisplayMemory();
+            DisplayFlags();
         }
 
         private void Scintilla_TextChanged(object sender, EventArgs e)
@@ -215,12 +217,13 @@ HALT";
                 line.MarginText = "0x" + nextMemoryAddress.ToString("X2");
                 if (!string.IsNullOrWhiteSpace(line.Text))
                 {
-                    try
+                    var instructionCount = assembler.CalculateCommandLength(line.Text);
+                    if (instructionCount > 0)
                     {
-                        nextMemoryAddress = nextMemoryAddress + assembler.Parse(line.Text).Count;
+                        nextMemoryAddress = nextMemoryAddress + instructionCount;
                         scintilla.IndicatorClearRange(line.Position, line.Length);
                     }
-                    catch
+                    else
                     {
                         // ignored
                         scintilla.Indicators[8].Style = IndicatorStyle.Squiggle;
@@ -239,6 +242,8 @@ HALT";
         private int _currentLineNumber;
         private void cmdRun_Click(object sender, EventArgs e)
         {
+            _machine = new Machine();
+
             var loader = new Loader(_machine);
             loader.LoadCommands(scintilla.Text);
             cmdStep.Enabled = true;

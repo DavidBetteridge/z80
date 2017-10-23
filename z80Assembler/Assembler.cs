@@ -17,7 +17,12 @@ namespace z80Assembler
         {
             var results = new List<byte>();
 
-            var hex = _instructionLookups.LookupHexCodeFromNormalisedCommand(Normalise(command));
+            if (!_instructionLookups.TryLookupHexCodeFromNormalisedCommand(Normalise(command), out var hex))
+            {
+                //Invalid command
+                return results;
+            }
+
             if (hex.Second() != 0) results.Add(hex.Second());
             if (hex.Third() != 0) results.Add(hex.Third());
             results.Add(hex.Final());
@@ -63,6 +68,37 @@ namespace z80Assembler
             command = Regex.Replace(command, "[0-9]+", "n");
             command = command.Trim();
             return command;
+        }
+
+        public int CalculateCommandLength(string command)
+        {
+            var cmd = Normalise(command);
+            if (!_instructionLookups.TryLookupHexCodeFromNormalisedCommand(Normalise(command), out var hex))
+            {
+                // Try again, but this time searching for nn rather than n
+                cmd = cmd.Replace("n", "nn");
+                if (!_instructionLookups.TryLookupHexCodeFromNormalisedCommand(Normalise(command), out hex))
+                {
+                    return 0;
+                }
+            }
+            
+            cmd = _instructionLookups.LookupCommandFromHexCode(hex);
+
+            var result = 1;
+            if (cmd.Contains("nn"))
+            {
+                result+=2;
+                cmd = cmd.Replace("nn", "");
+            }
+
+            if (cmd.Contains("n"))
+            {
+                result++;
+                cmd = cmd.Replace("n", "");
+            }
+
+            return result;
         }
     }
 }

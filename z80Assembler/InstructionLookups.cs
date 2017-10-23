@@ -58,24 +58,40 @@ namespace z80Assembler
             }
         }
 
-        public int LookupHexCodeFromNormalisedCommand(string normal)
+        public bool TryLookupHexCodeFromNormalisedCommand(string normal, out int hexCode)
         {
             if (normals.ContainsKey(normal))
-                return normals[normal].Hex;
+            {
+                hexCode = normals[normal].Hex;
+                return true;
+            }
 
             if (dds.ContainsKey(normal))
-                return 0xDD00 | dds[normal].Hex;
+            {
+                hexCode = 0xDD00 | dds[normal].Hex;
+                return true;
+            }
 
             if (cbs.ContainsKey(normal))
-                return 0xCB00 | cbs[normal].Hex;
+            {
+                hexCode = 0xCB00 | cbs[normal].Hex;
+                return true;
+            }
 
             if (eds.ContainsKey(normal))
-                return 0xED00 | eds[normal].Hex;
+            {
+                hexCode = 0xED00 | eds[normal].Hex;
+                return true;
+            }
 
             if (ddcbs.ContainsKey(normal))
-                return 0xDDCB00 | ddcbs[normal].Hex;
+            {
+                hexCode = 0xDDCB00 | ddcbs[normal].Hex;
+                return true;
+            }
 
-            throw new ParseException("Invalid command");
+            hexCode = 0;
+            return false;
         }
 
         public int Count()
@@ -105,5 +121,7 @@ namespace z80Assembler
                     return byHexCode[hexCode.Final()].Normal;
             }
         }
+
+
     }
 }

@@ -157,13 +157,12 @@ namespace z80Assembler.Tests
         }
 
         [Fact]
-        public void An_Invalid_Command_Show_Throw_An_Error()
+        public void An_Invalid_Command_Returns_No_Instructions()
         {
             var assembler = new Assembler();
-            
-            var exception = Record.Exception(() => assembler.Parse("ADD B,A"));
-            Assert.IsType<ParseException>(exception);
-            Assert.Equal("Invalid command", exception.Message);
+
+            var instructions = assembler.Parse("ADD B,A");
+            Assert.Empty(instructions);
         }
     }
 }
