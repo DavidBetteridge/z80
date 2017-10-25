@@ -17,11 +17,9 @@ namespace z80Assembler
         {
             var results = new List<byte>();
 
-            if (!_instructionLookups.TryLookupHexCodeFromNormalisedCommand(Normalise(command), out var hex))
-            {
-                //Invalid command
-                return results;
-            }
+            var cmd = _instructionLookups.TryLookupHexCodeFromNormalisedCommand(Normalise(command));
+            if (cmd == null) return results;//Invalid command
+            var hex = cmd.HexCode;
 
             if (hex.Second() != 0) results.Add(hex.Second());
             if (hex.Third() != 0) results.Add(hex.Third());
@@ -35,21 +33,34 @@ namespace z80Assembler
 
             var operands = withOutCommand.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
 
-            foreach (var operand in operands)
+            if (operands.Length > 0)
             {
-                ParseOperand(results, operand);
+                ParseOperand(results, operands[0], cmd.Operand1Size);
+            }
+
+            if (operands.Length > 1)
+            {
+                ParseOperand(results, operands[1], cmd.Operand2Size);
             }
 
             return results;
         }
 
-        private static void ParseOperand(List<byte> results, string operand)
+        private static void ParseOperand(List<byte> results, string operand, int operandSize)
         {
             operand = operand.Trim();
 
             // Immediate Value n == byte
             if (Regex.IsMatch(operand, "^[0-9]*$"))
-                results.Add(byte.Parse(operand));
+            {
+                var v = ushort.Parse(operand);
+                results.Add(v.Low());
+
+                if (operandSize == 2)
+                {
+                    results.Add(v.High());
+                }
+            }
 
             // Memory Address (nn) == 2 bytes
             if (Regex.IsMatch(operand, @"^\([0-9]*\)$"))
@@ -73,32 +84,12 @@ namespace z80Assembler
         public int CalculateCommandLength(string command)
         {
             var cmd = Normalise(command);
-            if (!_instructionLookups.TryLookupHexCodeFromNormalisedCommand(Normalise(command), out var hex))
+            var info = _instructionLookups.TryLookupHexCodeFromNormalisedCommand(Normalise(command));
+            if (info == null)
             {
-                // Try again, but this time searching for nn rather than n
-                cmd = cmd.Replace("n", "nn");
-                if (!_instructionLookups.TryLookupHexCodeFromNormalisedCommand(Normalise(command), out hex))
-                {
-                    return 0;
-                }
+                return 0;
             }
-            
-            cmd = _instructionLookups.LookupCommandFromHexCode(hex);
-
-            var result = 1;
-            if (cmd.Contains("nn"))
-            {
-                result+=2;
-                cmd = cmd.Replace("nn", "");
-            }
-
-            if (cmd.Contains("n"))
-            {
-                result++;
-                cmd = cmd.Replace("n", "");
-            }
-
-            return result;
+            return info.Length;
         }
     }
 }

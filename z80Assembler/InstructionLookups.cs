@@ -58,40 +58,40 @@ namespace z80Assembler
             }
         }
 
-        public bool TryLookupHexCodeFromNormalisedCommand(string normal, out int hexCode)
+        public InstructionInfo TryLookupHexCodeFromNormalisedCommand(string normal)
         {
-            if (normals.ContainsKey(normal))
+            for (int i = 0; i < 2; i++)
             {
-                hexCode = normals[normal].Hex;
-                return true;
-            }
+                if (normals.ContainsKey(normal))
+                {
+                    return new InstructionInfo(normals[normal].Hex, this);
+                }
 
-            if (dds.ContainsKey(normal))
-            {
-                hexCode = 0xDD00 | dds[normal].Hex;
-                return true;
-            }
+                if (dds.ContainsKey(normal))
+                {
+                    return new InstructionInfo(0xDD00 | dds[normal].Hex, this);
+                }
 
-            if (cbs.ContainsKey(normal))
-            {
-                hexCode = 0xCB00 | cbs[normal].Hex;
-                return true;
-            }
+                if (cbs.ContainsKey(normal))
+                {
+                    return new InstructionInfo(0xCB00 | cbs[normal].Hex, this);
+                }
 
-            if (eds.ContainsKey(normal))
-            {
-                hexCode = 0xED00 | eds[normal].Hex;
-                return true;
-            }
+                if (eds.ContainsKey(normal))
+                {
+                    return new InstructionInfo(0xED00 | eds[normal].Hex, this);
+                }
 
-            if (ddcbs.ContainsKey(normal))
-            {
-                hexCode = 0xDDCB00 | ddcbs[normal].Hex;
-                return true;
-            }
+                if (ddcbs.ContainsKey(normal))
+                {
+                    return new InstructionInfo(0xDDCB00 | ddcbs[normal].Hex, this);
+                }
 
-            hexCode = 0;
-            return false;
+                // The command could except a ushort but we have only been given a single byte
+                // so we need to check again.
+                normal = normal.Replace("n", "nn");
+            }
+            return null;
         }
 
         public int Count()

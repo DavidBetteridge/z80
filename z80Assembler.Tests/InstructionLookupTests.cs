@@ -80,9 +80,9 @@ namespace z80Assembler.Tests
             var instructionLookup = new InstructionLookups();
             instructionLookup.Load();
 
-            instructionLookup.TryLookupHexCodeFromNormalisedCommand("NOP", out var hex);
+            var info = instructionLookup.TryLookupHexCodeFromNormalisedCommand("NOP");
 
-            Assert.Equal(0x00, hex);
+            Assert.Equal(0x00, info.HexCode);
         }
 
         [Fact]
@@ -91,9 +91,9 @@ namespace z80Assembler.Tests
             var instructionLookup = new InstructionLookups();
             instructionLookup.Load();
 
-            instructionLookup.TryLookupHexCodeFromNormalisedCommand("LD BC,n", out var hex);
+            var info = instructionLookup.TryLookupHexCodeFromNormalisedCommand("LD BC,n");
 
-            Assert.Equal(0x01, hex);
+            Assert.Equal(0x01, info.HexCode);
         }
 
         [Fact]
@@ -125,6 +125,42 @@ namespace z80Assembler.Tests
             var length = assembler.CalculateCommandLength("RUBBISH");
 
             Assert.Equal(0, length);
+        }
+
+        [Fact]
+        public void Given_NOP_Then_Operand1_Size_Should_be_0_And_Operand2_Should_Be_0()
+        {
+            var instructionLookup = new InstructionLookups();
+            instructionLookup.Load();
+
+            var info = instructionLookup.TryLookupHexCodeFromNormalisedCommand("NOP");
+
+            Assert.Equal(0, info.Operand1Size);
+            Assert.Equal(0, info.Operand2Size);
+        }
+
+        [Fact]
+        public void Given_Call_100_Then_Operand1_Size_Should_be_2_And_Operand2_Should_Be_0()
+        {
+            var instructionLookup = new InstructionLookups();
+            instructionLookup.Load();
+            
+            var info = instructionLookup.TryLookupHexCodeFromNormalisedCommand("CALL n");
+
+            Assert.Equal(2, info.Operand1Size);
+            Assert.Equal(0, info.Operand2Size);
+        }
+
+        [Fact]
+        public void Given_LD_BC_n_Then_Operand1_Size_Should_be_0_And_Operand2_Should_Be_1()
+        {
+            var instructionLookup = new InstructionLookups();
+            instructionLookup.Load();
+
+            var info = instructionLookup.TryLookupHexCodeFromNormalisedCommand("LD BC,n");
+
+            Assert.Equal(0, info.Operand1Size);
+            Assert.Equal(2, info.Operand2Size);
         }
     }
 }
