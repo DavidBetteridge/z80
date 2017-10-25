@@ -191,7 +191,7 @@ namespace z80.ide
             scintilla.LexerLanguage = "asm";
             Configure();
             scintilla.Text = @"LD A, 10
-CALL 6
+CALL 7
 LD B, 20
 LD B, 10
 ADD A, B
@@ -239,7 +239,8 @@ HALT";
             }
         }
 
-        private int _currentLineNumber;
+        private Line _currentLine;
+
         private void cmdRun_Click(object sender, EventArgs e)
         {
             _machine = new Machine();
@@ -249,8 +250,13 @@ HALT";
             cmdStep.Enabled = true;
             _commandRunner = new CommandRunner(_machine);
 
-            _currentLineNumber = 0;
-            scintilla.Lines[_currentLineNumber].MarkerAdd(CURRENTLINE_MARKER);
+            if (_currentLine !=  null)
+            {
+                this._currentLine.MarkerDelete(CURRENTLINE_MARKER);
+            }
+
+            _currentLine = scintilla.Lines[0];
+            _currentLine.MarkerAdd(CURRENTLINE_MARKER);
 
             DisplayRegisters();
             DisplayMemory();
@@ -264,9 +270,20 @@ HALT";
             DisplayMemory();
             DisplayFlags();
 
-            scintilla.Lines[_currentLineNumber].MarkerDelete(CURRENTLINE_MARKER);
-            _currentLineNumber++;
-            scintilla.Lines[_currentLineNumber].MarkerAdd(CURRENTLINE_MARKER);
+            this._currentLine.MarkerDelete(CURRENTLINE_MARKER);
+
+            // Find the line with the same memory address as the program counter
+            var pc = _machine.Registers.Read(Reg16.PC);
+            foreach (var line in scintilla.Lines)
+            {
+                if (line.MarginText == "0x" + pc.ToString("X2"))
+                {
+                    line.MarkerAdd(CURRENTLINE_MARKER);
+                    _currentLine = line;
+                    break;
+                }
+            }
+
         }
     }
 }
