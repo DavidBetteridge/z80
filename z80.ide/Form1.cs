@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using ScintillaNET;
 using z80Assembler;
@@ -248,29 +242,29 @@ HALT";
             var loader = new Loader(_machine);
             loader.LoadCommands(scintilla.Text);
             cmdStep.Enabled = true;
+
             _commandRunner = new CommandRunner(_machine);
-
-            if (_currentLine !=  null)
-            {
-                this._currentLine.MarkerDelete(CURRENTLINE_MARKER);
-            }
-
-            _currentLine = scintilla.Lines[0];
-            _currentLine.MarkerAdd(CURRENTLINE_MARKER);
-
-            DisplayRegisters();
-            DisplayMemory();
-            DisplayFlags();
+            Display();
         }
 
         private void cmdStep_Click(object sender, EventArgs e)
         {
             _commandRunner.RunNextCommand();
+            Display();
+
+        }
+
+        private void Display()
+        {
             DisplayRegisters();
             DisplayMemory();
             DisplayFlags();
 
-            this._currentLine.MarkerDelete(CURRENTLINE_MARKER);
+            if (_currentLine != null)
+            {
+                // Remove the marker from the previous line
+                this._currentLine.MarkerDelete(CURRENTLINE_MARKER);
+            }
 
             // Find the line with the same memory address as the program counter
             var pc = _machine.Registers.Read(Reg16.PC);
@@ -283,7 +277,6 @@ HALT";
                     break;
                 }
             }
-
         }
     }
 }

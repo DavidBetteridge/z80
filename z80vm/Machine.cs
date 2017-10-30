@@ -15,7 +15,6 @@ namespace z80vm
 
 
         public Flags Flags { get; private set; }
-        public Labels Labels { get; private set; }
 
         #region NOP
         /// <summary>
@@ -120,7 +119,6 @@ namespace z80vm
             this.Registers = new Registers();
             this.Memory = new Memory();
             this.Flags = new Flags(this.Registers);
-            this.Labels = new Labels();
             this.conditionValidator = new ConditionValidator();
             this.flagsEvaluator = new FlagsEvaluator();
             this.commandValidator = new CommandValidator();
@@ -373,19 +371,6 @@ namespace z80vm
         }
 
         /// <summary>
-        /// Usage: When arriving at any of these intructions, execution is immediately continued from the location pointed to by the label
-        /// Flags: Preserved 
-        /// </summary>
-        /// <param name="label"></param>
-        public void JP(string label)
-        {
-            var memoryAddress = this.Labels.Read(label);
-            this.JP(memoryAddress);
-        }
-
-
-
-        /// <summary>
         /// Usage: If the operand is a register reference(e.g.jp (hl)), it means that the value of the register will be loaded into PC directly
         /// Flags: Preserved 
         /// </summary>
@@ -419,18 +404,6 @@ namespace z80vm
             }
         }
 
-        /// <summary>
-        /// Usage: When arriving at any of these intructions, execution is immediately continued from the location pointed to by the label
-        /// Flags: Preserved 
-        /// </summary>
-        /// <param name="label"></param>
-        public void JP(Condition condition, string label)
-        {
-            if (this.conditionValidator.IsTrue(this.Flags, condition))
-            {
-                this.JP(label);
-            }
-        }
         #endregion
 
         #region RET
@@ -482,36 +455,6 @@ namespace z80vm
                 this.CALL(memoryAddress);
             }
         }
-
-
-
-        /// <summary>
-        /// Usage: Change the address of execution whilst saving the return address on the stack
-        /// Flags: Preserved
-        /// </summary>
-        /// <param name="label"></param>
-        /// <param name="condition"></param>
-        public void CALL(string label, Condition condition)
-        {
-            if (this.conditionValidator.IsTrue(this.Flags, condition))
-            {
-                this.CALL(label);
-            }
-        }
-
-
-
-        /// <summary>
-        /// Usage: Change the address of execution whilst saving the return address on the stack
-        /// Flags: Preserved
-        /// </summary>
-        /// <param name="label"></param>
-        public void CALL(string label)
-        {
-            var memoryAddress = this.Labels.Read(label);
-            this.CALL(memoryAddress);
-        }
-
 
         #endregion
 

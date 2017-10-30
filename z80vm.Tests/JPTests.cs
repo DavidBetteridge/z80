@@ -13,17 +13,6 @@ namespace z80vm.Tests
             Assert.Equal(0xAAAA, machine.Registers.Read(Reg16.PC));
         }
 
-        [Fact]
-        public void CheckThatTheProgramCounterIsChangedToTheMemoryAddressPointedToByTheLabel()
-        {
-            var machine = CreateMachine();
-            machine.Labels.Set("ROUTINE", 0xBBBB);
-            machine.Registers.Set(Reg16.PC, 0x1000);
-            machine.JP("ROUTINE");
-
-            Assert.Equal(0xBBBB, machine.Registers.Read(Reg16.PC));
-        }
-
 
         [Theory]
         [InlineData(Reg16.HL)]
@@ -77,34 +66,6 @@ namespace z80vm.Tests
             Assert.NotEqual(0xAAAA, machine.Registers.Read(Reg16.PC));
         }
 
-        [Fact]
-        public void CheckThatTheProgramCounterIsChangedToTheMemoryAddressPointedToByTheLabelWhenTheConditionIsTrue()
-        {
-            const Condition ANY_CONDITION = Condition.c;
-
-            var machine = CreateMachineWhereAllConditionsAreValid();
-
-
-            machine.Labels.Set("ROUTINE", 0xBBBB);
-            machine.Registers.Set(Reg16.PC, 0x1000);
-            machine.JP(ANY_CONDITION, "ROUTINE");
-
-            Assert.Equal(0xBBBB, machine.Registers.Read(Reg16.PC));
-        }
-
-        [Fact]
-        public void CheckThatTheProgramCounterIsntChangedToTheMemoryAddressPointedToByTheLabelWhenTheConditionIsFalse()
-        {
-            const Condition ANY_CONDITION = Condition.c;
-
-            var machine = CreateMachineWhereAllConditionsAreInvalid();
-
-            machine.Labels.Set("ROUTINE", 0xBBBB);
-            machine.Registers.Set(Reg16.PC, 0x1000);
-            machine.JP(ANY_CONDITION, "ROUTINE");
-
-            Assert.NotEqual(0xBBBB, machine.Registers.Read(Reg16.PC));
-        }
 
     }
 }

@@ -99,7 +99,6 @@
     <Compile Include="INCTests.cs" />
     <Compile Include="JPTests.cs" />
     <Compile Include="JRTests.cs" />
-    <Compile Include="LabelTests.cs" />
     <Compile Include="LDDTests.cs" />
     <Compile Include="LDDRTests.cs" />
     <Compile Include="LDIRTests.cs" />

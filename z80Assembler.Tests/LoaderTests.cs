@@ -1,5 +1,6 @@
 ﻿using Xunit;
 using z80vm;
+using System.Linq;
 
 namespace z80Assembler.Tests
 {
@@ -49,6 +50,39 @@ INC D");
             loader.LoadCommands(@"CALL 100");
             Assert.Equal(0xcd, machine.Memory.ReadByte(0x00));
             Assert.Equal(100, machine.Memory.ReadWord(0x01));
+        }
+
+
+        [Fact]
+        public void ItShouldBePossibleToReplaceTheListOfDefinedLabels()
+        {
+            var machine = new Machine();
+            var loader = new Loader(machine);
+            loader.LoadCommands(@"CALL JumpTo
+JumpTo: INC C");
+            Assert.Single(loader.Labels);
+            Assert.Equal("JumpTo", loader.Labels.First().Key);
+        }
+
+        [Fact]
+        public void ItShouldBePossibleToParseACommandWithALabelIn()
+        {
+            var machine = new Machine();
+            var loader = new Loader(machine);
+            loader.LoadCommands(@"CALL JumpTo
+JumpTo: INC C");
+            Assert.Equal(0xcd, machine.Memory.ReadByte(0x00));
+        }
+
+        [Fact]
+        public void ItShouldBePossibleToReplaceALabelWithAMemoryAddress()
+        {
+            var machine = new Machine();
+            var loader = new Loader(machine);
+            loader.LoadCommands(@"CALL JumpTo
+JumpTo: INC C");
+            Assert.Equal(0xcd, machine.Memory.ReadByte(0x00));
+            Assert.Equal(0x3, machine.Memory.ReadWord(0x01));
         }
 
         //With one operand
