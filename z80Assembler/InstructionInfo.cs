@@ -25,8 +25,33 @@ namespace z80Assembler
         /// </summary>
         public int Operand2Size { get; set; }
 
+        /// <summary>
+        /// Amount of memory the third operand requires,  could be 0, 1 or 2 bytes
+        /// </summary>
+        public int Operand3Size { get; set; }
+
+
         public InstructionInfo(int hexCode, InstructionLookups InstructionLookup)
         {
+            int GetOperandSize(string operand)
+            {
+                switch (operand)
+                {
+                    case "(n)":
+                    case "n":
+                    case "(IX+d)":
+                        return 1;
+
+                    case "(nn)":
+                    case "nn":
+                        return 2;
+
+                    default:
+                        return 0;
+                }
+            }
+
+
             this.HexCode = hexCode;
 
             var cmd = InstructionLookup.LookupCommandFromHexCode(hexCode);
@@ -39,50 +64,30 @@ namespace z80Assembler
 
             var operands = withOutCommand.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
 
+
             if (operands.Length > 0)
             {
-                switch (operands[0])
-                {
-                    case "n":
-                        this.Operand1Size = 1;
-                        break;
-                    case "nn":
-                        this.Operand1Size = 2;
-                        break;
-                    default:
-                        this.Operand1Size = 0;
-                        break;
-                }
+                this.Operand1Size = GetOperandSize(operands[0]);
             }
 
             if (operands.Length > 1)
             {
-                switch (operands[1])
-                {
-                    case "n":
-                        this.Operand2Size = 1;
-                        break;
-                    case "nn":
-                        this.Operand2Size = 2;
-                        break;
-                    default:
-                        this.Operand2Size = 0;
-                        break;
-                }
+                this.Operand2Size = GetOperandSize(operands[1]);
             }
 
-            this.Length = 1 + this.Operand1Size + this.Operand2Size;
-            //if (cmd.Contains("nn"))
-            //{
-            //    Length += 2;
-            //    cmd = cmd.Replace("nn", "");
-            //}
+            if (operands.Length > 2)
+            {
+                this.Operand3Size = GetOperandSize(operands[2]);
+            }
 
-            //if (cmd.Contains("n"))
-            //{
-            //    Length++;
-            //    cmd = cmd.Replace("n", "");
-            //}
+            if (hexCode.Second() != 0)
+                this.Length = 3;
+            else if (hexCode.Third() != 0)
+                this.Length = 2;
+            else
+                this.Length = 1;
+
+            this.Length += this.Operand1Size + this.Operand2Size + this.Operand3Size;
         }
     }
 }

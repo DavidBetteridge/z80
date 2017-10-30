@@ -27,16 +27,28 @@ DAA - Started
 
 Parser
 ------
-Support Labels
-RST commands
+Given a list of commands,  and a base memory address
+	Returns a list of ParsedCommand
+		IsValid Yes/No
+		Memory Address
+		Labels replaced
+
+Loader
+------
+	Is given a list of parsed commands
+	Loads them into the z80 memory
+
+Runner
+------
+	Runs the next command specifed by the PC
 
 Issues
 ------
 Use var operand = new Moq.Mock<Iop8>(); in existing tests
+RST commands
 
 Bigger Bits
 -----------
-Runner 
 Interupts
 
 

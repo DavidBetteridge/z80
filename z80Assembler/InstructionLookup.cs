@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace z80Assembler
+﻿namespace z80Assembler
 {
     public class InstructionLookup
     {
@@ -30,7 +28,6 @@ namespace z80Assembler
                 .Trim()
                 .Replace(", ", ",")
                 .Replace("*", "");
-                //.Replace("nn", "n");
 
             while (cleaned.Contains("  "))
                 cleaned = cleaned.Replace("  ", " ");

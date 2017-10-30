@@ -19,6 +19,17 @@ namespace z80Assembler
 
         public void Load()
         {
+            string cleanDD(string DD)
+            {
+                //Remove the leading + if present.  ie.  +LD   D,n becomes LD   D,n
+                if (DD.StartsWith("+")) DD = DD.Substring(1);
+
+                // Remove nn with n and +d with +n
+                DD = DD.Replace("nn", "n").Replace("+d", "+n");
+
+                return DD;
+            }
+
             var assembly = typeof(InstructionLookups).GetTypeInfo().Assembly;
             var resourceName = "z80Assembler.z80Instructions.txt";
             using (var stream = assembly.GetManifestResourceStream(resourceName))
@@ -34,7 +45,8 @@ namespace z80Assembler
                             .ToArray();
 
                 this.normals = lines.ToDictionary(a => a.Normal.Replace("nn", "n"));
-                this.dds = lines.ToDictionary(a => a.DDPrefix.Replace("nn", "n"));
+
+                this.dds = lines.ToDictionary(a => cleanDD(a.DDPrefix));
                 this.cbs = lines.ToDictionary(a => a.CBPrefix.Replace("nn", "n"));
 
                 // This column contains a number of repeated commands,  hence the need for a manual loop
@@ -48,8 +60,11 @@ namespace z80Assembler
                 this.ddcbs = new Dictionary<string, InstructionLookup>();
                 foreach (var op in lines)
                 {
-                    if (!this.ddcbs.ContainsKey(op.DDCBPrefix.Replace("nn", "n")))
-                        this.ddcbs.Add(op.DDCBPrefix.Replace("nn", "n"), op);
+                    var clean = op.DDCBPrefix
+                                    .Replace("nn", "n")
+                                    .Replace("+d", "+n");
+                    if (!this.ddcbs.ContainsKey(clean))
+                        this.ddcbs.Add(clean, op);
                 }
 
                 this.byHexCode = lines.ToDictionary(a => a.Hex);

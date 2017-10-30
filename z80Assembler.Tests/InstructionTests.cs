@@ -148,7 +148,7 @@ namespace z80Assembler.Tests
         {
             var assembler = new Assembler();
 
-            var instructions = assembler.Parse("LD    L,RRC (IX+d)");
+            var instructions = assembler.Parse("LD    L,RRC (IX+n)");
 
             Assert.Equal(3, instructions.Count());
             Assert.Equal(0xDD, instructions.First());

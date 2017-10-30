@@ -203,21 +203,22 @@ HALT";
 
         private void UpdateLineNumbers()
         {
-            var assembler = new Assembler();
-            var nextMemoryAddress = 0;
+            if (string.IsNullOrWhiteSpace(scintilla.Text)) return;
+
+            var parser = new Parser();
+            var commands = parser.Parse(0, scintilla.Text);
+
+            var l = 0;
             foreach (var line in scintilla.Lines)
             {
+                var command = commands[l];
+                l++;
+
                 line.MarginStyle = Style.LineNumber;
-                line.MarginText = "0x" + nextMemoryAddress.ToString("X2");
+                line.MarginText = "0x" + command.MemoryLocation.ToString("X2");
                 if (!string.IsNullOrWhiteSpace(line.Text))
                 {
-                    var instructionCount = assembler.CalculateCommandLength(line.Text);
-                    if (instructionCount > 0)
-                    {
-                        nextMemoryAddress = nextMemoryAddress + instructionCount;
-                        scintilla.IndicatorClearRange(line.Position, line.Length);
-                    }
-                    else
+                    if (command.IsInValid)
                     {
                         // ignored
                         scintilla.Indicators[8].Style = IndicatorStyle.Squiggle;
@@ -228,6 +229,10 @@ HALT";
 
                         // Fill ranges
                         scintilla.IndicatorFillRange(line.Position, line.Length);
+                    }
+                    else
+                    {
+                        scintilla.IndicatorClearRange(line.Position, line.Length);
                     }
                 }
             }
