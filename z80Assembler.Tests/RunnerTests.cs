@@ -30,6 +30,17 @@ namespace z80Assembler.Tests
             commandRunner.RunCommand("NOP");
         }
 
+
+        [Fact]
+        public void Running_The_HALT_Command_Should_Return_True()
+        {
+            var machine = new Machine();
+            var commandRunner = new CommandRunner(machine);
+            var actualResult = commandRunner.RunCommand("HALT");
+
+            Assert.True(actualResult);
+        }
+
         [Fact]
         public void ADD_A_B_Should_Invoke_The_Add_A_B_Command()
         {
@@ -157,6 +168,19 @@ namespace z80Assembler.Tests
             commandRunner.RunNextCommand();
 
             Assert.Equal(133, machine.Registers.Read(Reg8.A));
+        }
+
+        [Fact]
+        public void Running_The_HALT_Command_Should_Return_TRUE()
+        {
+            var machine = new Machine();
+            machine.Registers.Set(Reg16.PC, 12);
+            machine.Memory.Set(12, 0x76);
+
+            var commandRunner = new CommandRunner(machine);
+            var actualResult = commandRunner.RunNextCommand();
+
+            Assert.True(actualResult);
         }
     }
 }

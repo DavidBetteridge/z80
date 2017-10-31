@@ -13,6 +13,7 @@ LDDR
 LDI
 DIR
 NOP (that was tricky)
+HALT
 
 Part Completed Commands
 ------------------
@@ -25,22 +26,6 @@ LD - Support for flag P/V flag,  Restrictions
 SUB - Started
 DAA - Started
 
-Parser
-------
-Given a list of commands,  and a base memory address
-	Returns a list of ParsedCommand
-		IsValid Yes/No
-		Memory Address
-		Labels replaced
-
-Loader
-------
-	Is given a list of parsed commands
-	Loads them into the z80 memory
-
-Runner
-------
-	Runs the next command specifed by the PC
 
 Issues
 ------

@@ -1,92 +1,140 @@
 ﻿using Xunit;
 using z80vm;
-using System.Linq;
+using System.Collections.Generic;
 
 namespace z80Assembler.Tests
 {
     public class LoaderTests
     {
-
         [Theory]
-        [InlineData("INC C", 0x0c)]
-        [InlineData("INC D", 0x14)]
-        public void ItShouldBePossibleToLoadASimpleCommandIntoMemory(string command, byte opcode)
+        [InlineData(0x0c)]
+        [InlineData(0x14)]
+        public void Given_A_Single_OneByte_Command_It_Should_Be_Loaded_Into_Memory(int opCode)
         {
             var machine = new Machine();
             var loader = new Loader(machine);
-            loader.LoadCommand(command);
+            var parsedCommand = new ParsedCommand()
+            {
+                OpCode = opCode,
+                TotalLength = 1
+            };
+            var parsedCommands = new List<ParsedCommand>() { parsedCommand };
 
-            Assert.Equal(opcode, machine.Memory.ReadByte(0x00));
-        }
+            loader.LoadCommands(parsedCommands);
 
-        [Fact]
-        public void ItShouldBePossibleToLoadTwoSimpleCommandsIntoMemory()
-        {
-            var machine = new Machine();
-            var loader = new Loader(machine);
-            loader.LoadCommand("INC C");
-            loader.LoadCommand("INC D");
-
-            Assert.Equal(0x0c, machine.Memory.ReadByte(0x00));
-            Assert.Equal(0x14, machine.Memory.ReadByte(0x01));
-        }
-
-        [Fact]
-        public void ItShouldBePossibleToLoadTwoSimpleCommandsAtOnce()
-        {
-            var machine = new Machine();
-            var loader = new Loader(machine);
-            loader.LoadCommands(@"INC C
-INC D");
-            Assert.Equal(0x0c, machine.Memory.ReadByte(0x00));
-            Assert.Equal(0x14, machine.Memory.ReadByte(0x01));
-        }
-
-        [Fact]
-        public void ItShouldBePossibleToLoadACommandWithTakesAnOperand()
-        {
-            var machine = new Machine();
-            var loader = new Loader(machine);
-            loader.LoadCommands(@"CALL 100");
-            Assert.Equal(0xcd, machine.Memory.ReadByte(0x00));
-            Assert.Equal(100, machine.Memory.ReadWord(0x01));
+            Assert.Equal(opCode, machine.Memory.ReadByte(0x00));
         }
 
 
         [Fact]
-        public void ItShouldBePossibleToReplaceTheListOfDefinedLabels()
+        public void Given_A_Single_Command_With_Operand1_It_Should_Be_Loaded_Into_Memory()
         {
             var machine = new Machine();
             var loader = new Loader(machine);
-            loader.LoadCommands(@"CALL JumpTo
-JumpTo: INC C");
-            Assert.Single(loader.Labels);
-            Assert.Equal("JumpTo", loader.Labels.First().Key);
+            var parsedCommand = new ParsedCommand()
+            {
+                OpCode = 0xAA,
+                Operand1 = 0xBBCC,
+                Operand1Length = 2,
+                TotalLength = 3
+            };
+            var parsedCommands = new List<ParsedCommand>() { parsedCommand };
+
+            loader.LoadCommands(parsedCommands);
+
+            Assert.Equal(0xAA, machine.Memory.ReadByte(0x00));
+            Assert.Equal(0xBBCC, machine.Memory.ReadWord(0x01));
         }
 
         [Fact]
-        public void ItShouldBePossibleToParseACommandWithALabelIn()
+        public void Given_A_Single_Command_With_Operand2_It_Should_Be_Loaded_Into_Memory()
         {
             var machine = new Machine();
             var loader = new Loader(machine);
-            loader.LoadCommands(@"CALL JumpTo
-JumpTo: INC C");
-            Assert.Equal(0xcd, machine.Memory.ReadByte(0x00));
+            var parsedCommand = new ParsedCommand()
+            {
+                OpCode = 0xAA,
+                Operand2 = 0xBBCC,
+                Operand2Length = 2,
+                TotalLength = 3
+            };
+            var parsedCommands = new List<ParsedCommand>() { parsedCommand };
+
+            loader.LoadCommands(parsedCommands);
+
+            Assert.Equal(0xAA, machine.Memory.ReadByte(0x00));
+            Assert.Equal(0xBBCC, machine.Memory.ReadWord(0x01));
+        }
+
+
+        [Fact]
+        public void Given_A_Single_Command_With_Operand3_It_Should_Be_Loaded_Into_Memory()
+        {
+            var machine = new Machine();
+            var loader = new Loader(machine);
+            var parsedCommand = new ParsedCommand()
+            {
+                OpCode = 0xAA,
+                Operand3 = 0xBBCC,
+                Operand3Length = 2,
+                TotalLength = 3
+            };
+            var parsedCommands = new List<ParsedCommand>() { parsedCommand };
+
+            loader.LoadCommands(parsedCommands);
+
+            Assert.Equal(0xAA, machine.Memory.ReadByte(0x00));
+            Assert.Equal(0xBBCC, machine.Memory.ReadWord(0x01));
         }
 
         [Fact]
-        public void ItShouldBePossibleToReplaceALabelWithAMemoryAddress()
+        public void Given_Multiple_OneByte_Commands_They_Should_Be_Loaded_Into_Memory_One_After_Another()
         {
             var machine = new Machine();
             var loader = new Loader(machine);
-            loader.LoadCommands(@"CALL JumpTo
-JumpTo: INC C");
-            Assert.Equal(0xcd, machine.Memory.ReadByte(0x00));
-            Assert.Equal(0x3, machine.Memory.ReadWord(0x01));
+            var parsedCommand1 = new ParsedCommand()
+            {
+                OpCode = 0x0a,
+                TotalLength = 1
+            };
+            var parsedCommand2 = new ParsedCommand()
+            {
+                OpCode = 0x0b,
+                TotalLength = 1
+            };
+            var parsedCommands = new List<ParsedCommand>() { parsedCommand1, parsedCommand2 };
+
+            loader.LoadCommands(parsedCommands);
+
+            Assert.Equal(0x0a, machine.Memory.ReadByte(0x00));
+            Assert.Equal(0x0b, machine.Memory.ReadByte(0x01));
         }
 
-        //With one operand
-        //With two operands
-        //Two commands with operands
+
+        [Fact]
+        public void Given_Multiple_Varying_Size_Commands_They_Should_Be_Loaded_Into_Memory_One_After_Another()
+        {
+            var machine = new Machine();
+            var loader = new Loader(machine);
+            var parsedCommand1 = new ParsedCommand()
+            {
+                OpCode = 0xCCBBAA,
+                TotalLength = 3
+            };
+            var parsedCommand2 = new ParsedCommand()
+            {
+                OpCode = 0xEEDD,
+                TotalLength = 2
+            };
+            var parsedCommands = new List<ParsedCommand>() { parsedCommand1, parsedCommand2 };
+
+            loader.LoadCommands(parsedCommands);
+
+            Assert.Equal(0xAA, machine.Memory.ReadByte(0x00));
+            Assert.Equal(0xBB, machine.Memory.ReadByte(0x01));
+            Assert.Equal(0xCC, machine.Memory.ReadByte(0x02));
+            Assert.Equal(0xDD, machine.Memory.ReadByte(0x03));
+            Assert.Equal(0xEE, machine.Memory.ReadByte(0x04));
+        }
     }
 }

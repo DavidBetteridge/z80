@@ -97,37 +97,6 @@ namespace z80Assembler.Tests
         }
 
         [Fact]
-        public void Given_NOP_TheLengthShouldBe_1()
-        {
-            var assembler = new Assembler();
-
-
-            var length = assembler.CalculateCommandLength("NOP");
-
-            Assert.Equal(1, length);
-        }
-
-        [Fact]
-        public void Given_CallN_TheLengthShouldBe_3()
-        {
-            var assembler = new Assembler();
-
-            var length = assembler.CalculateCommandLength("CALL 123");
-
-            Assert.Equal(3, length);
-        }
-
-        [Fact]
-        public void Given_AnInvalidCommand_TheLengthShouldBe_0()
-        {
-            var assembler = new Assembler();
-
-            var length = assembler.CalculateCommandLength("RUBBISH");
-
-            Assert.Equal(0, length);
-        }
-
-        [Fact]
         public void Given_NOP_Then_Operand1_Size_Should_be_0_And_Operand2_Should_Be_0()
         {
             var instructionLookup = new InstructionLookups();

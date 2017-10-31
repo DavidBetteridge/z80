@@ -39,6 +39,14 @@ CALL 100";
         [InlineData("IN A,(C)", 0xED78)]
         [InlineData("RST 8", 0xCF)]
         [InlineData("LD A,SET 7,(IX+16)", 0xDDCBFF)]
+        [InlineData("CALL PO,102", 0xE4)]
+        [InlineData("LD B, 100", 0x6)]
+        [InlineData("CPL", 0x2F)]
+        [InlineData("LD (123),A", 0x32)]
+        [InlineData("ADD   IX,BC", 0xDD09)]
+        [InlineData("RRC  (HL)", 0xCB0E)]
+        [InlineData("IN    B,(C)", 0xED40)]
+        [InlineData("LD    L,RRC (IX+1)", 0xDDCB0D)]
         public void Given_Valid_Commands_Should_Return_Their_OpCodes(string program, int opCode)
         {
             const ushort BASE_MEMORY_ADDRESS = 0;
@@ -109,6 +117,31 @@ CALL 100";
             Assert.Equal(operand1, first.Operand1);
             Assert.Equal(operand2, first.Operand2);
             Assert.Equal(operand3, first.Operand3);
+        }
+
+
+        [Theory]
+        [InlineData("NOP", 0, 0, 0)]
+        [InlineData("LD (6),HL", 2, 0, 0)]
+        [InlineData("LD B,10", 0, 1, 0)]
+        [InlineData("LD BC,123", 0, 2, 0)]
+        [InlineData("RLC D", 0, 0, 0)]
+        [InlineData("LD E,(IX+21)", 0, 1, 0)]
+        [InlineData("IN A,(C)", 0, 0, 0)]
+        [InlineData("RST 8", 0, 0, 0)]
+        [InlineData("LD A,SET 7,(IX+16)", 0, 0, 1)]
+        public void Given_Valid_Commands_Should_Return_The_Size_Of_The_Operands(string program, int operand1Size, int operand2Size, int operand3Size)
+        {
+            const ushort BASE_MEMORY_ADDRESS = 0;
+            var parser = new Parser();
+
+            var parsedCommands = parser.Parse(BASE_MEMORY_ADDRESS, program);
+
+            var first = parsedCommands.First();
+            Assert.False(first.IsInValid);
+            Assert.Equal(operand1Size, first.Operand1Length);
+            Assert.Equal(operand2Size, first.Operand2Length);
+            Assert.Equal(operand3Size, first.Operand3Length);
         }
 
 

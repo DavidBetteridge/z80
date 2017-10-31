@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using z80vm;
 
 namespace z80Assembler
@@ -7,91 +6,88 @@ namespace z80Assembler
     public class Loader
     {
         private readonly Machine _machine;
-        private readonly Assembler _assembler;
-        private ushort _nextAddress;
-
-        public Dictionary<string, ushort> Labels { get; private set; }
-
         public Loader(Machine machine)
         {
             _machine = machine;
-            _assembler = new Assembler();
-            _nextAddress = 0x00;
-            Labels = new Dictionary<string, ushort>();
         }
 
-        /// <summary>
-        /// Loads a single command into memory
-        /// </summary>
-        /// <param name="command"></param>
-        public void LoadCommand(string command)
+        public void LoadCommands(IEnumerable<ParsedCommand> parsedCommands)
         {
-            var opCode = _assembler.Parse(command);
-
-            foreach (var part in opCode)
+            ushort memoryLocation = 0x00;
+            foreach (var command in parsedCommands)
             {
-                _machine.Memory.Set(_nextAddress, part);
-                _nextAddress++;
+                // An OPCODE can be 1,2 or 3 bytes long
+                _machine.Memory.Set(memoryLocation, command.OpCode.Final());
+                memoryLocation++;
+
+                if (command.OpCode.Third() != 0)
+                {
+                    _machine.Memory.Set(memoryLocation, command.OpCode.Third());
+                    memoryLocation++;
+                }
+
+                if (command.OpCode.Second() != 0)
+                {
+                    _machine.Memory.Set(memoryLocation, command.OpCode.Second());
+                    memoryLocation++;
+                }
+
+                // An OPCODE can have between 0 and 3 operands
+                switch (command.Operand1Length)
+                {
+                    case 1:
+                        // Operand is a single byte long
+                        _machine.Memory.Set(memoryLocation, command.Operand1.Low());
+                        memoryLocation++;
+                        break;
+
+                    case 2:
+                        // Operand is a 2 bytes long
+                        _machine.Memory.Set(memoryLocation, command.Operand1);
+                        memoryLocation += 2;
+                        break;
+
+                    default:
+                        break;
+                }
+
+                switch (command.Operand2Length)
+                {
+                    case 1:
+                        // Operand is a single byte long
+                        _machine.Memory.Set(memoryLocation, command.Operand2.Low());
+                        memoryLocation++;
+                        break;
+
+                    case 2:
+                        // Operand is a 2 bytes long
+                        _machine.Memory.Set(memoryLocation, command.Operand2);
+                        memoryLocation += 2;
+                        break;
+
+                    default:
+                        break;
+                }
+
+                switch (command.Operand3Length)
+                {
+                    case 1:
+                        // Operand is a single byte long
+                        _machine.Memory.Set(memoryLocation, command.Operand3.Low());
+                        memoryLocation++;
+                        break;
+
+                    case 2:
+                        // Operand is a 2 bytes long
+                        _machine.Memory.Set(memoryLocation, command.Operand3);
+                        memoryLocation += 2;
+                        break;
+
+                    default:
+                        break;
+                }
             }
         }
 
-        /// <summary>
-        /// Loads multiple commands (seperated by newlines) into memory
-        /// </summary>
-        /// <param name="commands"></param>
-        public void LoadCommands(string commands)
-        {
-            var listOfCommands = commands.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-
-            // First pass, get a list of labels
-            foreach (var command in listOfCommands)
-            {
-                var label = ExtractLabel(command);
-                if (!string.IsNullOrWhiteSpace(label))
-                {
-                    Labels.Add(label, 0);
-                }
-            }
-
-            // Second pass,  
-            ushort memoryAddress = 0;
-            foreach (var command in listOfCommands)
-            {
-                var definedLabel = ExtractLabel(command);
-                if (!string.IsNullOrWhiteSpace(definedLabel))
-                {
-                    Labels[definedLabel] = memoryAddress;
-                }
-
-                //replace labels with dummy memory locations so that they parse as then 
-                //we know the length of the instruction
-                var cleanCommand = command;
-                foreach (var label in Labels.Keys)
-                {
-                    cleanCommand = cleanCommand.Replace(label, "00");
-                }
-
-                memoryAddress += (ushort)_assembler.Parse(cleanCommand).Count;
-            }
-
-            // Final pass, load the commands, but with the labels replaced
-            // by their actual memory addresses
-            foreach (var command in listOfCommands)
-            {
-                var cleanCommand = command;
-                foreach (var label in Labels)
-                {
-                    cleanCommand = cleanCommand.Replace(label.Key, label.Value.ToString());
-                }
-                LoadCommand(cleanCommand);
-            }
-        }
-
-        private string ExtractLabel(string command)
-        {
-            var i = command.IndexOf(':');
-            if (i < 0) return string.Empty;
-            return command.Substring(0, i);
-        }
     }
 }

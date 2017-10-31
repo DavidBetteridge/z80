@@ -12,6 +12,7 @@ namespace z80.ide
         private const int CURRENTLINE_MARKER = 1;
         private Machine _machine;
         private CommandRunner _commandRunner;
+        private readonly Parser _parser;
         private void DisplayRegisters()
         {
             void DisplayRegister(string type, string name, ushort value)
@@ -176,6 +177,8 @@ namespace z80.ide
         }
         public Form1()
         {
+            _parser = new Parser();
+
             InitializeComponent();
 
             scintilla.TextChanged += Scintilla_TextChanged;
@@ -185,9 +188,9 @@ namespace z80.ide
             scintilla.LexerLanguage = "asm";
             Configure();
             scintilla.Text = @"LD A, 10
-CALL 7
+CALL JumpTo
 LD B, 20
-LD B, 10
+JumpTo: LD B, 10
 ADD A, B
 HALT";
             _machine = new Machine();
@@ -205,8 +208,7 @@ HALT";
         {
             if (string.IsNullOrWhiteSpace(scintilla.Text)) return;
 
-            var parser = new Parser();
-            var commands = parser.Parse(0, scintilla.Text);
+            var commands = _parser.Parse(0, scintilla.Text);
 
             var l = 0;
             foreach (var line in scintilla.Lines)
@@ -243,9 +245,10 @@ HALT";
         private void cmdRun_Click(object sender, EventArgs e)
         {
             _machine = new Machine();
+            var commands = _parser.Parse(0, scintilla.Text);
 
             var loader = new Loader(_machine);
-            loader.LoadCommands(scintilla.Text);
+            loader.LoadCommands(commands);
             cmdStep.Enabled = true;
 
             _commandRunner = new CommandRunner(_machine);

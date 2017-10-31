@@ -91,6 +91,10 @@ namespace z80Assembler
                     parsedCommand.Operand2 = operand2;
                     parsedCommand.Operand3 = operand3;
 
+                    parsedCommand.Operand1Length = i.Operand1Size;
+                    parsedCommand.Operand2Length = i.Operand2Size;
+                    parsedCommand.Operand3Length = i.Operand3Size;
+
                     nextMemoryLocation += (ushort)parsedCommand.TotalLength;
                 }
 

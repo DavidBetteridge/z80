@@ -18,7 +18,7 @@ namespace z80Assembler
             _instructionLookups.Load();
         }
 
-        public void RunNextCommand()
+        public bool RunNextCommand()
         {
             // Read command pointed to by PC
             var newProgramCounter = _machine.Registers.Read(Reg16.PC);
@@ -44,15 +44,17 @@ namespace z80Assembler
                 newProgramCounter++;
             }
 
-            RunCommand(command);
+            var wasHaltCommand = RunCommand(command);
 
             // Increase PC if not changed by command
             if (currentProgramCounter == _machine.Registers.Read(Reg16.PC))
                 _machine.Registers.Set(Reg16.PC, newProgramCounter);
 
+
+            return wasHaltCommand;
         }
 
-        public void RunCommand(string command)
+        public bool RunCommand(string command)
         {
             var parameterTypes = default(Type[]);
             var parameters = new List<object>();
@@ -111,6 +113,8 @@ namespace z80Assembler
             var machineType = _machine.GetType();
             var method = machineType.GetRuntimeMethod(instruction, parameterTypes);
             method.Invoke(_machine, parameters.ToArray());
+
+            return (instruction == "HALT");
         }
 
         private bool TryGetRegister(string operand, out Reg8 reg8)

@@ -40,5 +40,20 @@ namespace z80Assembler
         /// This can be either an 8bit byte or an 16bit ushort
         /// </summary>
         public ushort Operand3 { get; set; }
+
+        /// <summary>
+        /// The size of operand 1 in bytes
+        /// </summary>
+        public int Operand1Length { get; set; }
+
+        /// <summary>
+        /// The size of operand 2 in bytes
+        /// </summary>
+        public int Operand2Length { get; set; }
+
+        /// <summary>
+        /// The size of operand 3 in bytes
+        /// </summary>
+        public int Operand3Length { get; set; }
     }
 }

@@ -8,6 +8,8 @@ namespace z80vm
         private IFlagsEvaluator flagsEvaluator;
         private ICommandValidator commandValidator;
 
+
+
         public Registers Registers { get; private set; }
 
         public Memory Memory { get; private set; }
@@ -23,7 +25,19 @@ namespace z80vm
         /// </summary>
         public void NOP()
         {
-            // Could waste 4 clock cycles here.
+            // Should waste 4 clock cycles here.
+        }
+        #endregion
+
+        #region HALT
+
+        /// <summary>
+        /// Usage: Waits for the next interupt - crashes if interupts are disabled
+        /// Flags: None
+        /// </summary>
+        public void HALT()
+        {
+            // Does nothing,  waits for the next interupt
         }
         #endregion
 
