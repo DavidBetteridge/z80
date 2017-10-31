@@ -1,4 +1,6 @@
-﻿namespace z80Assembler
+﻿using System.Collections.Generic;
+
+namespace z80Assembler
 {
     public class ParsedCommand
     {
@@ -23,5 +25,20 @@
         /// The location at which this command is going to be loaded into memory
         /// </summary>
         public ushort MemoryLocation { get; set; }
+
+        /// <summary>
+        /// This can be either an 8bit byte or an 16bit ushort
+        /// </summary>
+        public ushort Operand1 { get; set; }
+
+        /// <summary>
+        /// This can be either an 8bit byte or an 16bit ushort
+        /// </summary>
+        public ushort Operand2 { get; set; }
+
+        /// <summary>
+        /// This can be either an 8bit byte or an 16bit ushort
+        /// </summary>
+        public ushort Operand3 { get; set; }
     }
 }

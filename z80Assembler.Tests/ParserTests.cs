@@ -87,6 +87,31 @@ CALL 100";
             Assert.Equal(lengthInBytes, first.TotalLength);
         }
 
+        [Theory]
+        [InlineData("NOP", 0, 0, 0)]
+        [InlineData("LD (6),HL", 6, 0, 0)]
+        [InlineData("LD B,10", 0, 10, 0)]
+        [InlineData("LD BC,123", 0, 123, 0)]
+        [InlineData("RLC D", 0, 0, 0)]
+        [InlineData("LD E,(IX+21)", 0, 21, 0)]
+        [InlineData("IN A,(C)", 0, 0, 0)]
+        [InlineData("RST 8", 0, 0, 0)]
+        [InlineData("LD A,SET 7,(IX+16)", 0, 0, 16)]
+        public void Given_Valid_Commands_Should_Return_Their_Operands(string program, int operand1, int operand2, int operand3)
+        {
+            const ushort BASE_MEMORY_ADDRESS = 0;
+            var parser = new Parser();
+
+            var parsedCommands = parser.Parse(BASE_MEMORY_ADDRESS, program);
+
+            var first = parsedCommands.First();
+            Assert.False(first.IsInValid);
+            Assert.Equal(operand1, first.Operand1);
+            Assert.Equal(operand2, first.Operand2);
+            Assert.Equal(operand3, first.Operand3);
+        }
+
+
         [Fact]
         public void Given_Valid_Commands_Their_Memory_Locations_Should_Be_Defined()
         {
@@ -105,6 +130,43 @@ NOP";
             Assert.Equal(4, parsedCommands[2].MemoryLocation);  //LD B,10 is 2
             Assert.Equal(6, parsedCommands[3].MemoryLocation);  //LD BC,123 is 3
             Assert.Equal(9, parsedCommands[4].MemoryLocation);
+        }
+
+        [Fact]
+        public void Given_A_Non_Zero_BaseMemoryAddress_The_Commands_Will_Be_Offsetted()
+        {
+            const ushort BASE_MEMORY_ADDRESS = 0xA000;
+            var parser = new Parser();
+            var program = @"CALL 100
+NOP";
+
+            var parsedCommands = parser.Parse(BASE_MEMORY_ADDRESS, program);
+
+            Assert.Equal(0xA000, parsedCommands[0].MemoryLocation);  //CALL 100 is 3
+            Assert.Equal(0xA003, parsedCommands[1].MemoryLocation);  //NOP is 1
+        }
+
+        [Fact]
+        public void Labels_Can_Be_Replaced_By_Their_Memory_Addresses()
+        {
+            const ushort BASE_MEMORY_ADDRESS = 0xA000;
+            var parser = new Parser();
+            var program = @"CALL JumpTo
+        NOP
+        JumpTo: LD B,10
+        LD BC,123
+        NOP";
+
+            var parsedCommands = parser.Parse(BASE_MEMORY_ADDRESS, program);
+
+            Assert.Equal(0xA004, parsedCommands[0].Operand1);
+            Assert.False(parsedCommands[2].IsInValid);
+
+            //CALL 100 is 0xA000
+            //NOP is 0xA003
+            //LD B,10 is at 0xA004
+            //LD BC,123 is at 0xA006
+            //NOP is at 0xA009
         }
     }
 }
