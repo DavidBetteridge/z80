@@ -75,7 +75,7 @@ namespace z80Assembler
 
         public InstructionInfo TryLookupHexCodeFromNormalisedCommand(string normal)
         {
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 3; i++)
             {
                 if (normals.ContainsKey(normal))
                 {
@@ -102,9 +102,18 @@ namespace z80Assembler
                     return new InstructionInfo(0xDDCB00 | ddcbs[normal].Hex, this);
                 }
 
-                // The command could except a ushort but we have only been given a single byte
-                // so we need to check again.
-                normal = normal.Replace("n", "nn");
+                // The command could except a ushort but we have only been given a single byte so we need to check again.
+                switch (i)
+                {
+                    case 0:
+                        normal = normal.Replace("n", "nn");
+                        break;
+                    case 1:
+                        normal = normal.Replace("nn", "d");
+                        break;
+                    default:
+                        break;
+                }
             }
             return null;
         }

@@ -156,7 +156,7 @@ namespace z80Assembler
                 else
                 {
                     // Replace an numerics with a n
-                    command += Regex.Replace(part, "[0-9]+", "n");
+                    command += Regex.Replace(part, "[0-9]+", "n").Replace("-", "");
                 }
             }
             command = command.Trim();
@@ -205,6 +205,12 @@ namespace z80Assembler
             if (Regex.IsMatch(operand, "^[0-9]*$"))
             {
                 return ushort.Parse(operand);
+            }
+
+            // negative offset
+            if (Regex.IsMatch(operand, "^-?[0-9]*$"))
+            {
+                return (byte)sbyte.Parse(operand);
             }
 
             // Memory Address (nn) == 2 bytes

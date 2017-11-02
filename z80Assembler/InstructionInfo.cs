@@ -38,6 +38,7 @@ namespace z80Assembler
                 switch (operand)
                 {
                     case "(n)":
+                    case "d":
                     case "n":
                     case "(IX+d)":
                         return 1;

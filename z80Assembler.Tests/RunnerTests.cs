@@ -3,7 +3,7 @@ using z80vm;
 
 namespace z80Assembler.Tests
 {
-    public class RunnerTests 
+    public class RunnerTests
     {
         [Theory]
         [InlineData(0x00, "NOP")]
@@ -168,6 +168,23 @@ namespace z80Assembler.Tests
             commandRunner.RunNextCommand();
 
             Assert.Equal(133, machine.Registers.Read(Reg8.A));
+        }
+
+        [Fact]
+        public void Read_THE_DJNZ_Command_From_Memory()
+        {
+            var machine = new Machine();
+            machine.Registers.Set(Reg16.PC, 12);
+            machine.Memory.Set(12, 0x10);
+
+            sbyte offset = 20;
+            machine.Memory.Set(13, (byte)offset);
+            machine.Registers.Set(Reg8.B, 0);
+
+            var commandRunner = new CommandRunner(machine);
+            commandRunner.RunNextCommand();
+
+            Assert.Equal(32, machine.Registers.Read(Reg16.PC));
         }
 
         [Fact]

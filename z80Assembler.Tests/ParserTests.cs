@@ -47,6 +47,7 @@ CALL 100";
         [InlineData("RRC  (HL)", 0xCB0E)]
         [InlineData("IN    B,(C)", 0xED40)]
         [InlineData("LD    L,RRC (IX+1)", 0xDDCB0D)]
+        [InlineData("DJNZ -3", 0x10)]
         public void Given_Valid_Commands_Should_Return_Their_OpCodes(string program, int opCode)
         {
             const ushort BASE_MEMORY_ADDRESS = 0;
@@ -105,6 +106,7 @@ CALL 100";
         [InlineData("IN A,(C)", 0, 0, 0)]
         [InlineData("RST 8", 0, 0, 0)]
         [InlineData("LD A,SET 7,(IX+16)", 0, 0, 16)]
+        [InlineData("DJNZ -3", 253, 0, 0)]  //-3 is 253 in twos compliment
         public void Given_Valid_Commands_Should_Return_Their_Operands(string program, int operand1, int operand2, int operand3)
         {
             const ushort BASE_MEMORY_ADDRESS = 0;
@@ -130,6 +132,7 @@ CALL 100";
         [InlineData("IN A,(C)", 0, 0, 0)]
         [InlineData("RST 8", 0, 0, 0)]
         [InlineData("LD A,SET 7,(IX+16)", 0, 0, 1)]
+        [InlineData("DJNZ -1", 1, 0, 0)]
         public void Given_Valid_Commands_Should_Return_The_Size_Of_The_Operands(string program, int operand1Size, int operand2Size, int operand3Size)
         {
             const ushort BASE_MEMORY_ADDRESS = 0;

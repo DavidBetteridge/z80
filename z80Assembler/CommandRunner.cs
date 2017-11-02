@@ -44,6 +44,13 @@ namespace z80Assembler
                 newProgramCounter++;
             }
 
+            if (command.Contains(("d")))
+            {
+                var operand = _machine.Memory.ReadByte(newProgramCounter);
+                command = command.Replace("d", operand.ToString());
+                newProgramCounter++;
+            }
+
             var wasHaltCommand = RunCommand(command);
 
             // Increase PC if not changed by command
@@ -83,8 +90,16 @@ namespace z80Assembler
                     }
                     else
                     {
-                        parameterTypes = new[] { typeof(ushort) };
-                        parameters.Add(ushort.Parse(operands[0]));
+                        if (instruction == "DJNZ")
+                        {
+                            parameterTypes = new[] { typeof(sbyte) };
+                            parameters.Add((sbyte)byte.Parse(operands[0]));
+                        }
+                        else
+                        {
+                            parameterTypes = new[] { typeof(ushort) };
+                            parameters.Add(ushort.Parse(operands[0]));
+                        }
                     }
                 }
 

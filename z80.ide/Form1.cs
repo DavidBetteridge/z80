@@ -193,6 +193,16 @@ LD B, 20
 JumpTo: LD B, 10
 ADD A, B
 HALT";
+
+            /*
+             * LD A, 0
+LD B, 10
+Loop: ADD A, B
+DJNZ -1
+             * 
+             * 
+             */
+
             _machine = new Machine();
             DisplayRegisters();
             DisplayMemory();
@@ -213,13 +223,13 @@ HALT";
             var l = 0;
             foreach (var line in scintilla.Lines)
             {
-                var command = commands[l];
-                l++;
-
-                line.MarginStyle = Style.LineNumber;
-                line.MarginText = "0x" + command.MemoryLocation.ToString("X2");
                 if (!string.IsNullOrWhiteSpace(line.Text))
                 {
+                    var command = commands[l];
+                    l++;
+
+                    line.MarginStyle = Style.LineNumber;
+                    line.MarginText = "0x" + command.MemoryLocation.ToString("X2");
                     if (command.IsInValid)
                     {
                         // ignored
