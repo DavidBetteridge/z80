@@ -204,5 +204,21 @@ NOP";
             //LD BC,123 is at 0xA006
             //NOP is at 0xA009
         }
+
+        [Fact]
+        public void Labels_Can_Be_Replaced_By_Their_Offsets()
+        {
+            const ushort BASE_MEMORY_ADDRESS = 0xA000;
+            var parser = new Parser();
+            var program = @"LD A, 0
+LD B, 10
+Loop: ADD A, B
+DJNZ Loop";
+
+            var parsedCommands = parser.Parse(BASE_MEMORY_ADDRESS, program);
+
+            Assert.Equal(-1, (sbyte)parsedCommands[3].Operand1);
+            Assert.False(parsedCommands[3].IsInValid);
+        }
     }
 }

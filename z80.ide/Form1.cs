@@ -198,7 +198,7 @@ HALT";
              * LD A, 0
 LD B, 10
 Loop: ADD A, B
-DJNZ -1
+DJNZ Loop
              * 
              * 
              */

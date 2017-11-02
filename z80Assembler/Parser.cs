@@ -17,6 +17,7 @@ namespace z80Assembler
         {
             // Each command is on it's own line
             var commands = program.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            var instructions = new InstructionInfo[commands.Length];
 
             // First pass, get a list of labels
             var labels = new Dictionary<string, ushort>();
@@ -31,32 +32,39 @@ namespace z80Assembler
 
             // Second pass,  
             ushort nextMemoryLocation = baseMemoryAddress;
+            var commandNumber = 0;
             foreach (var command in commands)
             {
                 var definedLabel = ExtractLabel(command);
+                var cleanCommand = command;
                 if (!string.IsNullOrWhiteSpace(definedLabel))
                 {
                     labels[definedLabel] = nextMemoryLocation;
+                    cleanCommand = RemoveLabel(cleanCommand);
                 }
 
                 //replace labels with dummy memory locations so that they parse as then 
                 //we know the length of the instruction
-                var cleanCommand = command;
                 foreach (var label in labels.Keys)
                 {
                     cleanCommand = cleanCommand.Replace(label, "00");
                 }
 
                 var normalisedCommand = Normalise(cleanCommand);
-                var i = _instructionLookups.TryLookupHexCodeFromNormalisedCommand(normalisedCommand);
-                if (i != null)
-                    nextMemoryLocation += (ushort)i.Length;
+                instructions[commandNumber] = _instructionLookups.TryLookupHexCodeFromNormalisedCommand(normalisedCommand);
+                if (instructions[commandNumber] != null)
+                    nextMemoryLocation += (ushort)instructions[commandNumber].Length;
+
+                commandNumber++;
             }
 
             var result = new List<ParsedCommand>();
             nextMemoryLocation = baseMemoryAddress;  //Reset after 2nd pass
+            commandNumber = 0;
             foreach (var command in commands)
             {
+                var i = instructions[commandNumber];
+
                 var cleanCommand = command;
 
                 // If present then remove the label defintion from the start of the command
@@ -65,12 +73,16 @@ namespace z80Assembler
                 // Replace the labels by their actual memory addresses
                 foreach (var label in labels)
                 {
-                    cleanCommand = cleanCommand.Replace(label.Key, label.Value.ToString());
+                    if (cleanCommand.StartsWith("DJNZ"))
+                    {
+                        var offset = (label.Value - nextMemoryLocation);
+                        cleanCommand = cleanCommand.Replace(label.Key, offset.ToString());
+                    }
+                    else
+                    {
+                        cleanCommand = cleanCommand.Replace(label.Key, label.Value.ToString());
+                    }
                 }
-
-                // Create a normalised version of the command
-                var normalisedCommand = Normalise(cleanCommand);
-                var i = _instructionLookups.TryLookupHexCodeFromNormalisedCommand(normalisedCommand);
 
                 var parsedCommand = new ParsedCommand();
                 if (i == null)
@@ -99,6 +111,8 @@ namespace z80Assembler
                 }
 
                 result.Add(parsedCommand);
+
+                commandNumber++;
             }
 
             return result;

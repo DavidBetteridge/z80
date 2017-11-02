@@ -1,5 +1,22 @@
 # z80
-A z80 virtual machine
+This project contains my implementation of a z80 emulator written in C#.  I've been mainly using [http://z80-heaven.wikidot.com/] as source for the definition of each of the instructions.
+
+The solution has been split up into a number of projects:
+
+* z80vm - this is a .net standard class library containing the processor's memory, registers and implementations of each of the commands (ADD A, B etc)
+
+* z80Assembler - this is a .net standard class library containing
+    + PARSER: this parses commands from their textual representation converts them into their hexadecimal codes
+    + LOADER: stores hexadecimal commands in memory
+    + COMMAND RUNNER: executes the commands stored in memory
+
+* z80.ide - this is a .net framework windows forms application which implements a very simple debugger.
+
+* z80.example -  this is a .net framework console application showing how to use the APIs.
+
+* z80vm.Tests - xunit tests for the z80vm project.
+
+* z80Assembler.Tests - xunit tests for the z80Assembler project.
 
 ## Debugger
 The debugger in action
@@ -32,19 +49,6 @@ while (!halted)
 }
 ```
 
-
-## Example Parser
-
-```C#
-// Prepare the assembler
-var assembler = new Assembler();
-
-// Parse a single instruction,  this will return 3 bytes
-//  0x32 - this represents the LD (nn), A instruction
-//  0b0000_0001 - this is the higher order byte of 500
-//  0b1111_0100 - this is the lower order byte of 500
-var bytes = assembler.Parse("LD (500),A");
-```
 
 ## Example Virtual Machine
 
