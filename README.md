@@ -1,5 +1,5 @@
 # z80
-This project contains my implementation of a z80 emulator written in C#.  I've been mainly using [http://z80-heaven.wikidot.com/] as source for the definition of each of the instructions.
+This project contains my implementation of a z80 emulator written in C#.  I've been mainly using http://z80-heaven.wikidot.com/ as source for the definition of each of the instructions.
 
 The solution has been split up into a number of projects:
 
@@ -48,6 +48,10 @@ while (!halted)
     Console.ReadKey(true);
 }
 ```
+**Note**
+
+We are misusing the halt statement in the line above to mean QUIT the program.  It's actual meaning is halt the program until it we receive an interrupt.
+
 
 
 ## Example Virtual Machine
