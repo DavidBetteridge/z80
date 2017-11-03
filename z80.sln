@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "z80Assembler.Tests", "z80As
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "z80.ide", "z80.ide\z80.ide.csproj", "{D939B46E-7529-4F6D-B421-6A177E45D109}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "z80.BlindTests", "z80.BlindTests\z80.BlindTests.csproj", "{D37EA1EE-BB89-49D9-9BAD-AAA196DA04D5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{D939B46E-7529-4F6D-B421-6A177E45D109}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D939B46E-7529-4F6D-B421-6A177E45D109}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D939B46E-7529-4F6D-B421-6A177E45D109}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D37EA1EE-BB89-49D9-9BAD-AAA196DA04D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D37EA1EE-BB89-49D9-9BAD-AAA196DA04D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D37EA1EE-BB89-49D9-9BAD-AAA196DA04D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D37EA1EE-BB89-49D9-9BAD-AAA196DA04D5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

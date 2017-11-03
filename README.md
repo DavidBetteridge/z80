@@ -18,6 +18,8 @@ The solution has been split up into a number of projects:
 
 * z80Assembler.Tests - xunit tests for the z80Assembler project.
 
+* z80.BlindTests - console application for carrying out the blind testing of all instruction.s
+
 ## Debugger
 The debugger in action
 
