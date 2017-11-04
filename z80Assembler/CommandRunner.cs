@@ -26,15 +26,18 @@ namespace z80Assembler
 
             // What command are we going to run?
             var commandInHex = _machine.Memory.ReadByte((newProgramCounter));
-            var command = _instructionLookups.LookupCommandFromHexCode(commandInHex);
             newProgramCounter++;
+            var instruction = new InstructionInfo(commandInHex, _instructionLookups);
 
             // Do we need to supply a parameter?
+            var command = instruction.CommandText;
+            var operandLength = OperandLength.None;
             if (command.Contains(("nn")))
             {
                 var operand = _machine.Memory.ReadWord(newProgramCounter);
                 command = command.Replace("nn", operand.ToString());
                 newProgramCounter += 2;
+                operandLength = OperandLength.Short;
             }
 
             if (command.Contains(("n")))
@@ -42,6 +45,7 @@ namespace z80Assembler
                 var operand = _machine.Memory.ReadByte(newProgramCounter);
                 command = command.Replace("n", operand.ToString());
                 newProgramCounter++;
+                operandLength = OperandLength.Byte;
             }
 
             if (command.Contains(("d")))
@@ -49,9 +53,10 @@ namespace z80Assembler
                 var operand = _machine.Memory.ReadByte(newProgramCounter);
                 command = command.Replace("d", operand.ToString());
                 newProgramCounter++;
+                operandLength = OperandLength.Offset;
             }
 
-            var wasHaltCommand = RunCommand(command);
+            var wasHaltCommand = RunCommand(command, operandLength, instruction);
 
             // Increase PC if not changed by command
             if (currentProgramCounter == _machine.Registers.Read(Reg16.PC))
@@ -61,78 +66,148 @@ namespace z80Assembler
             return wasHaltCommand;
         }
 
-        public bool RunCommand(string command)
+        public bool RunCommand(string command, OperandLength operandLength, InstructionInfo instructionInfo)
         {
-            var parameterTypes = default(Type[]);
+            var parameterTypes = new List<Type>();
             var parameters = new List<object>();
             string instruction;
 
-            if (!command.Contains(" "))
+            // The aim is to populate 
+            //  instruction - with the name of the instruction,  for example LD
+            //  parameterTypes - with the types of the parameters to the instruction
+            //  parameters - with the values of the parameters to the instruction
+            var suspectOperand = -1;
+            if (command.Contains(" "))
             {
-                // The command has no arguments (operands) for example NOP.
-                instruction = command;
-                parameterTypes = new Type[0];
+                instruction = command.Substring(0, command.IndexOf(' '));
+                var parms = command.Substring(command.IndexOf(' ')).Split(',');
+                for (int i = 0; i < parms.Length; i++)
+                {
+                    var parm = parms[i].Trim();
+
+                    if (TryGet8BitRegister(parm, out var reg81))
+                    {
+                        // There are two options at this point,  either this method is expecting
+                        // to be passed a 8bit register or a 8bit register wrapped in an op8.   For now we assume 
+                        // that a byte is required,  but it fail to get a match then we try an op8
+                        if (i == parms.Length - 1) suspectOperand = i;
+                        parameterTypes.Add(typeof(Reg8));
+                        parameters.Add(reg81);
+                    }
+                    else if (TryGet16BitRegister(parm, out var reg16))
+                    {
+                        parameterTypes.Add(typeof(Reg16));
+                        parameters.Add(reg16);
+                    }
+                    else
+                    {
+                        switch (operandLength)
+                        {
+                            case OperandLength.None:
+                                break;
+                            case OperandLength.Offset:
+                                parameterTypes.Add(typeof(sbyte));
+                                parameters.Add((sbyte)byte.Parse(parm));
+                                break;
+                            case OperandLength.Byte:
+                                // There are two options at this point,  either this method is expecting
+                                // to be passed a byte or a byte wrapped in an op8.   For now we assume 
+                                // that a byte is required,  but it fail to get a match then we try an op8
+                                if (i == parms.Length - 1) suspectOperand = i;
+                                parameterTypes.Add(typeof(byte));
+                                parameters.Add(byte.Parse(parm));
+                                break;
+                            case OperandLength.Short:
+                                parameterTypes.Add(typeof(ushort));
+                                parameters.Add(ushort.Parse(parm));
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
+                }
+
             }
             else
             {
-                // This command has one or two arguments.
-                instruction = command.Substring(0, command.IndexOf(' '));
-                var operands = command.Substring(command.IndexOf(' ') + 1).Split(',');
-
-                if (operands.Length == 1)
-                {
-                    if (TryGetRegister(operands[0], out var reg81))
-                    {
-                        var op81 = Read8BitValue(reg81);
-
-                        parameterTypes = new[] { typeof(op8) };
-                        parameters.Add(op81);
-                    }
-                    else
-                    {
-                        if (instruction == "DJNZ")
-                        {
-                            parameterTypes = new[] { typeof(sbyte) };
-                            parameters.Add((sbyte)byte.Parse(operands[0]));
-                        }
-                        else
-                        {
-                            parameterTypes = new[] { typeof(ushort) };
-                            parameters.Add(ushort.Parse(operands[0]));
-                        }
-                    }
-                }
-
-                if (operands.Length == 2)
-                {
-                    TryGetRegister(operands[0], out var reg81);
-
-                    parameterTypes = new[] { typeof(Reg8), typeof(op8) };
-
-                    if (TryGetRegister(operands[1], out var reg82))
-                    {
-                        var op82 = Read8BitValue(reg82);
-                        parameters.Add(reg81);
-                        parameters.Add(op82);
-                    }
-                    else
-                    {
-                        var asImmediate = byte.Parse(operands[1]);
-                        var op82 = Read8BitValue(asImmediate);
-                        parameters.Add(reg81);
-                        parameters.Add(op82);
-                    }
-                }
+                // The command has no arguments (operands) for example NOP.
+                instruction = command;
             }
 
             var machineType = _machine.GetType();
-            var method = machineType.GetRuntimeMethod(instruction, parameterTypes);
-            method.Invoke(_machine, parameters.ToArray());
+            var parmsArray = parameters.ToArray();
+            var parmTypesArray = parameterTypes.ToArray();
+
+            var method = machineType.GetRuntimeMethod(instruction, parmTypesArray);
+
+            if (method == null && suspectOperand != -1)
+            {
+                var previousType = parmTypesArray[suspectOperand];
+                parmTypesArray[suspectOperand] = typeof(op8);
+
+                if (previousType == typeof(Byte))
+                    parmsArray[suspectOperand] = Read8BitValue((byte)parmsArray[suspectOperand]);
+
+                if (previousType == typeof(Reg8))
+                    parmsArray[suspectOperand] = Read8BitValue((Reg8)parmsArray[suspectOperand]);
+
+                method = machineType.GetRuntimeMethod(instruction, parmTypesArray);
+            }
+
+            method.Invoke(_machine, parmsArray);
 
             return (instruction == "HALT");
         }
 
-        private bool TryGetRegister(string operand, out Reg8 reg8)
+        private bool TryGet16BitRegister(string operand, out Reg16 reg16)
+        {
+            var result = true;
+
+            switch (operand)
+            {
+                case "AF":
+                    reg16 = Reg16.AF;
+                    break;
+
+                case "BC":
+                    reg16 = Reg16.BC;
+                    break;
+
+                case "DE":
+                    reg16 = Reg16.DE;
+                    break;
+
+                case "HL":
+                    reg16 = Reg16.HL;
+                    break;
+
+                case "IX":
+                    reg16 = Reg16.IX;
+                    break;
+
+                case "IY":
+                    reg16 = Reg16.IY;
+                    break;
+
+                case "PC":
+                    reg16 = Reg16.PC;
+                    break;
+
+                case "SP":
+                    reg16 = Reg16.SP;
+                    break;
+                default:
+                    reg16 = Reg16.AF;
+                    result = false;
+                    break;
+            }
+
+            return result;
+
+        }
+
+        private bool TryGet8BitRegister(string operand, out Reg8 reg8)
         {
             var result = true;
 

@@ -27,7 +27,12 @@ namespace z80Assembler.Tests
         {
             var machine = new Machine();
             var commandRunner = new CommandRunner(machine);
-            commandRunner.RunCommand("NOP");
+
+            var instructionLookups = new InstructionLookups();
+            instructionLookups.Load();
+            var ii = new InstructionInfo(0, instructionLookups);
+
+            commandRunner.RunCommand("NOP", OperandLength.None, ii);
         }
 
 
@@ -36,7 +41,12 @@ namespace z80Assembler.Tests
         {
             var machine = new Machine();
             var commandRunner = new CommandRunner(machine);
-            var actualResult = commandRunner.RunCommand("HALT");
+
+            var instructionLookups = new InstructionLookups();
+            instructionLookups.Load();
+            var ii = new InstructionInfo(0x76, instructionLookups);
+
+            var actualResult = commandRunner.RunCommand("HALT", OperandLength.None,ii);
 
             Assert.True(actualResult);
         }
@@ -47,9 +57,13 @@ namespace z80Assembler.Tests
             var machine = new Machine();
             var commandRunner = new CommandRunner(machine);
 
+            var instructionLookups = new InstructionLookups();
+            instructionLookups.Load();
+            var ii = new InstructionInfo(0x80, instructionLookups);
+
             machine.Registers.Set(Reg8.A, 10);
             machine.Registers.Set(Reg8.B, 20);
-            commandRunner.RunCommand("ADD A,B");
+            commandRunner.RunCommand("ADD A,B", OperandLength.None,ii);
 
             Assert.Equal(30, machine.Registers.Read(Reg8.A));
         }
@@ -60,9 +74,13 @@ namespace z80Assembler.Tests
             var machine = new Machine();
             var commandRunner = new CommandRunner(machine);
 
+            var instructionLookups = new InstructionLookups();
+            instructionLookups.Load();
+            var ii = new InstructionInfo(0x81, instructionLookups);
+
             machine.Registers.Set(Reg8.A, 10);
             machine.Registers.Set(Reg8.C, 20);
-            commandRunner.RunCommand("ADD A,C");
+            commandRunner.RunCommand("ADD A,C", OperandLength.None, ii);
 
             Assert.Equal(30, machine.Registers.Read(Reg8.A));
         }
@@ -73,8 +91,12 @@ namespace z80Assembler.Tests
             var machine = new Machine();
             var commandRunner = new CommandRunner(machine);
 
+            var instructionLookups = new InstructionLookups();
+            instructionLookups.Load();
+            var ii = new InstructionInfo(0x04, instructionLookups);
+
             machine.Registers.Set(Reg8.B, 10);
-            commandRunner.RunCommand("INC B");
+            commandRunner.RunCommand("INC B", OperandLength.None, ii);
 
             Assert.Equal(11, machine.Registers.Read(Reg8.B));
         }
@@ -85,8 +107,12 @@ namespace z80Assembler.Tests
             var machine = new Machine();
             var commandRunner = new CommandRunner(machine);
 
+            var instructionLookups = new InstructionLookups();
+            instructionLookups.Load();
+            var ii = new InstructionInfo(0x0d, instructionLookups);
+
             machine.Registers.Set(Reg8.C, 10);
-            commandRunner.RunCommand("DEC C");
+            commandRunner.RunCommand("DEC C", OperandLength.None,ii);
 
             Assert.Equal(9, machine.Registers.Read(Reg8.C));
         }
@@ -97,8 +123,12 @@ namespace z80Assembler.Tests
             var machine = new Machine();
             var commandRunner = new CommandRunner(machine);
 
+            var instructionLookups = new InstructionLookups();
+            instructionLookups.Load();
+            var ii = new InstructionInfo(0xc6, instructionLookups);
+
             machine.Registers.Set(Reg8.A, 10);
-            commandRunner.RunCommand("ADD A,123");
+            commandRunner.RunCommand("ADD A,123", OperandLength.Byte,ii);
 
             Assert.Equal(133, machine.Registers.Read(Reg8.A));
         }
@@ -109,7 +139,11 @@ namespace z80Assembler.Tests
             var machine = new Machine();
             var commandRunner = new CommandRunner(machine);
 
-            commandRunner.RunCommand("CALL 100");
+            var instructionLookups = new InstructionLookups();
+            instructionLookups.Load();
+            var ii = new InstructionInfo(0xcd, instructionLookups);
+
+            commandRunner.RunCommand("CALL 100", OperandLength.Short,ii);
 
             Assert.Equal(100, machine.Registers.Read(Reg16.PC));
         }
@@ -198,6 +232,20 @@ namespace z80Assembler.Tests
             var actualResult = commandRunner.RunNextCommand();
 
             Assert.True(actualResult);
+        }
+
+        [Fact]
+        public void Read_THE_LD_BC_nn_Command_From_Memory()
+        {
+            var machine = new Machine();
+            machine.Registers.Set(Reg16.PC, 12);
+            machine.Memory.Set(12, 0x01);
+            machine.Memory.Set(13, 0xDDDD);
+
+            var commandRunner = new CommandRunner(machine);
+            commandRunner.RunNextCommand();
+
+            Assert.Equal(0xDDDD, machine.Registers.Read(Reg16.BC));
         }
     }
 }

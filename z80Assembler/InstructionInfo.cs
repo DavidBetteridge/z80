@@ -2,6 +2,13 @@
 
 namespace z80Assembler
 {
+    public enum OperandLength
+    {
+        None = 0,
+        Offset = 1,
+        Byte = 2,
+        Short = 3
+    }
     public class InstructionInfo
     {
         /// <summary>
@@ -18,18 +25,22 @@ namespace z80Assembler
         /// <summary>
         /// Amount of memory the first operand requires,  could be 0, 1 or 2 bytes
         /// </summary>
-        public int Operand1Size { get; set; }
+        public int Operand1Size { get; private set; }
 
         /// <summary>
         /// Amount of memory the second operand requires,  could be 0, 1 or 2 bytes
         /// </summary>
-        public int Operand2Size { get; set; }
+        public int Operand2Size { get; private set; }
 
         /// <summary>
         /// Amount of memory the third operand requires,  could be 0, 1 or 2 bytes
         /// </summary>
-        public int Operand3Size { get; set; }
+        public int Operand3Size { get; private set; }
 
+        /// <summary>
+        /// The textual version of the command.  For example LD BC, nn
+        /// </summary>
+        public string CommandText { get; private set; }
 
         public InstructionInfo(int hexCode, InstructionLookups InstructionLookup)
         {
@@ -55,13 +66,12 @@ namespace z80Assembler
 
             this.HexCode = hexCode;
 
-            var cmd = InstructionLookup.LookupCommandFromHexCode(hexCode);
+            this.CommandText = InstructionLookup.LookupCommandFromHexCode(hexCode).Trim();
 
             // Split up the command into the command and it's two operands
-            cmd = cmd.Trim();
             var withOutCommand = "";
-            if (cmd.Contains(" "))
-                withOutCommand = cmd.Substring(cmd.IndexOf(' ')).Trim();
+            if (this.CommandText.Contains(" "))
+                withOutCommand = this.CommandText.Substring(this.CommandText.IndexOf(' ')).Trim();
 
             var operands = withOutCommand.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
 
