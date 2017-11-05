@@ -89,10 +89,15 @@ namespace z80Assembler
                     {
                         // There are two options at this point,  either this method is expecting
                         // to be passed a 8bit register or a 8bit register wrapped in an op8.   For now we assume 
-                        // that a byte is required,  but it fail to get a match then we try an op8
-                        if (i == parms.Length - 1) suspectOperand = i;
+                        // that a register is required,  but if it fails to get a match then we try an op8
+                        if (i == parms.Length - 1) suspectOperand = i; //only the final parameter can be an op8
                         parameterTypes.Add(typeof(Reg8));
                         parameters.Add(reg81);
+                    }
+                    else if (TryGetValueAt16BitRegister(parm, out var value))
+                    {
+                        parameterTypes.Add(typeof(Value));
+                        parameters.Add(value);
                     }
                     else if (TryGet16BitRegister(parm, out var reg16))
                     {
@@ -112,8 +117,8 @@ namespace z80Assembler
                             case OperandLength.Byte:
                                 // There are two options at this point,  either this method is expecting
                                 // to be passed a byte or a byte wrapped in an op8.   For now we assume 
-                                // that a byte is required,  but it fail to get a match then we try an op8
-                                if (i == parms.Length - 1) suspectOperand = i;
+                                // that a byte is required, but if it fails to get a match then we try an op8
+                                if (i == parms.Length - 1) suspectOperand = i; //only the final parameter can be an op8
                                 parameterTypes.Add(typeof(byte));
                                 parameters.Add(byte.Parse(parm));
                                 break;
@@ -143,6 +148,8 @@ namespace z80Assembler
 
             if (method == null && suspectOperand != -1)
             {
+                // We didn't get a match with our first attempt,  but we can now try replacing our
+                // suspect operand with it's value wrapped in an op8 instead.
                 var previousType = parmTypesArray[suspectOperand];
                 parmTypesArray[suspectOperand] = typeof(op8);
 
@@ -155,9 +162,56 @@ namespace z80Assembler
                 method = machineType.GetRuntimeMethod(instruction, parmTypesArray);
             }
 
+            if (method == null) throw new Exception($"No command matching {command} can be found.  Has it been implemented?");
             method.Invoke(_machine, parmsArray);
 
             return (instruction == "HALT");
+        }
+
+        private bool TryGetValueAt16BitRegister(string operand, out Value value)
+        {
+            var result = true;
+
+            switch (operand)
+            {
+                case "(AF)":
+                    value = Value.valueAt(Reg16.AF);
+                    break;
+
+                case "(BC)":
+                    value = Value.valueAt(Reg16.BC);
+                    break;
+
+                case "(DE)":
+                    value = Value.valueAt(Reg16.DE);
+                    break;
+
+                case "(HL)":
+                    value = Value.valueAt(Reg16.HL);
+                    break;
+
+                case "(IX)":
+                    value = Value.valueAt(Reg16.IX);
+                    break;
+
+                case "(IY)":
+                    value = Value.valueAt(Reg16.IY);
+                    break;
+
+                case "(PC)":
+                    value = Value.valueAt(Reg16.PC);
+                    break;
+
+                case "(SP)":
+                    value = Value.valueAt(Reg16.SP);
+                    break;
+                default:
+                    value = Value.valueAt(Reg16.AF);
+                    result = false;
+                    break;
+            }
+
+            return result;
         }
 
         private bool TryGet16BitRegister(string operand, out Reg16 reg16)
