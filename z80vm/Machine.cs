@@ -18,6 +18,21 @@ namespace z80vm
 
         public Flags Flags { get; private set; }
 
+        #region RLCA
+        /// <summary>
+        /// Usage: Performs RLC A much quicker, and modifies the flags differently
+        /// Flags: S,Z, and P/V are preserved, H and N flags are reset
+        /// </summary>
+        public void RLCA()
+        {
+            var currentValue = Registers.Read(Reg8.A);
+            var newValue = (byte)((currentValue << 1) | (currentValue >> 7));
+            Registers.Set(Reg8.A, newValue);
+            Flags.Clear(Flag.H);
+            Flags.Clear(Flag.N);
+        }
+        #endregion
+
         #region RLC
         /// <summary>
         /// Usage: 8-bit rotation to the left. The bit leaving on the left is copied into the carry, and to bit 0.

@@ -14,6 +14,7 @@ LDI
 DIR
 NOP (that was tricky)
 HALT
+RLCA
 
 Part Completed Commands
 ------------------

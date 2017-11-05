@@ -84,6 +84,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="RLCATests.cs" />
     <Compile Include="RLCTests.cs" />
     <Compile Include="ADCTests.cs" />
     <Compile Include="ADDTests.cs" />
