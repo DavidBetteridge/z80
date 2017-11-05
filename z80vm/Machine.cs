@@ -54,6 +54,7 @@ namespace z80vm
             this.Registers.Set(Reg8.A, currentValue);
 
         }
+
         #endregion
 
         #region MyRegion
@@ -151,6 +152,18 @@ namespace z80vm
             var currentValue = op8.Read(this.Memory, this.Registers);
             var newValue = (byte)(currentValue + 1);
             op8.Set(this.Memory, this.Registers, newValue);
+        }
+
+        /// <summary>
+        /// Usage: Increments the value of the operand by one.
+        /// Flags: No flag are altered.
+        /// </summary>
+        /// <param name="register"></param>
+        public void INC(Reg16 register)
+        {
+            var currentValue = this.Registers.Read(register);
+            var newValue = (ushort)(currentValue + 1);
+            this.Registers.Set(register, newValue);
         }
         #endregion
 

@@ -19,9 +19,9 @@ namespace z80vm.Tests
         }
 
         [Theory]
-        [InlineData(0,1)]
-        [InlineData(100,101)]
-        public void TheValueOfTheOperandShouldBeIncrementedByOne(byte startingValue,  byte expectedValue)
+        [InlineData(0, 1)]
+        [InlineData(100, 101)]
+        public void TheValueOfTheOperandShouldBeIncrementedByOne(byte startingValue, byte expectedValue)
         {
             var machine = CreateMachineWhereAllCommandsAreValid();
             var operand = new Moq.Mock<IOp8>();
@@ -31,5 +31,20 @@ namespace z80vm.Tests
 
             operand.Verify(o => o.Set(machine.Memory, machine.Registers, expectedValue), Moq.Times.Once);
         }
+
+        /******************************************************************************************************************
+        *  Tests for the 16 BIT Version of this command
+        *******************************************************************************************************************/
+        [Theory]
+        [InlineData(Reg16.BC, 0, 1)]
+        public void TheValueOfThe16BitRegisterShouldBeIncrementedByOne(Reg16 register, ushort startingValue, ushort expectedValue)
+        {
+            var machine = CreateMachineWhereAllCommandsAreValid();
+            machine.Registers.Set(register, startingValue);
+            machine.INC(register);
+
+            Assert.Equal(expectedValue, machine.Registers.Read(register));
+        }
+
     }
 }
