@@ -811,6 +811,12 @@ namespace z80vm
             this.Memory.Set(memoryAddress, op8.Read(this.Memory, this.Registers));
         }
 
+        public void LD(Reg8 register, Value operand2)
+        {
+            var memoryAddress = (ushort)(this.Registers.Read(operand2.Register) + operand2.Offset);
+            this.Registers.Set(register, this.Memory.ReadByte(memoryAddress));
+        }
+
         /// <summary>
         /// Usage: Loads the value of the registry into the memory location
         /// Flags: Not changed

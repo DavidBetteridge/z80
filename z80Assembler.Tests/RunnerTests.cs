@@ -263,6 +263,21 @@ namespace z80Assembler.Tests
             Assert.Equal(50, machine.Memory.ReadByte(1000));
         }
 
-        //LD (BC),A
+
+        [Fact]
+        public void Read_THE_LD__A_addressOfBC_Command_From_Memory()
+        {
+            var machine = new Machine();
+            machine.Registers.Set(Reg16.PC, 12);
+            machine.Registers.Set(Reg16.BC, 1000);
+            machine.Memory.Set(1000, 0xAA);
+            machine.Memory.Set(12, 0x0A);
+
+            var commandRunner = new CommandRunner(machine);
+            commandRunner.RunNextCommand();
+
+            Assert.Equal(0xAA, machine.Registers.Read(Reg8.A));
+        }
+
     }
 }

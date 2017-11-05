@@ -104,6 +104,11 @@ namespace z80Assembler
                         parameterTypes.Add(typeof(Reg16));
                         parameters.Add(reg16);
                     }
+                    else if (TryGet16BitShadowRegister(parm, out var regShadow16))
+                    {
+                        parameterTypes.Add(typeof(Reg16Shadow));
+                        parameters.Add(reg16);
+                    }
                     else
                     {
                         switch (operandLength)
@@ -253,6 +258,38 @@ namespace z80Assembler
                     break;
                 default:
                     reg16 = Reg16.AF;
+                    result = false;
+                    break;
+            }
+
+            return result;
+
+        }
+
+        private bool TryGet16BitShadowRegister(string operand, out Reg16Shadow reg16)
+        {
+            var result = true;
+
+            switch (operand)
+            {
+                case "AF'":
+                    reg16 = Reg16Shadow.AF;
+                    break;
+
+                case "BC'":
+                    reg16 = Reg16Shadow.BC;
+                    break;
+
+                case "DE'":
+                    reg16 = Reg16Shadow.DE;
+                    break;
+
+                case "HL'":
+                    reg16 = Reg16Shadow.HL;
+                    break;
+
+                default:
+                    reg16 = Reg16Shadow.AF;
                     result = false;
                     break;
             }
