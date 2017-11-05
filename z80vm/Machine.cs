@@ -18,6 +18,33 @@ namespace z80vm
 
         public Flags Flags { get; private set; }
 
+        #region RLC
+        /// <summary>
+        /// Usage: 8-bit rotation to the left. The bit leaving on the left is copied into the carry, and to bit 0.
+        /// Flags: H and N flags are reset, P/V is parity, S and Z are modified by definition.
+        /// </summary>
+        /// <param name="register"></param>
+        public void RLC(Reg8 register)
+        {
+            var currentValue = Registers.Read(register);
+            var newValue = (byte)((currentValue << 1) | (currentValue >> 7));
+            Registers.Set(register, newValue);
+        }
+
+        /// <summary>
+        /// Usage: 8-bit rotation to the left. The bit leaving on the left is copied into the carry, and to bit 0.
+        /// Flags: H and N flags are reset, P/V is parity, S and Z are modified by definition.
+        /// </summary>
+        /// <param name="register"></param>
+        public void RLC(Value value)
+        {
+            var memoryLocation = Registers.Read(value.Register);
+            var currentValue = Memory.ReadByte(memoryLocation);
+            var newValue = (byte)((currentValue << 1) | (currentValue >> 7));
+            Memory.Set(memoryLocation, newValue);
+        }
+        #endregion
+
         #region NOP
         /// <summary>
         /// Usage: Wastes time
@@ -27,6 +54,7 @@ namespace z80vm
         {
             // Should waste 4 clock cycles here.
         }
+
         #endregion
 
         #region HALT
