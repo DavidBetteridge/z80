@@ -48,6 +48,7 @@ namespace z80Assembler
             }
 
             if (System.Environment.NewLine != "\r\n") throw new Exception("Unexpected new line");
+            if (string.IsNullOrWhiteSpace(result)) throw new Exception(resourceName + " was empty");
 
             var lines = result
                         .Split(new[] { System.Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
@@ -55,6 +56,8 @@ namespace z80Assembler
                         .Take(256)
                         .Select(l => new InstructionLookup(l))
                         .ToArray();
+
+            if (lines.Length != 256) throw new Exception("Only " + lines.Length + " lines were loaded.");
 
             this.normals = lines.ToDictionary(a => a.Normal.Replace("nn", "n"));
 
@@ -82,6 +85,8 @@ namespace z80Assembler
             this.byHexCode = lines.ToDictionary(a => a.Hex);
 
             numberOfLines = normals.Count();
+
+            if (numberOfLines != 256) throw new Exception("Only " + numberOfLines + " normals were loaded.");
 
         }
 
