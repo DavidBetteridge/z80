@@ -47,6 +47,8 @@ namespace z80Assembler
                 throw new Exception("Could not read " + resourceName + " - " + ex.Message);
             }
 
+            if (System.Environment.NewLine != "\r\n") throw new Exception("Unexpected new line");
+
             var lines = result
                         .Split(new[] { System.Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
                         .Skip(3)
