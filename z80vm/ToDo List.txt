@@ -15,6 +15,7 @@ DIR
 NOP (that was tricky)
 HALT
 RLCA
+RRCA
 
 Part Completed Commands
 ------------------

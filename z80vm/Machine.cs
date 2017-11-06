@@ -18,6 +18,32 @@ namespace z80vm
 
         public Flags Flags { get; private set; }
 
+        #region RRCA
+        /// <summary>
+        /// Usage: Performs a RRC A faster and modifies the flags differently.
+        /// Flags: The carry becomes the value leaving on the right, H and N are reset, P/V, S, and Z are preserved
+        /// </summary>
+        public void RRCA()
+        {
+            var currentValue = Registers.Read(Reg8.A);
+            var newValue = (byte)((currentValue >> 1) | (currentValue << 7));
+            Registers.Set(Reg8.A, newValue);
+
+            if ((currentValue & 0b0000_0001) == 1)
+            {
+                Flags.Set(Flag.C);
+            }
+            else
+            {
+                Flags.Clear(Flag.C);
+
+            }
+
+            Flags.Clear(Flag.H);
+            Flags.Clear(Flag.N);
+        }
+        #endregion
+
         #region RRC
 
         /// <summary>
