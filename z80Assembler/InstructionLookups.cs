@@ -47,10 +47,8 @@ namespace z80Assembler
                 throw new Exception("Could not read " + resourceName + " - " + ex.Message);
             }
 
-            throw new Exception(result);
-
             var lines = result
-                        .Split(new[] { System.Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
+                        .Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries)
                         .Skip(3)
                         .Take(256)
                         .Select(l => new InstructionLookup(l))
