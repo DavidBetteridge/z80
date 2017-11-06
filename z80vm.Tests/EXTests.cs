@@ -36,7 +36,7 @@ namespace z80vm.Tests
         {
             var machine = CreateMachine();
             var exception = Record.Exception(() => machine.EX(valueAt(operand1), Reg16.HL));
-            Assert.IsType(typeof(System.InvalidOperationException), exception);
+            Assert.IsType<System.InvalidOperationException>(exception);
         }
 
         [Theory]
@@ -45,7 +45,7 @@ namespace z80vm.Tests
         {
             var machine = CreateMachine();
             var exception = Record.Exception(() => machine.EX(valueAt(Reg16.SP), operand2));
-            Assert.IsType(typeof(System.InvalidOperationException), exception);
+            Assert.IsType<System.InvalidOperationException>(exception);
         }
 
 
@@ -72,7 +72,7 @@ namespace z80vm.Tests
             machine.Registers.Set(operand2, 0x2000);
 
             var exception = Record.Exception(() => machine.EX(operand1, operand2));
-            Assert.IsType(typeof(System.InvalidOperationException), exception);
+            Assert.IsType<System.InvalidOperationException>(exception);
         }
 
         [Fact]
@@ -99,7 +99,7 @@ namespace z80vm.Tests
             machine.Registers.Set(register, 0x2000);
 
             var exception = Record.Exception(() => machine.EX(Reg16.AF, register));
-            Assert.IsType(typeof(System.InvalidOperationException), exception);
+            Assert.IsType<System.InvalidOperationException>(exception);
         }
 
         [Theory]
@@ -113,7 +113,7 @@ namespace z80vm.Tests
             machine.Registers.Set(Reg16Shadow.AF, 0x2000);
 
             var exception = Record.Exception(() => machine.EX(register, Reg16Shadow.AF));
-            Assert.IsType(typeof(System.InvalidOperationException), exception);
+            Assert.IsType<System.InvalidOperationException>(exception);
         }
 
     }

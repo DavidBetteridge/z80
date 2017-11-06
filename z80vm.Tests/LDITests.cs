@@ -64,7 +64,7 @@ namespace z80vm.Tests
             machine.Flags.Clear(Flag.PV);
             machine.LDI();
 
-            Assert.Equal(true, machine.Flags.Read(Flag.PV));
+            Assert.True(machine.Flags.Read(Flag.PV));
         }
 
         [Fact]
@@ -75,7 +75,7 @@ namespace z80vm.Tests
             machine.Flags.Set(Flag.PV);
             machine.LDI();
 
-            Assert.Equal(false, machine.Flags.Read(Flag.PV));
+            Assert.False(machine.Flags.Read(Flag.PV));
         }
 
         [Fact]
@@ -85,7 +85,7 @@ namespace z80vm.Tests
             machine.Flags.Set(Flag.H);
             machine.LDI();
 
-            Assert.Equal(false, machine.Flags.Read(Flag.H));
+            Assert.False(machine.Flags.Read(Flag.H));
         }
 
         [Fact]
@@ -95,7 +95,7 @@ namespace z80vm.Tests
             machine.Flags.Set(Flag.N);
             machine.LDI();
 
-            Assert.Equal(false, machine.Flags.Read(Flag.N));
+            Assert.False(machine.Flags.Read(Flag.N));
         }
 
 

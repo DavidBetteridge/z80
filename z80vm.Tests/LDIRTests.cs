@@ -74,7 +74,7 @@ namespace z80vm.Tests
             machine.Flags.Set(flag);
             machine.LDIR();
 
-            Assert.Equal(false, machine.Flags.Read(flag));
+            Assert.False(machine.Flags.Read(flag));
         }
 
     }

@@ -24,7 +24,7 @@ namespace z80vm.Tests
 
             var conditionHolds = conditionValidator.IsTrue(flags, condition);
 
-            Assert.Equal(true, conditionHolds);
+            Assert.True(conditionHolds);
         }
 
         [Theory]
@@ -47,7 +47,7 @@ namespace z80vm.Tests
 
             var conditionHolds = conditionValidator.IsTrue(flags, condition);
 
-            Assert.Equal(false, conditionHolds);
+            Assert.False(conditionHolds);
         }
 
     }

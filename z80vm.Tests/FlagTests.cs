@@ -48,7 +48,7 @@ namespace z80vm.Tests
 
             machine.Flags.Set(Flag.C);
 
-            Assert.Equal(false, machine.Flags.Read(Flag.H));
+            Assert.False(machine.Flags.Read(Flag.H));
         }
 
         [Theory]
@@ -95,7 +95,7 @@ namespace z80vm.Tests
             var machine = CreateMachine();
             machine.Registers.Set(Reg8.F, valueOfFregister);
             
-            Assert.Equal(true, machine.Flags.Read(flag));
+            Assert.True(machine.Flags.Read(flag));
         }
 
 

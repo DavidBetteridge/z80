@@ -77,7 +77,7 @@ namespace z80vm.Tests
 
             machine.LD(Reg8.A, Read8BitValue(source));
 
-            Assert.Equal(false, machine.Flags.Read(Flag.H));
+            Assert.False(machine.Flags.Read(Flag.H));
         }
 
         [Theory]
@@ -90,7 +90,7 @@ namespace z80vm.Tests
 
             machine.LD(Reg8.A, Read8BitValue(source));
 
-            Assert.Equal(true, machine.Flags.Read(Flag.H));
+            Assert.True(machine.Flags.Read(Flag.H));
         }
 
         [Theory]
@@ -103,7 +103,7 @@ namespace z80vm.Tests
 
             machine.LD(Reg8.A, Read8BitValue(source));
 
-            Assert.Equal(false, machine.Flags.Read(Flag.N));
+            Assert.False(machine.Flags.Read(Flag.N));
         }
 
         [Theory]
@@ -116,7 +116,7 @@ namespace z80vm.Tests
 
             machine.LD(Reg8.A, Read8BitValue(source));
 
-            Assert.Equal(true, machine.Flags.Read(Flag.N));
+            Assert.True(machine.Flags.Read(Flag.N));
         }
 
         [Theory]
@@ -128,7 +128,7 @@ namespace z80vm.Tests
             machine.Registers.Set(source, 0);
             machine.LD(Reg8.A, Read8BitValue(source));
 
-            Assert.Equal(true, machine.Flags.Read(Flag.Z));
+            Assert.True(machine.Flags.Read(Flag.Z));
         }
 
         [Theory]
@@ -141,7 +141,7 @@ namespace z80vm.Tests
             machine.Registers.Set(source, 100);
             machine.LD(Reg8.A, Read8BitValue(source));
 
-            Assert.Equal(false, machine.Flags.Read(Flag.Z));
+            Assert.False(machine.Flags.Read(Flag.Z));
         }
 
         [Theory]
@@ -155,7 +155,7 @@ namespace z80vm.Tests
             machine.Registers.Set(source, 10);
             machine.LD(Reg8.A, Read8BitValue(source));
 
-            Assert.Equal(true, machine.Flags.Read(Flag.Z));
+            Assert.True(machine.Flags.Read(Flag.Z));
         }
 
         [Theory]
@@ -167,7 +167,7 @@ namespace z80vm.Tests
             machine.Registers.Set(source, value);
             machine.LD(Reg8.A, Read8BitValue(source));
 
-            Assert.Equal(true, machine.Flags.Read(Flag.S));
+            Assert.True(machine.Flags.Read(Flag.S));
         }
 
         [Theory]
@@ -180,7 +180,7 @@ namespace z80vm.Tests
             machine.Flags.Set(Flag.S);
             machine.LD(Reg8.A, Read8BitValue(source));
 
-            Assert.Equal(false, machine.Flags.Read(Flag.S));
+            Assert.False(machine.Flags.Read(Flag.S));
         }
 
         [Theory]
@@ -193,7 +193,7 @@ namespace z80vm.Tests
             machine.Flags.Set(Flag.S);
             machine.LD(Reg8.A, Read8BitValue(source));
 
-            Assert.Equal(true, machine.Flags.Read(Flag.S));
+            Assert.True(machine.Flags.Read(Flag.S));
         }
 
         //*************************************  16-BIT COMBINATIONS ************************************************

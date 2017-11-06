@@ -37,7 +37,7 @@ namespace z80vm.Tests
             var machine = CreateMachine();
 
             var exception = Record.Exception(() => machine.JP(register));
-            Assert.IsType(typeof(System.InvalidOperationException), exception);
+            Assert.IsType<System.InvalidOperationException>(exception);
         }
 
 

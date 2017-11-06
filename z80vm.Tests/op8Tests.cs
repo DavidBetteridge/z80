@@ -141,7 +141,7 @@ namespace z80vm.Tests
             var op = op8.Read8BitValue(123);
 
             var exception = Record.Exception(() => op.Set(machine.Memory, machine.Registers, 1));
-            Assert.IsType(typeof(System.InvalidOperationException), exception);
+            Assert.IsType<System.InvalidOperationException>(exception);
         }
     }
 }

@@ -22,9 +22,9 @@ namespace z80vm.Tests
         }
 
         [Theory]
-        [InlineData(0xFFFF, 1)]
-        [InlineData(0x0, -1)]
-        public void AnErrorShouldNotBeReportedIfTheInstructionJumpsOutOfTheMemorySpace(ushort start, sbyte offset)
+        [InlineData(0xFFFF)]
+        [InlineData(0x0)]
+        public void AnErrorShouldNotBeReportedIfTheInstructionJumpsOutOfTheMemorySpace(ushort start)
         {
             var machine = CreateMachine();
             machine.Registers.Set(Reg16.PC, start);
@@ -69,7 +69,7 @@ namespace z80vm.Tests
             var machine = CreateMachine();
 
             var exception = Record.Exception(() => machine.JR(condition, 1));
-            Assert.IsType(typeof(System.InvalidOperationException), exception);
+            Assert.IsType<System.InvalidOperationException>(exception);
         }
 
     }

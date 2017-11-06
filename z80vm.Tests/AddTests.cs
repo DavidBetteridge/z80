@@ -16,7 +16,7 @@ namespace z80vm.Tests
             var machine = CreateMachineWhereAllCommandsAreInvalid();
 
             var exception = Record.Exception(() => machine.ADD(Reg8.B, Read8BitValue(1)));
-            Assert.IsType(typeof(System.InvalidOperationException), exception);
+            Assert.IsType<System.InvalidOperationException>(exception);
         }
 
         [Theory]
@@ -92,7 +92,7 @@ namespace z80vm.Tests
             machine.Flags.Set(Flag.N);
             machine.ADD(Reg8.A, Read8BitValue(2));
 
-            Assert.Equal(false, machine.Flags.Read(Flag.N));
+            Assert.False(machine.Flags.Read(Flag.N));
         }
 
         [Theory]
@@ -104,7 +104,7 @@ namespace z80vm.Tests
             machine.Registers.Set(Reg8.A, lhs);
             machine.ADD(Reg8.A, Read8BitValue(rhs));
 
-            Assert.Equal(true, machine.Flags.Read(Flag.H));
+            Assert.True(machine.Flags.Read(Flag.H));
         }
 
         [Fact]
@@ -116,7 +116,7 @@ namespace z80vm.Tests
 
             machine.ADD(Reg8.A, Read8BitValue(1));
 
-            Assert.Equal(false, machine.Flags.Read(Flag.H));
+            Assert.False(machine.Flags.Read(Flag.H));
         }
 
 
@@ -130,7 +130,7 @@ namespace z80vm.Tests
             machine.SetCommandValidator(commandValidator.Object);
 
             var exception = Record.Exception(() => machine.ADD(Reg16.HL, Reg16.BC));
-            Assert.IsType(typeof(System.InvalidOperationException), exception);
+            Assert.IsType<System.InvalidOperationException>(exception);
         }
 
         [Fact]
@@ -152,7 +152,7 @@ namespace z80vm.Tests
             machine.Registers.Set(Reg16.BC, 0xBBBB);
             machine.ADD(Reg16.HL, Reg16.BC);
 
-            Assert.Equal(true, machine.Flags.Read(Flag.C));
+            Assert.True(machine.Flags.Read(Flag.C));
         }
 
         [Fact]

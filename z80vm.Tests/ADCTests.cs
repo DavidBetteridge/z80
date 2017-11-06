@@ -14,7 +14,7 @@ namespace z80vm.Tests
             var machine = CreateMachineWhereAllCommandsAreInvalid();
 
             var exception = Record.Exception(() => machine.ADC(Reg8.B, Read8BitValue(1)));
-            Assert.IsType(typeof(System.InvalidOperationException), exception);
+            Assert.IsType<System.InvalidOperationException>(exception);
         }
 
         [Theory]
@@ -118,7 +118,7 @@ namespace z80vm.Tests
             var machine = CreateMachineWhereAllCommandsAreInvalid();
 
             var exception = Record.Exception(() => machine.ADC(Reg16.AF, Reg16.AF));
-            Assert.IsType(typeof(System.InvalidOperationException), exception);
+            Assert.IsType<System.InvalidOperationException>(exception);
         }
 
         [Theory]

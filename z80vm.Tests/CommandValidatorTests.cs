@@ -18,7 +18,7 @@ namespace z80vm.Tests
         {
             var cv = new CommandValidator();
             var exception = Record.Exception(() => cv.EnsureCommandIsValid(Reg8.B, Reg8.A, "ADD"));
-            Assert.IsType(typeof(System.InvalidOperationException), exception);
+            Assert.IsType<System.InvalidOperationException>(exception);
         }
 
         [Fact]
@@ -35,7 +35,7 @@ namespace z80vm.Tests
         {
             var cv = new CommandValidator();
             var exception = Record.Exception(() => cv.EnsureCommandIsValid(Value.valueAt(Reg16.SP), "INC"));
-            Assert.IsType(typeof(System.InvalidOperationException), exception);
+            Assert.IsType<System.InvalidOperationException>(exception);
         }
     }
 }
