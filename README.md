@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/699rgu71wxdg7yx2?svg=true)](https://ci.appveyor.com/project/DavidBetteridge/z80)
+
 # z80
 This project contains my implementation of a z80 emulator written in C#.  I've been mainly using http://z80-heaven.wikidot.com/ as source for the definition of each of the instructions.
 
