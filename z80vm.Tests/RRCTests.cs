@@ -35,14 +35,15 @@ namespace z80vm.Tests
         }
 
         [Theory]
-        [InlineData(Reg16.IX, 1, 0b0000_0000, 0b0000_0000)]
-        [InlineData(Reg16.IX, 2, 0b0101_0101, 0b1010_1010)]
-        [InlineData(Reg16.IY, 3, 0b0000_0001, 0b1000_0000)]
+        [InlineData(Reg16.IX, 10, 0b0000_0000, 0b0000_0000)]
+        [InlineData(Reg16.IX, 20, 0b0101_0101, 0b1010_1010)]
+        [InlineData(Reg16.IY, 30, 0b0000_0001, 0b1000_0000)]
         public void Given_A_MemoryAddress_Plus_Offset_It_Should_Rotate_Its_Value_To_The_Right(Reg16 register, sbyte offset, byte originalValue, byte expectedValue)
         {
-            var memoryAddress = (ushort)(0x2000 + offset);
+            var baseAddress = (ushort)0x2000;
+            var memoryAddress = (ushort)(baseAddress + offset);
             var machine = CreateMachine();
-            machine.Registers.Set(register, memoryAddress);
+            machine.Registers.Set(register, baseAddress);
             machine.Memory.Set(memoryAddress, originalValue);
 
             machine.RRC(Value.valueAt(register).Add(offset));

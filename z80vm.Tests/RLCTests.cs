@@ -40,9 +40,10 @@ namespace z80vm.Tests
         [InlineData(Reg16.IY, 3, 0b1000_0000, 0b0000_0001)]
         public void Given_A_MemoryAddress_Plus_Offset_It_Should_Rotate_Its_Value_To_The_Left(Reg16 register, sbyte offset, byte originalValue, byte expectedValue)
         {
-            var memoryAddress = (ushort)(0x2000 + offset);
+            var baseAddress = (ushort)0x2000;
+            var memoryAddress = (ushort)(baseAddress + offset);
             var machine = CreateMachine();
-            machine.Registers.Set(register, memoryAddress);
+            machine.Registers.Set(register, baseAddress);
             machine.Memory.Set(memoryAddress, originalValue);
 
             machine.RLC(Value.valueAt(register).Add(offset));

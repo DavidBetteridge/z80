@@ -18,6 +18,54 @@ namespace z80vm
 
         public Flags Flags { get; private set; }
 
+        #region RL
+        /// <summary>
+        /// Usage: 9-bit rotation to the left. the register's bits are shifted left. The carry value is put into 0th bit of the register, and the leaving 7th bit is put into the carry.
+        /// Flags: C is changed to the leaving 7th bit, H and N are reset, P/V is parity, S and Z are modified by definition
+        /// </summary>
+        /// <param name="register"></param>
+        public void RL(Reg8 register)
+        {
+            var currentValue = Registers.Read(register);
+            var newValue = RL_RotateLeft(currentValue);
+
+            Registers.Set(register, newValue);
+        }
+
+        /// <summary>
+        /// Usage: 9-bit rotation to the left. the register's bits are shifted left. The carry value is put into 0th bit of the register, and the leaving 7th bit is put into the carry.
+        /// Flags: C is changed to the leaving 7th bit, H and N are reset, P/V is parity, S and Z are modified by definition
+        /// </summary>
+        public void RL(Value value)
+        {
+            var memoryLocation = (ushort)(Registers.Read(value.Register) + value.Offset);
+            var currentValue = Memory.ReadByte(memoryLocation);
+
+            var newValue = RL_RotateLeft(currentValue);
+
+            Memory.Set(memoryLocation, newValue);
+        }
+
+        private byte RL_RotateLeft(byte currentValue)
+        {
+            var carrySet = Flags.Read(Flag.C);
+            var newValue = (byte)(currentValue << 1);
+            if (carrySet) newValue |= 1;
+
+            if ((currentValue >> 7) == 1)
+            {
+                Flags.Set(Flag.C);
+            }
+            else
+            {
+                Flags.Clear(Flag.C);
+
+            }
+
+            return newValue;
+        }
+        #endregion
+
         #region RRCA
         /// <summary>
         /// Usage: Performs a RRC A faster and modifies the flags differently.
@@ -65,7 +113,7 @@ namespace z80vm
         /// <param name="register"></param>
         public void RRC(Value value)
         {
-            var memoryLocation = Registers.Read(value.Register);
+            var memoryLocation = (ushort)(Registers.Read(value.Register) + value.Offset);
             var currentValue = Memory.ReadByte(memoryLocation);
             var newValue = (byte)((currentValue >> 1) | (currentValue << 7));
             Memory.Set(memoryLocation, newValue);
@@ -107,7 +155,7 @@ namespace z80vm
         /// <param name="register"></param>
         public void RLC(Value value)
         {
-            var memoryLocation = Registers.Read(value.Register);
+            var memoryLocation = (ushort)(Registers.Read(value.Register) + value.Offset);
             var currentValue = Memory.ReadByte(memoryLocation);
             var newValue = (byte)((currentValue << 1) | (currentValue >> 7));
             Memory.Set(memoryLocation, newValue);
