@@ -32,45 +32,55 @@ namespace z80Assembler
 
             var assembly = typeof(InstructionLookups).GetTypeInfo().Assembly;
             var resourceName = "z80Assembler.z80Instructions.txt";
-            using (var stream = assembly.GetManifestResourceStream(resourceName))
-            using (var reader = new StreamReader(stream))
+            var result = "";
+
+            try
             {
-                var result = reader.ReadToEnd();
-
-                var lines = result
-                            .Split(new[] { System.Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
-                            .Skip(3)
-                            .Take(256)
-                            .Select(l => new InstructionLookup(l))
-                            .ToArray();
-
-                this.normals = lines.ToDictionary(a => a.Normal.Replace("nn", "n"));
-
-                this.dds = lines.ToDictionary(a => cleanDD(a.DDPrefix));
-                this.cbs = lines.ToDictionary(a => a.CBPrefix.Replace("nn", "n"));
-
-                // This column contains a number of repeated commands,  hence the need for a manual loop
-                this.eds = new Dictionary<string, InstructionLookup>();
-                foreach (var op in lines)
+                using (var stream = assembly.GetManifestResourceStream(resourceName))
+                using (var reader = new StreamReader(stream))
                 {
-                    if (!this.eds.ContainsKey(op.EDPrefix.Replace("nn", "n")))
-                        this.eds.Add(op.EDPrefix.Replace("nn", "n"), op);
+                    result = reader.ReadToEnd();
                 }
-
-                this.ddcbs = new Dictionary<string, InstructionLookup>();
-                foreach (var op in lines)
-                {
-                    var clean = op.DDCBPrefix
-                                    .Replace("nn", "n")
-                                    .Replace("+d", "+n");
-                    if (!this.ddcbs.ContainsKey(clean))
-                        this.ddcbs.Add(clean, op);
-                }
-
-                this.byHexCode = lines.ToDictionary(a => a.Hex);
-
-                numberOfLines = normals.Count();
             }
+            catch (Exception ex)
+            {
+                throw new Exception("Could not read " + resourceName + " - " + ex.Message);
+            }
+
+            var lines = result
+                        .Split(new[] { System.Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
+                        .Skip(3)
+                        .Take(256)
+                        .Select(l => new InstructionLookup(l))
+                        .ToArray();
+
+            this.normals = lines.ToDictionary(a => a.Normal.Replace("nn", "n"));
+
+            this.dds = lines.ToDictionary(a => cleanDD(a.DDPrefix));
+            this.cbs = lines.ToDictionary(a => a.CBPrefix.Replace("nn", "n"));
+
+            // This column contains a number of repeated commands,  hence the need for a manual loop
+            this.eds = new Dictionary<string, InstructionLookup>();
+            foreach (var op in lines)
+            {
+                if (!this.eds.ContainsKey(op.EDPrefix.Replace("nn", "n")))
+                    this.eds.Add(op.EDPrefix.Replace("nn", "n"), op);
+            }
+
+            this.ddcbs = new Dictionary<string, InstructionLookup>();
+            foreach (var op in lines)
+            {
+                var clean = op.DDCBPrefix
+                                .Replace("nn", "n")
+                                .Replace("+d", "+n");
+                if (!this.ddcbs.ContainsKey(clean))
+                    this.ddcbs.Add(clean, op);
+            }
+
+            this.byHexCode = lines.ToDictionary(a => a.Hex);
+
+            numberOfLines = normals.Count();
+
         }
 
         public InstructionInfo TryLookupHexCodeFromNormalisedCommand(string normal)
