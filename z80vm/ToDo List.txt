@@ -26,6 +26,7 @@ INC - needs to set flags for 8 bit operations and support for (hl),  (ix+n) and 
 NEG - needs to set flags
 RLC - needs to set flags
 RL - needs to set flags
+RLA - needs to set flags
 RRC - needs to set flags
 LD - Support for flag P/V flag,  Restrictions
 SUB - Started

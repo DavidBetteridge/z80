@@ -107,7 +107,12 @@ namespace z80Assembler
                     else if (TryGet16BitShadowRegister(parm, out var regShadow16))
                     {
                         parameterTypes.Add(typeof(Reg16Shadow));
-                        parameters.Add(reg16);
+                        parameters.Add(regShadow16);
+                    }
+                    else if (TryGetCondition(parm, out var condition))
+                    {
+                        parameterTypes.Add(typeof(Condition));
+                        parameters.Add(condition);
                     }
                     else
                     {
@@ -129,6 +134,11 @@ namespace z80Assembler
                                 break;
                             case OperandLength.Short:
                                 parameterTypes.Add(typeof(ushort));
+
+                                // If it's a memory address then it will be wrapped in (),  ie. (0xFFFF)
+                                if (parm.StartsWith("(")) parm = parm.Substring(1);
+                                if (parm.EndsWith(")")) parm = parm.Substring(0, parm.Length - 1);
+
                                 parameters.Add(ushort.Parse(parm));
                                 break;
                             default:
@@ -171,6 +181,54 @@ namespace z80Assembler
             method.Invoke(_machine, parmsArray);
 
             return (instruction == "HALT");
+        }
+
+        private bool TryGetCondition(string operand, out Condition condition)
+        {
+            var result = true;
+
+            switch (operand.ToUpper())
+            {
+                case "C":
+                    condition = Condition.c;
+                    break;
+
+                case "M":
+                    condition = Condition.m;
+                    break;
+
+                case "NC":
+                    condition = Condition.nc;
+                    break;
+
+                case "NZ":
+                    condition = Condition.nz;
+                    break;
+
+                case "P":
+                    condition = Condition.p;
+                    break;
+
+                case "PE":
+                    condition = Condition.pe;
+                    break;
+
+                case "PO":
+                    condition = Condition.po;
+                    break;
+
+                case "Z":
+                    condition = Condition.z;
+                    break;
+
+                default:
+                    condition = Condition.c;
+                    result = false;
+                    break;
+            }
+
+            return result;
+
         }
 
         private bool TryGetValueAt16BitRegister(string operand, out Value value)

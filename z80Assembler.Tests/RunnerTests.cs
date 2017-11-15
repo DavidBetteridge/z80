@@ -279,5 +279,6 @@ namespace z80Assembler.Tests
             Assert.Equal(0xAA, machine.Registers.Read(Reg8.A));
         }
 
+
     }
 }

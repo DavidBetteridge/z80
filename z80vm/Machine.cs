@@ -18,6 +18,21 @@ namespace z80vm
 
         public Flags Flags { get; private set; }
 
+        #region RLA
+
+        /// <summary>
+        /// Usage: Performs an RL A, but is much faster and S, Z, and P/V flags are preserved.
+        /// Flags: C is changed to the leaving 7th bit, H and N are reset, P/V , S and Z are preserved.
+        /// </summary>
+        public void RLA()
+        {
+            var currentValue = Registers.Read(Reg8.A);
+            var newValue = RL_RotateLeft(currentValue);
+
+            Registers.Set(Reg8.A, newValue);
+        }
+        #endregion
+
         #region RL
         /// <summary>
         /// Usage: 9-bit rotation to the left. the register's bits are shifted left. The carry value is put into 0th bit of the register, and the leaving 7th bit is put into the carry.
@@ -59,7 +74,6 @@ namespace z80vm
             else
             {
                 Flags.Clear(Flag.C);
-
             }
 
             return newValue;

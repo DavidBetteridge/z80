@@ -85,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="RLCATests.cs" />
+    <Compile Include="RLATests.cs" />
     <Compile Include="RLTests.cs" />
     <Compile Include="RRCATests.cs" />
     <Compile Include="RRCTests.cs" />
