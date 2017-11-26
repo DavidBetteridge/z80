@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using z80vm;
 
@@ -28,7 +22,7 @@ namespace z80.ide
             //Cr – these three bits indicate which character row is being addressed: from 0 – 7
             //Cc – these five bits refer to which character column is being addressed: from 0 – 31
             //The top three bits( 010 ) of the high byte don’t change.
-
+            this.memory = memory;
             var g = this.panel1.CreateGraphics();
 
             for (ushort address = 16384; address < 16384 + (2048 * 3); address++)
@@ -41,7 +35,35 @@ namespace z80.ide
                 DrawColour(memory, g, address);
             }
 
-            this.memory = memory;
+
+        }
+
+
+        private static (int col, int y) XYFromAddress(ushort address)
+        {
+            var third = (address & 0b0001_1000_0000_0000) >> 11;
+            var line = (address & 0b0000_0111_0000_0000) >> 8;
+            var row = (address & 0b0000_0000_1110_0000) >> 5;
+            var col = (address & 0b0000_0000_0001_1111);
+            var y = (third * 64) + (row * 8) + line;
+
+            return (col, y);
+        }
+
+        private static ushort AddressFromXY(int x, int y)
+        {
+            var third = (y / 64);
+            y = y % 64;
+
+            var cr = y / 8;
+            var L = y % 8;
+
+            return (ushort)(0b0100_0000_0000_0000 | (third << 11) | (L << 8) | (cr << 5) | x);
+        }
+
+        private bool isPixelSet(byte bitMap, int offset)
+        {
+            return (bitMap & (1 << offset)) != 0;
         }
 
         private void DrawColour(Memory memory, Graphics g, ushort address)
@@ -54,9 +76,9 @@ namespace z80.ide
                         return Color.Black;
                     case 1:
                         if (isBright)
-                            return Color.LightBlue;
-                        else
                             return Color.Blue;
+                        else
+                            return Color.DarkBlue;
                     case 2:
                         if (isBright)
                             return Color.Red;
@@ -79,16 +101,15 @@ namespace z80.ide
                             return Color.Cyan;
                     case 6:
                         if (isBright)
-                            return Color.LightYellow;
-                        else
                             return Color.Yellow;
+                        else
+                            return Color.GreenYellow;
                     case 7:
                         return Color.White;
                     default:
                         return Color.Black;
                 }
             }
-
 
             var bitmap = memory.ReadByte(address);
 
@@ -105,9 +126,26 @@ namespace z80.ide
             var col = blockOffset % 32;
 
             var y = row * 8;
-            var x = col * 8;
+            var x = col;// * 8;
 
-            g.FillRectangle(new SolidBrush(paperColour), x * 4, y * 4, 4, 4);
+            for (int y0 = 0; y0 < 8; y0++)
+            {
+                var bitMap = memory.ReadByte(AddressFromXY(x, y + y0));
+
+                var offset = 7;
+                for (int x0 = 0; x0 < 8; x0++)
+                {
+                    if (!isPixelSet(bitMap, x0))
+                    {
+                        g.FillRectangle(new SolidBrush(paperColour), ((x*8)+ offset) * 4, (y + y0) * 4, 4, 4);
+                    }
+                    else
+                    {
+                        g.FillRectangle(new SolidBrush(inkColour), ((x * 8) + offset) * 4, (y + y0) * 4, 4, 4);
+                    }
+                    offset--;
+                }
+            }
         }
 
 
@@ -120,14 +158,10 @@ namespace z80.ide
 
         private void DrawAddress(Memory memory, Graphics g, ushort address)
         {
-            var third = (address & 0b0001_1000_0000_0000) >> 11;
-            var line = (address & 0b0000_0111_0000_0000) >> 8;
-            var row = (address & 0b0000_0000_1110_0000) >> 5;
-            var col = (address & 0b0000_0000_0001_1111);
+            var (col, y) = XYFromAddress(address);
+
 
             var bitmap = memory.ReadByte(address);
-
-            var y = (third * 64) + (row * 8) + line;
 
             //X
             // col is a byte from 0 to 31
@@ -139,7 +173,7 @@ namespace z80.ide
                 var x = (col * 8) + offset;
 
                 //Read the bitmap to see if the this pixel is set
-                var setPixel = (bitmap & (1 << i)) != 0;
+                var setPixel = isPixelSet(bitmap, i);
 
                 var realX = x * 4;
                 var realY = y * 4;
@@ -152,6 +186,8 @@ namespace z80.ide
                 offset--;
             }
         }
+
+
 
         private void cmdFillDemo_Click(object sender, EventArgs e)
         {
