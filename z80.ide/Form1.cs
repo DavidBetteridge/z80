@@ -207,6 +207,11 @@ DJNZ Loop
             DisplayRegisters();
             DisplayMemory();
             DisplayFlags();
+
+            var screen = new Screen();
+            screen.Show();
+            screen.Display(_machine.Memory);
+            screen.BringToFront();
         }
 
         private void Scintilla_TextChanged(object sender, EventArgs e)
