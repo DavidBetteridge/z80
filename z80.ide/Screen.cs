@@ -6,39 +6,39 @@ using z80vm;
 
 namespace z80.ide
 {
+
+    //    //0   1   0   T   T   L   L   L          Cr Cr Cr Cc Cc Cc Cc Cc
+    //    //T – these two bits refer to which third of the screen is being addressed: 00 – Top, 01 – Middle, 10 – Bottom
+    //    //L – these three bits indicate which line is being addressed: from 0 – 7, or 000 – 111 in binary
+    //    //Cr – these three bits indicate which character row is being addressed: from 0 – 7
+    //    //Cc – these five bits refer to which character column is being addressed: from 0 – 31
+    //    //The top three bits( 010 ) of the high byte don’t change.
+
     public partial class Screen : Form
     {
-        private Memory memory;
-        public Screen()
-        {
-            InitializeComponent();
-        }
+        private const ushort SCREEN_MEMORY_START = 0x4000;
+        private const ushort SCREEN_MEMORY_BITMAP_END = 0x5800;
+        private const ushort SCREEN_MEMORY_END = 0x5B00;
 
-        internal void Display(Memory memory)
+        private readonly Memory memory;
+        public Screen(Memory memory)
         {
-            //0   1   0   T   T   L   L   L          Cr Cr Cr Cc Cc Cc Cc Cc
-            //T – these two bits refer to which third of the screen is being addressed: 00 – Top, 01 – Middle, 10 – Bottom
-            //L – these three bits indicate which line is being addressed: from 0 – 7, or 000 – 111 in binary
-            //Cr – these three bits indicate which character row is being addressed: from 0 – 7
-            //Cc – these five bits refer to which character column is being addressed: from 0 – 31
-            //The top three bits( 010 ) of the high byte don’t change.
             this.memory = memory;
-            var g = this.panel1.CreateGraphics();
-
-            for (ushort address = 16384; address < 16384 + (2048 * 3); address++)
-            {
-                DrawAddress(memory, g, address);
-            }
-
-            for (ushort address = 22528; address < 22528 + 768; address++)
-            {
-                DrawColour(memory, g, address);
-            }
-
-
+            InitializeComponent();
+            memory.ValueChanged += Memory_ValueChanged;
         }
+        private void Memory_ValueChanged(object sender, MemoryValueChangedEventArgs e)
+        {
+            if (e.address >= SCREEN_MEMORY_START && e.address < SCREEN_MEMORY_BITMAP_END)
+            {
+                DrawAddress(memory, e.address);
+            }
 
-
+            if (e.address >= SCREEN_MEMORY_BITMAP_END && e.address < SCREEN_MEMORY_END)
+            {
+                DrawColour(memory, e.address);
+            }
+        }
         private static (int col, int y) XYFromAddress(ushort address)
         {
             var third = (address & 0b0001_1000_0000_0000) >> 11;
@@ -66,7 +66,7 @@ namespace z80.ide
             return (bitMap & (1 << offset)) != 0;
         }
 
-        private void DrawColour(Memory memory, Graphics g, ushort address)
+        private void DrawColour(Memory memory, ushort address)
         {
             Color LookupColour(int code, bool isBright)
             {
@@ -126,8 +126,8 @@ namespace z80.ide
             var col = blockOffset % 32;
 
             var y = row * 8;
-            var x = col;// * 8;
-
+            var x = col;
+            var g = this.panel1.CreateGraphics();
             for (int y0 = 0; y0 < 8; y0++)
             {
                 var bitMap = memory.ReadByte(AddressFromXY(x, y + y0));
@@ -148,25 +148,12 @@ namespace z80.ide
             }
         }
 
-
-
-        public void DrawAddress(Memory memory, ushort address)
-        {
-            var g = this.panel1.CreateGraphics();
-            DrawAddress(memory, g, address);
-        }
-
-        private void DrawAddress(Memory memory, Graphics g, ushort address)
+        private void DrawAddress(Memory memory, ushort address)
         {
             var (col, y) = XYFromAddress(address);
 
-
+            var g = this.panel1.CreateGraphics();
             var bitmap = memory.ReadByte(address);
-
-            //X
-            // col is a byte from 0 to 31
-            // each byte is 8 emulator pixels
-            // so x = col * 8 + 
             var offset = 7;
             for (int i = 0; i < 8; i++)
             {
@@ -187,25 +174,21 @@ namespace z80.ide
             }
         }
 
-
-
         private void cmdFillDemo_Click(object sender, EventArgs e)
         {
             var g = this.panel1.CreateGraphics();
-            for (ushort s = 16384; s <= 22527; s++)
+            for (ushort s = SCREEN_MEMORY_START; s < SCREEN_MEMORY_END; s++)
             {
                 this.memory.Set(s, 255);
-                DrawAddress(this.memory, g, s);
             }
         }
 
         private void cmdClearDemo_Click(object sender, EventArgs e)
         {
             var g = this.panel1.CreateGraphics();
-            for (ushort s = 16384; s <= 22527; s++)
+            for (ushort s = SCREEN_MEMORY_START; s < SCREEN_MEMORY_END; s++)
             {
                 this.memory.Set(s, 0);
-                DrawAddress(this.memory, g, s);
             }
         }
 
@@ -218,12 +201,11 @@ namespace z80.ide
         {
             var allBytes = File.ReadAllBytes(filename);
             var offset = 0;
-            for (ushort s = 16384; s <= 22527 + 768; s++)
+            for (ushort s = SCREEN_MEMORY_START; s < SCREEN_MEMORY_END; s++)
             {
                 this.memory.Set(s, allBytes[offset]);
                 offset++;
             }
-            Display(this.memory);
         }
 
         private void cmdLoadColour_Click(object sender, EventArgs e)

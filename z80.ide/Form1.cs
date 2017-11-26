@@ -208,9 +208,8 @@ DJNZ Loop
             DisplayMemory();
             DisplayFlags();
 
-            var screen = new Screen();
+            var screen = new Screen(_machine.Memory);
             screen.Show();
-            screen.Display(_machine.Memory);
             screen.BringToFront();
         }
 
