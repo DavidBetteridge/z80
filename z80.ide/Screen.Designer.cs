@@ -28,21 +28,16 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.components = new System.ComponentModel.Container();
             this.cmdFillDemo = new System.Windows.Forms.Button();
             this.cmdClearDemo = new System.Windows.Forms.Button();
             this.cmdLoadGloria = new System.Windows.Forms.Button();
             this.cmdLoadColour = new System.Windows.Forms.Button();
             this.cmdLoadManicMinor = new System.Windows.Forms.Button();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
-            // 
-            // panel1
-            // 
-            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel1.Location = new System.Drawing.Point(3, 12);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1024, 768);
-            this.panel1.TabIndex = 0;
             // 
             // cmdFillDemo
             // 
@@ -94,6 +89,22 @@
             this.cmdLoadManicMinor.UseVisualStyleBackColor = true;
             this.cmdLoadManicMinor.Click += new System.EventHandler(this.cmdLoadManicMinor_Click);
             // 
+            // timer1
+            // 
+            this.timer1.Enabled = true;
+            this.timer1.Interval = 500;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(1024, 768);
+            this.pictureBox1.TabIndex = 0;
+            this.pictureBox1.TabStop = false;
+            // 
             // Screen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -104,20 +115,22 @@
             this.Controls.Add(this.cmdLoadGloria);
             this.Controls.Add(this.cmdClearDemo);
             this.Controls.Add(this.cmdFillDemo);
-            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.pictureBox1);
             this.Name = "Screen";
             this.Text = "Screen";
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button cmdFillDemo;
         private System.Windows.Forms.Button cmdClearDemo;
         private System.Windows.Forms.Button cmdLoadGloria;
         private System.Windows.Forms.Button cmdLoadColour;
         private System.Windows.Forms.Button cmdLoadManicMinor;
+        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }

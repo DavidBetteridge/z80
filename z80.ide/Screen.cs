@@ -21,11 +21,18 @@ namespace z80.ide
         private const ushort SCREEN_MEMORY_END = 0x5B00;
 
         private readonly Memory memory;
+        private readonly Bitmap bitmap;
+        private readonly Bitmap flashBitmap;
         public Screen(Memory memory)
         {
             this.memory = memory;
             InitializeComponent();
+
+            this.bitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
+            this.flashBitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
+
             memory.ValueChanged += Memory_ValueChanged;
+            SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
         }
         private void Memory_ValueChanged(object sender, MemoryValueChangedEventArgs e)
         {
@@ -66,51 +73,74 @@ namespace z80.ide
             return (bitMap & (1 << offset)) != 0;
         }
 
-        private void DrawColour(Memory memory, ushort address)
+
+        private Color LookupColour(int code, bool isBright)
         {
-            Color LookupColour(int code, bool isBright)
+            switch (code)
             {
-                switch (code)
+                case 0:
+                    return Color.Black;
+                case 1:
+                    if (isBright)
+                        return Color.Blue;
+                    else
+                        return Color.DarkBlue;
+                case 2:
+                    if (isBright)
+                        return Color.Red;
+                    else
+                        return Color.DarkRed;
+                case 3:
+                    if (isBright)
+                        return Color.Magenta;
+                    else
+                        return Color.DarkMagenta;
+                case 4:
+                    if (isBright)
+                        return Color.LightGreen;
+                    else
+                        return Color.Green;
+                case 5:
+                    if (isBright)
+                        return Color.LightCyan;
+                    else
+                        return Color.Cyan;
+                case 6:
+                    if (isBright)
+                        return Color.Yellow;
+                    else
+                        return Color.GreenYellow;
+                case 7:
+                    return Color.White;
+                default:
+                    return Color.Black;
+            }
+        }
+
+        private void SetPixelBlock(int x, int y, Color color)
+        {
+            for (int x0 = 0; x0 < 4; x0++)
+            {
+                for (int y0 = 0; y0 < 4; y0++)
                 {
-                    case 0:
-                        return Color.Black;
-                    case 1:
-                        if (isBright)
-                            return Color.Blue;
-                        else
-                            return Color.DarkBlue;
-                    case 2:
-                        if (isBright)
-                            return Color.Red;
-                        else
-                            return Color.DarkRed;
-                    case 3:
-                        if (isBright)
-                            return Color.Magenta;
-                        else
-                            return Color.DarkMagenta;
-                    case 4:
-                        if (isBright)
-                            return Color.LightGreen;
-                        else
-                            return Color.Green;
-                    case 5:
-                        if (isBright)
-                            return Color.LightCyan;
-                        else
-                            return Color.Cyan;
-                    case 6:
-                        if (isBright)
-                            return Color.Yellow;
-                        else
-                            return Color.GreenYellow;
-                    case 7:
-                        return Color.White;
-                    default:
-                        return Color.Black;
+                    this.bitmap.SetPixel(x + x0, y + y0, color);
                 }
             }
+        }
 
+        private void SetFlashPixelBlock(int x, int y, Color color)
+        {
+            for (int x0 = 0; x0 < 4; x0++)
+            {
+                for (int y0 = 0; y0 < 4; y0++)
+                {
+                    this.flashBitmap.SetPixel(x + x0, y + y0, color);
+                }
+            }
+        }
+
+        private void DrawColour(Memory memory, ushort address)
+        {
             var bitmap = memory.ReadByte(address);
 
             var ink = bitmap & 0b111;
@@ -121,13 +151,12 @@ namespace z80.ide
             var inkColour = LookupColour(ink, bright);
             var paperColour = LookupColour(paper, bright);
 
-            var blockOffset = address - 22528;
+            var blockOffset = address - SCREEN_MEMORY_BITMAP_END;
             var row = blockOffset / 32;
             var col = blockOffset % 32;
 
             var y = row * 8;
             var x = col;
-            var g = this.panel1.CreateGraphics();
             for (int y0 = 0; y0 < 8; y0++)
             {
                 var bitMap = memory.ReadByte(AddressFromXY(x, y + y0));
@@ -137,22 +166,55 @@ namespace z80.ide
                 {
                     if (!isPixelSet(bitMap, x0))
                     {
-                        g.FillRectangle(new SolidBrush(paperColour), ((x*8)+ offset) * 4, (y + y0) * 4, 4, 4);
+                        SetPixelBlock(((x * 8) + offset) * 4, (y + y0) * 4, paperColour);
+                        SetFlashPixelBlock(((x * 8) + offset) * 4, (y + y0) * 4, flash ? inkColour : paperColour);
                     }
                     else
                     {
-                        g.FillRectangle(new SolidBrush(inkColour), ((x * 8) + offset) * 4, (y + y0) * 4, 4, 4);
+                        SetPixelBlock(((x * 8) + offset) * 4, (y + y0) * 4, inkColour);
+                        SetFlashPixelBlock(((x * 8) + offset) * 4, (y + y0) * 4, flash ? paperColour : inkColour);
                     }
+
                     offset--;
                 }
             }
+            DrawBitmap();
+        }
+
+        private Color LookupInkColour(int x, int y)
+        {
+            var row = y / 8;
+            var address = (ushort)(SCREEN_MEMORY_BITMAP_END + (row * 32) + (x / 8));
+
+            var bitmap = memory.ReadByte(address);
+
+            var ink = bitmap & 0b111;
+            var paper = (bitmap & 0b111000) >> 3;
+            var bright = ((bitmap & 0b1000000) >> 6) == 1;
+            var flash = ((bitmap & 0b10000000) >> 7) == 1;
+
+            return LookupColour(ink, bright);
+        }
+
+        private Color LookupPenColour(int x, int y)
+        {
+            var row = y / 8;
+            var address = (ushort)(SCREEN_MEMORY_BITMAP_END + (row * 32) + (x / 8));
+
+            var bitmap = memory.ReadByte(address);
+
+            var ink = bitmap & 0b111;
+            var paper = (bitmap & 0b111000) >> 3;
+            var bright = ((bitmap & 0b1000000) >> 6) == 1;
+            var flash = ((bitmap & 0b10000000) >> 7) == 1;
+
+            return LookupColour(paper, bright);
         }
 
         private void DrawAddress(Memory memory, ushort address)
         {
             var (col, y) = XYFromAddress(address);
 
-            var g = this.panel1.CreateGraphics();
             var bitmap = memory.ReadByte(address);
             var offset = 7;
             for (int i = 0; i < 8; i++)
@@ -166,18 +228,18 @@ namespace z80.ide
                 var realY = y * 4;
 
                 if (setPixel)
-                    g.FillRectangle(Brushes.White, realX, realY, 4, 4);
+                    SetPixelBlock(realX, realY, LookupInkColour(x, y));
                 else
-                    g.FillRectangle(Brushes.Black, realX, realY, 4, 4);
+                    SetPixelBlock(realX, realY, LookupPenColour(x, y));
 
                 offset--;
             }
+            DrawBitmap();
         }
 
         private void cmdFillDemo_Click(object sender, EventArgs e)
         {
-            var g = this.panel1.CreateGraphics();
-            for (ushort s = SCREEN_MEMORY_START; s < SCREEN_MEMORY_END; s++)
+            for (ushort s = SCREEN_MEMORY_START; s <= SCREEN_MEMORY_BITMAP_END; s++)
             {
                 this.memory.Set(s, 255);
             }
@@ -185,8 +247,7 @@ namespace z80.ide
 
         private void cmdClearDemo_Click(object sender, EventArgs e)
         {
-            var g = this.panel1.CreateGraphics();
-            for (ushort s = SCREEN_MEMORY_START; s < SCREEN_MEMORY_END; s++)
+            for (ushort s = SCREEN_MEMORY_START; s <= SCREEN_MEMORY_BITMAP_END; s++)
             {
                 this.memory.Set(s, 0);
             }
@@ -216,6 +277,25 @@ namespace z80.ide
         private void cmdLoadManicMinor_Click(object sender, EventArgs e)
         {
             LoadFile("ManicMiner(SoftwareProjectsLtd).scr");
+        }
+
+        private bool flash;
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            DrawBitmap();
+            flash = !flash;
+        }
+
+        private void DrawBitmap()
+        {
+            if (flash)
+            {
+                this.pictureBox1.Image = bitmap;
+            }
+            else
+            {
+                this.pictureBox1.Image = flashBitmap;
+            }
         }
     }
 }
