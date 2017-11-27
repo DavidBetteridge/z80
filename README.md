@@ -22,6 +22,11 @@ The solution has been split up into a number of projects:
 
 * z80.BlindTests - console application for carrying out the blind testing of all instruction.s
 
+## Screen
+The debugger supports the loading of scr format files as shown below:
+
+![Screen](https://github.com/DavidBetteridge/z80/blob/master/screen.PNG "Screen")
+
 ## Debugger
 The debugger in action
 
