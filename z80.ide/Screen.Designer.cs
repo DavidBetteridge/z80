@@ -36,6 +36,9 @@
             this.cmdLoadManicMinor = new System.Windows.Forms.Button();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.cmdLoadManicMiner2 = new System.Windows.Forms.Button();
+            this.cmdLoadJSW = new System.Windows.Forms.Button();
+            this.cmdLoadDanDare = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -105,11 +108,44 @@
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
+            // cmdLoadManicMiner2
+            // 
+            this.cmdLoadManicMiner2.Location = new System.Drawing.Point(1034, 237);
+            this.cmdLoadManicMiner2.Name = "cmdLoadManicMiner2";
+            this.cmdLoadManicMiner2.Size = new System.Drawing.Size(166, 39);
+            this.cmdLoadManicMiner2.TabIndex = 6;
+            this.cmdLoadManicMiner2.Text = "Load Manic Miner 2";
+            this.cmdLoadManicMiner2.UseVisualStyleBackColor = true;
+            this.cmdLoadManicMiner2.Click += new System.EventHandler(this.cmdLoadManicMiner2_Click);
+            // 
+            // cmdLoadJSW
+            // 
+            this.cmdLoadJSW.Location = new System.Drawing.Point(1035, 282);
+            this.cmdLoadJSW.Name = "cmdLoadJSW";
+            this.cmdLoadJSW.Size = new System.Drawing.Size(166, 39);
+            this.cmdLoadJSW.TabIndex = 7;
+            this.cmdLoadJSW.Text = "Load JSW";
+            this.cmdLoadJSW.UseVisualStyleBackColor = true;
+            this.cmdLoadJSW.Click += new System.EventHandler(this.cmdLoadJSW_Click);
+            // 
+            // cmdLoadDanDare
+            // 
+            this.cmdLoadDanDare.Location = new System.Drawing.Point(1035, 327);
+            this.cmdLoadDanDare.Name = "cmdLoadDanDare";
+            this.cmdLoadDanDare.Size = new System.Drawing.Size(166, 39);
+            this.cmdLoadDanDare.TabIndex = 8;
+            this.cmdLoadDanDare.Text = "Load DanDare";
+            this.cmdLoadDanDare.UseVisualStyleBackColor = true;
+            this.cmdLoadDanDare.Click += new System.EventHandler(this.cmdLoadDanDare_Click);
+            // 
             // Screen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1212, 796);
+            this.Controls.Add(this.cmdLoadDanDare);
+            this.Controls.Add(this.cmdLoadJSW);
+            this.Controls.Add(this.cmdLoadManicMiner2);
             this.Controls.Add(this.cmdLoadManicMinor);
             this.Controls.Add(this.cmdLoadColour);
             this.Controls.Add(this.cmdLoadGloria);
@@ -132,5 +168,8 @@
         private System.Windows.Forms.Button cmdLoadManicMinor;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Button cmdLoadManicMiner2;
+        private System.Windows.Forms.Button cmdLoadJSW;
+        private System.Windows.Forms.Button cmdLoadDanDare;
     }
 }

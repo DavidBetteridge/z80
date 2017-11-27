@@ -28,20 +28,26 @@ namespace z80vm
 
         public void Set(ushort address, byte value)
         {
+            var currentValue = data[address];
             data[address] = value;
 
-            ValueChanged?.Invoke(this, new MemoryValueChangedEventArgs() { address = address, newValue = value });
+            if (value != currentValue)
+                ValueChanged?.Invoke(this, new MemoryValueChangedEventArgs() { address = address, newValue = value });
         }
 
         public void Set(ushort address, ushort value)
         {
+            var currentValue = ReadWord(address);
+
             //The Z80 is little endian,  so the lowest byte is stored in the lowest address
             data[address + 1] = value.High();
             data[address] = value.Low();
 
-            ValueChanged?.Invoke(this, new MemoryValueChangedEventArgs() { address = address, newValue = value.Low() });
-            ValueChanged?.Invoke(this, new MemoryValueChangedEventArgs() { address = (ushort)(address + 1), newValue = value.High() });
-
+            if (currentValue != value)
+            {
+                ValueChanged?.Invoke(this, new MemoryValueChangedEventArgs() { address = address, newValue = value.Low() });
+                ValueChanged?.Invoke(this, new MemoryValueChangedEventArgs() { address = (ushort)(address + 1), newValue = value.High() });
+            }
 
         }
 

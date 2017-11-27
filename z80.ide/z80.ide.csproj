@@ -85,7 +85,13 @@
     <None Include="colour.scr">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="DanDare.scr">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="gloria.scr">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="JetSetWilly.scr">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="ManicMiner%28SoftwareProjectsLtd%29.scr">

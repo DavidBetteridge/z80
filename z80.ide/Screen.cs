@@ -32,7 +32,6 @@ namespace z80.ide
             this.flashBitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
 
             memory.ValueChanged += Memory_ValueChanged;
-            SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
         }
         private void Memory_ValueChanged(object sender, MemoryValueChangedEventArgs e)
         {
@@ -46,6 +45,12 @@ namespace z80.ide
                 DrawColour(memory, e.address);
             }
         }
+
+        /// <summary>
+        /// Calculates the x and y corrds of a pixel from it's memory address.
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
         private static (int col, int y) XYFromAddress(ushort address)
         {
             var third = (address & 0b0001_1000_0000_0000) >> 11;
@@ -57,6 +62,12 @@ namespace z80.ide
             return (col, y);
         }
 
+        /// <summary>
+        /// Calculates the bitmap address from a pixel's x and y corrds.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         private static ushort AddressFromXY(int x, int y)
         {
             var third = (y / 64);
@@ -68,12 +79,23 @@ namespace z80.ide
             return (ushort)(0b0100_0000_0000_0000 | (third << 11) | (L << 8) | (cr << 5) | x);
         }
 
+        /// <summary>
+        /// Is this particular bit set on the bitmap
+        /// </summary>
+        /// <param name="bitMap"></param>
+        /// <param name="offset"></param>
+        /// <returns></returns>
         private bool isPixelSet(byte bitMap, int offset)
         {
             return (bitMap & (1 << offset)) != 0;
         }
 
-
+        /// <summary>
+        /// Given a value 0-7 and the isBright bit return it's colour
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="isBright"></param>
+        /// <returns></returns>
         private Color LookupColour(int code, bool isBright)
         {
             switch (code)
@@ -117,6 +139,13 @@ namespace z80.ide
             }
         }
 
+        /// <summary>
+        /// Draw pixel on the current display.  Each emulator pixel is a 4x4 block in real life
+        /// We also draw directly onto the graphics device to make it look more reliastic.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="color"></param>
         private void SetPixelBlock(int x, int y, Color color)
         {
             for (int x0 = 0; x0 < 4; x0++)
@@ -126,8 +155,21 @@ namespace z80.ide
                     this.bitmap.SetPixel(x + x0, y + y0, color);
                 }
             }
+
+            if (!flash)
+            {
+                var g = this.pictureBox1.CreateGraphics();
+                g.FillRectangle(new SolidBrush(color), x, y, 4, 4);
+            }
         }
 
+        /// <summary>
+        /// Draw pixel on the flash display.  Each emulator pixel is a 4x4 block in real life
+        /// We also draw directly onto the graphics device to make it look more reliastic.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="color"></param>
         private void SetFlashPixelBlock(int x, int y, Color color)
         {
             for (int x0 = 0; x0 < 4; x0++)
@@ -137,19 +179,23 @@ namespace z80.ide
                     this.flashBitmap.SetPixel(x + x0, y + y0, color);
                 }
             }
+
+            if (flash)
+            {
+                var g = this.pictureBox1.CreateGraphics();
+                g.FillRectangle(new SolidBrush(color), x, y, 4, 4);
+            }
         }
 
+        /// <summary>
+        /// A colour attribute value has changed.  A single colour block gives the
+        /// colours for a 8x8 block.  Update this block.
+        /// </summary>
+        /// <param name="memory"></param>
+        /// <param name="address"></param>
         private void DrawColour(Memory memory, ushort address)
         {
-            var bitmap = memory.ReadByte(address);
-
-            var ink = bitmap & 0b111;
-            var paper = (bitmap & 0b111000) >> 3;
-            var bright = ((bitmap & 0b1000000) >> 6) == 1;
-            var flash = ((bitmap & 0b10000000) >> 7) == 1;
-
-            var inkColour = LookupColour(ink, bright);
-            var paperColour = LookupColour(paper, bright);
+            var (paperColour, inkColour, flash) = LookupColours(address);
 
             var blockOffset = address - SCREEN_MEMORY_BITMAP_END;
             var row = blockOffset / 32;
@@ -178,14 +224,16 @@ namespace z80.ide
                     offset--;
                 }
             }
-            DrawBitmap();
         }
 
-        private Color LookupInkColour(int x, int y)
+        /// <summary>
+        /// Loads the colour attribute from the given memory address and work out
+        /// it's colours and if it should be flashing
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        private (Color paper, Color ink, bool flash) LookupColours(ushort address)
         {
-            var row = y / 8;
-            var address = (ushort)(SCREEN_MEMORY_BITMAP_END + (row * 32) + (x / 8));
-
             var bitmap = memory.ReadByte(address);
 
             var ink = bitmap & 0b111;
@@ -193,24 +241,15 @@ namespace z80.ide
             var bright = ((bitmap & 0b1000000) >> 6) == 1;
             var flash = ((bitmap & 0b10000000) >> 7) == 1;
 
-            return LookupColour(ink, bright);
+            return (LookupColour(paper, bright), LookupColour(ink, bright), flash);
         }
 
-        private Color LookupPenColour(int x, int y)
-        {
-            var row = y / 8;
-            var address = (ushort)(SCREEN_MEMORY_BITMAP_END + (row * 32) + (x / 8));
-
-            var bitmap = memory.ReadByte(address);
-
-            var ink = bitmap & 0b111;
-            var paper = (bitmap & 0b111000) >> 3;
-            var bright = ((bitmap & 0b1000000) >> 6) == 1;
-            var flash = ((bitmap & 0b10000000) >> 7) == 1;
-
-            return LookupColour(paper, bright);
-        }
-
+        /// <summary>
+        /// Part of the bitmap has changed.   Lookup the colour for these 8 pixels
+        /// and redraw them.
+        /// </summary>
+        /// <param name="memory"></param>
+        /// <param name="address"></param>
         private void DrawAddress(Memory memory, ushort address)
         {
             var (col, y) = XYFromAddress(address);
@@ -227,37 +266,29 @@ namespace z80.ide
                 var realX = x * 4;
                 var realY = y * 4;
 
+                var colourAddress = (ushort)(SCREEN_MEMORY_BITMAP_END + ((y / 8) * 32) + (x / 8));
+                var (paperColour, inkColour, flash) = LookupColours(colourAddress);
+                
                 if (setPixel)
-                    SetPixelBlock(realX, realY, LookupInkColour(x, y));
+                {
+                    SetPixelBlock(realX, realY, inkColour);
+                    SetFlashPixelBlock(realX, realY, flash ? paperColour : inkColour);
+                }
                 else
-                    SetPixelBlock(realX, realY, LookupPenColour(x, y));
+                {
+                    SetPixelBlock(realX, realY, paperColour);
+                    SetFlashPixelBlock(realX, realY, flash ? inkColour : paperColour);
+                }
 
                 offset--;
             }
-            DrawBitmap();
         }
 
-        private void cmdFillDemo_Click(object sender, EventArgs e)
-        {
-            for (ushort s = SCREEN_MEMORY_START; s <= SCREEN_MEMORY_BITMAP_END; s++)
-            {
-                this.memory.Set(s, 255);
-            }
-        }
 
-        private void cmdClearDemo_Click(object sender, EventArgs e)
-        {
-            for (ushort s = SCREEN_MEMORY_START; s <= SCREEN_MEMORY_BITMAP_END; s++)
-            {
-                this.memory.Set(s, 0);
-            }
-        }
-
-        private void cmdLoadGloria_Click(object sender, EventArgs e)
-        {
-            LoadFile("gloria.scr");
-        }
-
+        /// <summary>
+        /// Loads a file in the scr format
+        /// </summary>
+        /// <param name="filename"></param>
         private void LoadFile(string filename)
         {
             var allBytes = File.ReadAllBytes(filename);
@@ -267,6 +298,37 @@ namespace z80.ide
                 this.memory.Set(s, allBytes[offset]);
                 offset++;
             }
+        }
+
+        /// <summary>
+        /// Sets the screen to black
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cmdFillDemo_Click(object sender, EventArgs e)
+        {
+            for (ushort s = SCREEN_MEMORY_START; s < SCREEN_MEMORY_END; s++)
+            {
+                this.memory.Set(s, 255);
+            }
+        }
+
+        /// <summary>
+        /// Sets the screen to white
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cmdClearDemo_Click(object sender, EventArgs e)
+        {
+            for (ushort s = SCREEN_MEMORY_START; s < SCREEN_MEMORY_END; s++)
+            {
+                this.memory.Set(s, 0);
+            }
+        }
+
+        private void cmdLoadGloria_Click(object sender, EventArgs e)
+        {
+            LoadFile("gloria.scr");
         }
 
         private void cmdLoadColour_Click(object sender, EventArgs e)
@@ -279,14 +341,27 @@ namespace z80.ide
             LoadFile("ManicMiner(SoftwareProjectsLtd).scr");
         }
 
-        private bool flash;
-        private void timer1_Tick(object sender, EventArgs e)
+        private void cmdLoadManicMiner2_Click(object sender, EventArgs e)
         {
-            DrawBitmap();
-            flash = !flash;
+            LoadFile("ManicMiner.scr");
         }
 
-        private void DrawBitmap()
+        private void cmdLoadJSW_Click(object sender, EventArgs e)
+        {
+            LoadFile("JetSetWilly.scr");
+        }
+
+        /// <summary>
+        /// Alternates between normal and flash
+        /// </summary>
+        private bool flash;
+        
+        /// <summary>
+        /// Switch between the normal and flash version every 0.5 seconds
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void timer1_Tick(object sender, EventArgs e)
         {
             if (flash)
             {
@@ -296,6 +371,13 @@ namespace z80.ide
             {
                 this.pictureBox1.Image = flashBitmap;
             }
+
+            flash = !flash;
+        }
+
+        private void cmdLoadDanDare_Click(object sender, EventArgs e)
+        {
+            LoadFile("DanDare.scr");
         }
     }
 }
